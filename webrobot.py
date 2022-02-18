@@ -95,8 +95,11 @@ class Robot:
                 return item
 
     def page_save(self, res):
-        SQL = "INSERT INTO tbl_crawl_data (time_stamp, time_zone, http_status_code, http_content_type, scheme, url, path, query_string, checksum, data) VALUES(NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s)";
-        val = (res['http_status_code'], res['http_content_type'], res['scheme'], res['url'], res['path'], res['query_string'], res['checksum'], res['data'])
+        SQL = """
+        INSERT INTO tbl_crawl_data (time_stamp, time_zone, http_status_code, http_content_type, scheme, url, path, query_string, checksum, encoding, data)
+            VALUES(NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        val = (res['http_status_code'], res['http_content_type'], res['scheme'], res['url'], res['path'], res['query_string'], res['checksum'], res['encoding'], res['data'])
         cursor = self.cnx.cursor()
         cursor.execute(SQL, val)
         self.cnx.commit()
@@ -119,19 +122,23 @@ class Robot:
             else:
                 code = response.getcode()
                 content_type = response.info()["content-type"]
-                if re.search('^(text/html|text/plain)', content_type, re.IGNORECASE):
-                    parsed_url = urlparse(self.url)
-                    html = response.read()
-                    plaintext = html.decode('iso-8859-1')
-                    checksum = hashlib.md5(plaintext.encode('utf-8'))
+                matches = re.search('^(text/html|text/plain);\s*charset=([a-zA-Z0-9-_]*)', content_type, re.IGNORECASE)
+                if matches:
+                    content_type = matches.group(1)
+                    encoding = matches.group(2)
+                    data = response.read()
+                    text = data.decode(encoding)
+                    checksum = hashlib.md5(data)
 
+                    parsed_url = urlparse(self.url)
                     res = { 'http_status_code': code, 'http_content_type': content_type,
                             'scheme': parsed_url.scheme, 'url': self.url, 'path': parsed_url.path,
-                            'query_string': parsed_url.query, 'checksum': checksum.hexdigest(), 'data': plaintext,
+                            'query_string': parsed_url.query, 'checksum': checksum.hexdigest(),
+                            'data': text, 'encoding': encoding,
                     }
                     self.page_save(res)
 
-                    links = re.findall("href=[\"\'](.*?)[\"\']", plaintext)
+                    links = re.findall("href=[\"\'](.*?)[\"\']", text)
                     for link in links:
                         if len(link) and link[0] == '/':
                             url = urljoin(self.url, link)

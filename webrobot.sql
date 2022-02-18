@@ -10,6 +10,7 @@ CREATE TABLE `tbl_crawl_data` (
   `path` text,
   `query_string` text,
   `checksum` varchar(32) DEFAULT NULL,
+  `encoding` varchar(32) DEFAULT NULL,
   `data` mediumtext,
   PRIMARY KEY (`id`)
 );
