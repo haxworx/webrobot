@@ -6,20 +6,21 @@ import re
 import sys
 import atexit
 import logging
-import configparser
 import mysql.connector
 import hashlib
 from mysql.connector import errorcode
 
-CONFIG_FILE = 'config.txt'
+import config
+import robots_text
+import page_list
 
 class Robot:
     def __init__(self, url):
         self.base_url = url
         self.netloc = urlparse(url).netloc
-        self.robot_text = self.RobotText()
-        self.page_list = self.PageList()
-        self.config_read()
+        self.robots_text = robots_text.robots_text()
+        self.page_list = page_list.page_list()
+        self.config = config.config()
         self.database_connect()
         atexit.register(self.cleanup)
 
@@ -28,78 +29,12 @@ class Robot:
 
     def database_connect(self):
         try:
-            self.cnx = mysql.connector.connect(user=self.db_user,
-                                               password=self.db_pass,
-                                               host=self.db_host,
-                                               database=self.db_name)
+            self.cnx = mysql.connector.connect(user=self.config.db_user,
+                                               password=self.config.db_pass,
+                                               host=self.config.db_host,
+                                               database=self.config.db_name)
         except mysql.connector.Error as err:
             raise e
-
-    def config_read(self):
-        try:
-            with open(CONFIG_FILE, "r") as f:
-                content = f.read()
-                parser = configparser.ConfigParser()
-                parser.read_string(content)
-
-                if not all(key in parser['database'] for key in ('host', 'name', 'user', 'pass')):
-                    raise Exception("Missing database config field.")
-                self.db_host = parser['database']['host']
-                self.db_name = parser['database']['name']
-                self.db_user = parser['database']['user']
-                self.db_pass = parser['database']['pass']
-        except OSError as e:
-            print("Unable to open '{}' -> {}" . format(CONFIG_FILE, e), file=sys.stderr)
-            sys.exit(1)
-        except Exception as e:
-            print("Error parsing '{}' -> {}" . format(CONFIG_FILE, e), file=sys.stderr)
-            sys.exit(1)
-
-    class RobotText:
-        """
-        Handle robots.txt.
-        """
-        def __init__(self):
-            self.version = "pythonbond/1.0"
-            self.allowed = []
-            self.restricted = []
-
-    class PageList:
-        """
-        Simple class to keep track of pages.
-        Provides an iterator and append method.
-        """
-        def __init__(self):
-            self.page_list = []
-            self.page_index = 0
-
-        def __iter__(self):
-            return self
-
-        def __next__(self):
-            while True:
-                if self.page_index + 1 < len(self.page_list):
-                    self.page_index += 1
-                if self.page_list[self.page_index]['visited'] != True:
-                    return self.page_list[self.page_index]
-                else:
-                    raise StopIteration
-
-        def append(self, item):
-            """
-            Append a URL to the page list.
-            Only appends when url is unseen/new.
-            """
-            exists = False
-            for page in self.page_list:
-                if item['url'] == page['url']:
-                    exists = True
-                    break
-            if exists:
-                return None
-            else:
-                self.page_list.append(item)
-                return item
 
     def page_save(self, res):
         SQL = """
@@ -119,7 +54,7 @@ class Robot:
             logging.info("Parsing %s", self.url)
             try:
                 request = urllib.request.Request(self.url)
-                request.add_header('User-Agent', self.robot_text.version)
+                request.add_header('User-Agent', self.robots_text.version)
                 response = urllib.request.urlopen(request)
                 code = response.getcode()
             except urllib.error.HTTPError as e:
