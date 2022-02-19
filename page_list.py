@@ -1,4 +1,4 @@
-class page_list:
+class PageList:
     """
     Simple class to keep track of pages.
     Provides an iterator and append method.
@@ -6,7 +6,6 @@ class page_list:
     def __init__(self):
         self.page_list = []
         self.page_index = 0
-        print(self.page_index)
 
     def __iter__(self):
         return self

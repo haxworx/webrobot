@@ -10,17 +10,17 @@ import mysql.connector
 import hashlib
 from mysql.connector import errorcode
 
-import config
-import robots_text
-import page_list
+from config import Config
+from page_list import PageList
+from robots_text import RobotsText
 
 class Robot:
     def __init__(self, url):
         self.base_url = url
         self.netloc = urlparse(url).netloc
-        self.robots_text = robots_text.robots_text()
-        self.page_list = page_list.page_list()
-        self.config = config.config()
+        self.robots_text = RobotsText()
+        self.page_list = PageList()
+        self.config = Config()
         self.database_connect()
         atexit.register(self.cleanup)
 

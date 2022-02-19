@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-class robots_text:
+class RobotsText:
     """
     Handle robots.txt.
     """

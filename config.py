@@ -5,7 +5,7 @@ import configparser
 
 CONFIG_FILE = 'config.txt'
 
-class config:
+class Config:
     def __init__(self):
         self.read()
 
