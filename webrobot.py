@@ -11,13 +11,12 @@ import mysql.connector
 import hashlib
 from mysql.connector import errorcode
 
+CONFIG_FILE = 'config.txt'
+
 class Robot:
     def __init__(self, url):
         self.base_url = url
-        result = urlparse(url)
-        self.netloc = result.netloc;
-        self.scheme = result.scheme;
-
+        self.netloc = urlparse(url).netloc
         self.robot_text = self.RobotText()
         self.page_list = self.PageList()
         self.config_read()
@@ -38,15 +37,22 @@ class Robot:
 
     def config_read(self):
         try:
-            with open("config.txt", "r") as f:
+            with open(CONFIG_FILE, "r") as f:
                 content = f.read()
                 parser = configparser.ConfigParser()
                 parser.read_string(content)
+
+                if not all(key in parser['database'] for key in ('name', 'user', 'pass')):
+                    raise Exception("Missing database config field.")
                 self.db_name = parser['database']['name']
                 self.db_user = parser['database']['user']
                 self.db_pass = parser['database']['pass']
         except OSError as e:
-            raise e
+            print("Unable to open '{}' -> {}" . format(CONFIG_FILE, e), file=sys.stderr)
+            sys.exit(1)
+        except Exception as e:
+            print("Error parsing '{}' -> {}" . format(CONFIG_FILE, e), file=sys.stderr)
+            sys.exit(1)
 
     class RobotText:
         """
@@ -111,19 +117,22 @@ class Robot:
             self.url = page['url']
             logging.info("Parsing %s", self.url)
             try:
-                response = urllib.request.urlopen(self.url)
+                request = urllib.request.Request(self.url)
+                request.add_header('User-Agent', self.robot_text.version)
+                response = urllib.request.urlopen(request)
+                code = response.getcode()
             except urllib.error.HTTPError as e:
                 logging.warning("Ignoring %s -> %i", self.url, e.code)
                 page['visited'] = True
             except urllib.error.URLError as e:
-                print("We failed to reach a server.")
-                print("reason: {}" . format(e.reason))
+                print("Unable to connect: {}" . format(e.reason))
                 break
             else:
-                code = response.getcode()
-                content_type = response.info()["content-type"]
+                content_type = response.headers["content-type"]
                 matches = re.search('^(text/html|text/plain);\s*charset=([a-zA-Z0-9-_]*)', content_type, re.IGNORECASE)
                 if matches:
+                    # Have we redirected?
+                    self.url = response.url
                     content_type = matches.group(1)
                     encoding = matches.group(2)
                     data = response.read()
@@ -143,7 +152,7 @@ class Robot:
                         if len(link) and link[0] == '/':
                             url = urljoin(self.url, link)
                             parsed_url = urlparse(url)
-                            if parsed_url.scheme == self.scheme and parsed_url.netloc == self.netloc:
+                            if parsed_url.netloc == self.netloc:
                                 if self.page_list.append({ "url": url, "visited": False }) is not None:
                                     logging.info("Appending new url: %s", url)
                     response.close()
