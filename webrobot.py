@@ -6,6 +6,7 @@ import re
 import sys
 import atexit
 import time
+import string
 import logging
 import hashlib
 import mysql.connector
@@ -18,7 +19,7 @@ from robots_text import RobotsText
 class Robot:
     def __init__(self, url):
         self.base_url = url
-        self.netloc = urlparse(url).netloc
+        self.hostname = self.get_hostname(url)
         self.robots_text = RobotsText()
         self.page_list = PageList()
         self.config = Config()
@@ -36,6 +37,15 @@ class Robot:
                                                database=self.config.db_name)
         except mysql.connector.Error as err:
             raise e
+
+    def get_hostname(self, url):
+        netloc = urlparse(url).netloc
+        hostname = netloc.split('.')
+        result = '.'
+        for i, subhostname in enumerate(hostname):
+            if subhostname == "www":
+                hostname.pop(i)
+        return result.join(hostname)
 
     def valid_link(self, link):
         if len(link) and link[0] == '/':
@@ -97,8 +107,8 @@ class Robot:
                     for link in links:
                         if self.valid_link(link):
                             url = urljoin(self.url, link)
-                            parsed_url = urlparse(url)
-                            if parsed_url.netloc == self.netloc:
+                            hostname = self.get_hostname(url)
+                            if hostname == self.hostname:
                                 page = Page(url)
                                 if self.page_list.append(page) is not None:
                                     logging.info("Appending new url: %s", url)
@@ -115,6 +125,7 @@ if __name__ == '__main__':
     logging.info("Init.")
 
     crawler = Robot(sys.argv[1])
+    logging.info("Slurping %s", crawler.hostname)
     crawler.crawl()
 
     logging.info("Done.")
