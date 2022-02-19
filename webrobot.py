@@ -30,7 +30,7 @@ class Robot:
         try:
             self.cnx = mysql.connector.connect(user=self.db_user,
                                                password=self.db_pass,
-                                               host='127.0.0.1',
+                                               host=self.db_host,
                                                database=self.db_name)
         except mysql.connector.Error as err:
             raise e
@@ -42,8 +42,9 @@ class Robot:
                 parser = configparser.ConfigParser()
                 parser.read_string(content)
 
-                if not all(key in parser['database'] for key in ('name', 'user', 'pass')):
+                if not all(key in parser['database'] for key in ('host', 'name', 'user', 'pass')):
                     raise Exception("Missing database config field.")
+                self.db_host = parser['database']['host']
                 self.db_name = parser['database']['name']
                 self.db_user = parser['database']['user']
                 self.db_pass = parser['database']['pass']
