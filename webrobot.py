@@ -37,6 +37,11 @@ class Robot:
         except mysql.connector.Error as err:
             raise e
 
+    def valid_link(self, link):
+        if len(link) and link[0] == '/':
+            return True
+        return False
+
     def save_results(self, res):
         SQL = """
         INSERT INTO tbl_crawl_data (time_stamp, time_zone, http_status_code, http_content_type, scheme, url, path, query_string, checksum, encoding, data)
@@ -90,7 +95,7 @@ class Robot:
 
                     links = re.findall("href=[\"\'](.*?)[\"\']", text)
                     for link in links:
-                        if len(link) and link[0] == '/':
+                        if self.valid_link(link):
                             url = urljoin(self.url, link)
                             parsed_url = urlparse(url)
                             if parsed_url.netloc == self.netloc:
