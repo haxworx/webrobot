@@ -11,7 +11,7 @@ import hashlib
 from mysql.connector import errorcode
 
 from config import Config
-from page_list import PageList
+from pages import PageList, Page
 from robots_text import RobotsText
 
 class Robot:
@@ -36,7 +36,7 @@ class Robot:
         except mysql.connector.Error as err:
             raise e
 
-    def page_save(self, res):
+    def save_results(self, res):
         SQL = """
         INSERT INTO tbl_crawl_data (time_stamp, time_zone, http_status_code, http_content_type, scheme, url, path, query_string, checksum, encoding, data)
             VALUES(NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -47,11 +47,11 @@ class Robot:
         self.cnx.commit()
 
     def crawl(self):
-        self.page_list.append( { "url": self.base_url, "visited": False })
+        page = Page(self.base_url)
+        self.page_list.append(page)
 
         for page in self.page_list:
-            self.url = page['url']
-            logging.info("Parsing %s", self.url)
+            self.url = page.get_url()
             try:
                 request = urllib.request.Request(self.url)
                 request.add_header('User-Agent', self.robots_text.version)
@@ -59,14 +59,16 @@ class Robot:
                 code = response.getcode()
             except urllib.error.HTTPError as e:
                 logging.warning("Ignoring %s -> %i", self.url, e.code)
-                page['visited'] = True
+                page.set_visited(True)
             except urllib.error.URLError as e:
                 print("Unable to connect: {}" . format(e.reason))
                 break
             else:
                 content_type = response.headers["content-type"]
                 matches = re.search('^(text/html|text/plain);\s*charset=([a-zA-Z0-9-_]*)', content_type, re.IGNORECASE)
-                if matches:
+                if not matches:
+                    logging.warning("Ignoring %s as %s", self.url, content_type)
+                else:
                     # Have we redirected?
                     self.url = response.url
                     content_type = matches.group(1)
@@ -75,13 +77,15 @@ class Robot:
                     text = data.decode(encoding)
                     checksum = hashlib.md5(data)
 
+                    logging.info("Saving %s", self.url)
+
                     parsed_url = urlparse(self.url)
                     res = { 'http_status_code': code, 'http_content_type': content_type,
                             'scheme': parsed_url.scheme, 'url': self.url, 'path': parsed_url.path,
                             'query_string': parsed_url.query, 'checksum': checksum.hexdigest(),
                             'data': text, 'encoding': encoding,
                     }
-                    self.page_save(res)
+                    self.save_results(res)
 
                     links = re.findall("href=[\"\'](.*?)[\"\']", text)
                     for link in links:
@@ -89,12 +93,11 @@ class Robot:
                             url = urljoin(self.url, link)
                             parsed_url = urlparse(url)
                             if parsed_url.netloc == self.netloc:
-                                if self.page_list.append({ "url": url, "visited": False }) is not None:
+                                page = Page(url)
+                                if self.page_list.append(page) is not None:
                                     logging.info("Appending new url: %s", url)
                     response.close()
-                else:
-                    logging.warning("Ignoring %s as %s", self.url, content_type)
-                page['visited'] = True
+                page.set_visited(True)
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -106,4 +109,6 @@ if __name__ == '__main__':
 
     crawler = Robot(sys.argv[1])
     crawler.crawl()
+
+    logging.info("Done.")
 

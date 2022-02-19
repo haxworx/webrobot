@@ -17,24 +17,38 @@ class PageList:
         while True:
             if self.page_index + 1 < len(self.page_list):
                 self.page_index += 1
-            if self.page_list[self.page_index]['visited'] != True:
+            if self.page_list[self.page_index].get_visited() != True:
                 return self.page_list[self.page_index]
             else:
                 raise StopIteration
 
-    def append(self, item):
+    def append(self, page_new):
         """
         Append a URL to the page list.
         Only appends when url is unseen/new.
         """
         exists = False
         for page in self.page_list:
-            if item['url'] == page['url']:
+            if page_new.get_url() == page.get_url():
                 exists = True
                 break
         if exists:
              return None
         else:
-            self.page_list.append(item)
-            return item
+            self.page_list.append(page_new)
+            return page_new
+
+class Page:
+    def __init__(self, url, visited=False):
+        self.url = url
+        self.visited = visited
+
+    def set_visited(self, visited):
+        self.visited = visited
+
+    def get_visited(self):
+        return self.visited
+
+    def get_url(self):
+        return self.url
 
