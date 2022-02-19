@@ -22,6 +22,10 @@ class Config:
                 self.db_name = parser['database']['name']
                 self.db_user = parser['database']['user']
                 self.db_pass = parser['database']['pass']
+                if 'interval' not in parser['crawling']:
+                    raise Exception("Missing crawling config field.")
+
+                self.crawl_interval = float(parser['crawling']['interval'])
         except OSError as e:
             print("Unable to open '{}' -> {}" . format(CONFIG_FILE, e), file=sys.stderr)
             sys.exit(1)

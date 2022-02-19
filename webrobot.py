@@ -5,9 +5,10 @@ from urllib.parse import urljoin, urlparse
 import re
 import sys
 import atexit
+import time
 import logging
-import mysql.connector
 import hashlib
+import mysql.connector
 from mysql.connector import errorcode
 
 from config import Config
@@ -98,6 +99,7 @@ class Robot:
                                     logging.info("Appending new url: %s", url)
                     response.close()
                 page.set_visited(True)
+                time.sleep(self.config.crawl_interval)
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:

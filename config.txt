@@ -4,3 +4,7 @@ host = 127.0.0.1
 name = crawl
 user = test
 pass = password
+
+[crawling]
+
+interval = 0.5
