@@ -1,3 +1,6 @@
+import sys
+import urllib
+
 class PageList:
     """
     Simple class to keep track of pages.
@@ -7,20 +10,21 @@ class PageList:
         self.page_list = []
         self.page_index = 0
 
+    def __len__(self):
+        return len(self.page_list)
+
     def __iter__(self):
         return self
 
     def __next__(self):
+        page = None
         if len(self.page_list) == 0:
             raise StopIteration
-
-        while True:
-            if self.page_index + 1 < len(self.page_list):
-                self.page_index += 1
-            if self.page_list[self.page_index].get_visited() != True:
-                return self.page_list[self.page_index]
-            else:
-                raise StopIteration
+        if self.page_index == 0 or self.page_index < len(self.page_list):
+            page = self.page_list[self.page_index]
+            self.page_index += 1
+            return page
+        raise StopIteration
 
     def append(self, page_new):
         """
@@ -40,8 +44,24 @@ class PageList:
 
 class Page:
     def __init__(self, url, visited=False):
-        self.url = url
+        self.url = self.asciify_url(url)
         self.visited = visited
+
+    def asciify_url(self, url):
+        if not url.isascii():
+            (scheme, netloc, path, query, fragment) = urllib.parse.urlsplit(url)
+            if not scheme.isascii():
+                scheme = urllib.parse.quote(scheme)
+            if not netloc.isascii():
+                netloc = netloc.encode('idna').decode('utf-8')
+            if not path.isascii():
+                path = urllib.parse.quote(path)
+            if not query.isascii():
+                query = urllib.parse.quote(query)
+            if not fragment.isascii():
+                fragment = urllib.parse.quote(fragment)
+            url = urllib.parse.urlunsplit((scheme, netloc, path, query, fragment))
+        return url
 
     def set_visited(self, visited):
         self.visited = visited

@@ -26,6 +26,9 @@ class Robot:
         self.database_connect()
         atexit.register(self.cleanup)
 
+        self.save_count = 0
+        self.attempted = 0
+
     def cleanup(self):
         self.cnx.close()
 
@@ -54,19 +57,22 @@ class Robot:
 
     def save_results(self, res):
         SQL = """
-        INSERT INTO tbl_crawl_data (time_stamp, time_zone, http_status_code, http_content_type, scheme, url, path, query_string, checksum, encoding, data)
-            VALUES(NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO tbl_crawl_data (time_stamp, time_zone, domain, http_status_code, http_content_type, scheme, url, path, query_string, checksum, encoding, data)
+            VALUES(NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        val = (res['http_status_code'], res['http_content_type'], res['scheme'], res['url'], res['path'], res['query_string'], res['checksum'], res['encoding'], res['data'])
+        val = (res['domain'], res['http_status_code'], res['http_content_type'], res['scheme'], res['url'], res['path'], res['query_string'], res['checksum'], res['encoding'], res['data'])
         cursor = self.cnx.cursor()
         cursor.execute(SQL, val)
         self.cnx.commit()
+
+        self.save_count += 1
 
     def crawl(self):
         page = Page(self.base_url)
         self.page_list.append(page)
 
         for page in self.page_list:
+            self.attempted += 1
             self.url = page.get_url()
             try:
                 request = urllib.request.Request(self.url)
@@ -96,7 +102,7 @@ class Robot:
                     logging.info("Saving %s", self.url)
 
                     parsed_url = urlparse(self.url)
-                    res = { 'http_status_code': code, 'http_content_type': content_type,
+                    res = { 'domain': self.get_hostname(self.url), 'http_status_code': code, 'http_content_type': content_type,
                             'scheme': parsed_url.scheme, 'url': self.url, 'path': parsed_url.path,
                             'query_string': parsed_url.query, 'checksum': checksum.hexdigest(),
                             'data': text, 'encoding': encoding,
@@ -128,5 +134,6 @@ if __name__ == '__main__':
     logging.info("Slurping %s", crawler.hostname)
     crawler.crawl()
 
+    print("saved {} attempted {} total {}" . format(crawler.save_count, crawler.attempted, len(crawler.page_list)))
     logging.info("Done.")
 
