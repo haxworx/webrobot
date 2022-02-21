@@ -83,6 +83,7 @@ class Robot:
             except urllib.error.HTTPError as e:
                 logging.warning("Ignoring %s -> %i", self.url, e.code)
                 page.set_visited(True)
+                response.close()
             except urllib.error.URLError as e:
                 print("Unable to connect: {}" . format(e.reason))
                 break
@@ -119,9 +120,9 @@ class Robot:
                                 page = Page(url)
                                 if self.page_list.append(page) is not None:
                                     logging.info("Appending new url: %s", url)
-                    response.close()
                 page.set_visited(True)
                 time.sleep(self.config.crawl_interval)
+                response.close()
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
