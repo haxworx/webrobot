@@ -57,7 +57,7 @@ class Robot:
             return True
         return False
 
-    def save_results(self, res):
+    def save_results(self, res)
         SQL = """
         INSERT INTO tbl_crawl_data (time_stamp, time_zone, domain, http_status_code, http_content_type, scheme, url, path, query_string, checksum, encoding, data)
             VALUES(NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -70,6 +70,7 @@ class Robot:
         self.save_count += 1
 
     def crawl(self):
+        logging.info("Crawling %s", self.base_url)
         self.robots_text.parse(self.base_url)
         self.page_list.append(self.robots_text.get_url())
         self.page_list.append(self.base_url)
@@ -125,6 +126,7 @@ class Robot:
                 page.set_visited(True)
                 time.sleep(self.config.crawl_interval)
                 response.close()
+        logging.info("Done! Saved %s, attempted %s, total %s", crawler.save_count, crawler.attempted, len(crawler.page_list))
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -132,12 +134,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     logging.basicConfig(level=logging.INFO)
-    logging.info("Init.")
 
     crawler = Robot(sys.argv[1])
-    logging.info("Slurping %s", crawler.hostname)
     crawler.crawl()
-
-    print("saved {} attempted {} total {}" . format(crawler.save_count, crawler.attempted, len(crawler.page_list)))
-    logging.info("Done.")
 
