@@ -38,10 +38,10 @@ class PageList:
                 exists = True
                 break
         if exists:
-             return None
+             return False
         else:
             self.page_list.append(page_new)
-            return page_new
+            return True
 
 class Page:
     def __init__(self, url, visited=False):

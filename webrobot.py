@@ -96,9 +96,9 @@ class Robot:
                     self.url = response.url
                     content_type = matches.group(1)
                     encoding = 'utf-8'
-                    matches = re.search('charset=([a-zA-Z0-9-_]*)', content_type, re.IGNORECASE)
+                    matches = re.search('charset=([a-zA-Z0-9-_]*)', response.headers['content-type'], re.IGNORECASE)
                     if matches:
-                        encoding = matches_charset.group(1)
+                        encoding = matches.group(1)
 
                     data = response.read()
                     text = data.decode(encoding)
@@ -120,7 +120,7 @@ class Robot:
                             url = urljoin(self.url, link)
                             hostname = self.get_hostname(url)
                             if hostname == self.hostname:
-                                if self.page_list.append(url) is not None:
+                                if self.page_list.append(url):
                                     logging.info("Appending new url: %s", url)
                 page.set_visited(True)
                 time.sleep(self.config.crawl_interval)
