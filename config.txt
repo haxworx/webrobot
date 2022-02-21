@@ -1,10 +1,17 @@
 [database]
 
+# MySQL database credentials.
 host = 127.0.0.1
 name = crawl
 user = test
 pass = password
 
 [crawling]
-
+# Delay between download attempts.
 interval = 0.5
+
+# User-Agent string to advertise.
+user-agent = pythonbond/0.1
+
+# Pipe delimited content type to slurp.
+wanted-content = text/plain|text/html|text/css

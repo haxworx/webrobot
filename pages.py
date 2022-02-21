@@ -26,11 +26,12 @@ class PageList:
             return page
         raise StopIteration
 
-    def append(self, page_new):
+    def append(self, url):
         """
         Append a URL to the page list.
         Only appends when url is unseen/new.
         """
+        page_new = Page(url)
         exists = False
         for page in self.page_list:
             if page_new.get_url() == page.get_url():

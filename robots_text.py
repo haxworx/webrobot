@@ -9,17 +9,18 @@ class RobotsText:
     """
     Handle robots.txt.
     """
-    def __init__(self):
-        self.version = "pythonbond/1.0"
+    def __init__(self, user_agent):
+        self.user_agent = user_agent
         self.agents = dict()
         self.allowed = []
         self.disallowed = []
+        self.url = None;
 
     def parse(self, url):
         parsed_url = urlparse(url)
-        url = parsed_url.scheme + '://' + parsed_url.netloc + '/robots.txt'
+        self.url = url = parsed_url.scheme + '://' + parsed_url.netloc + '/robots.txt'
         try:
-            downloader = Download(url, self.version)
+            downloader = Download(url, self.user_agent)
             (response, code) = downloader.get()
         except urllib.error.HTTPError as e:
             logging.warning("Ignoring %s -> %i", url, e.code)
@@ -45,9 +46,11 @@ class RobotsText:
                     self.agents[agent]['disallowed'].append(matches.group(1))
 
             for agent, values in self.agents.items():
-                if agent == '*' or agent == self.version:
+                if agent == '*' or agent == self.user_agent:
                     for path in values['allowed']:
                         self.allowed.append(path)
                     for path in values['disallowed']:
                         self.disallowed.append(path)
+    def get_url(self):
+        return self.url
 

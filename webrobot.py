@@ -21,10 +21,11 @@ class Robot:
     def __init__(self, url):
         self.base_url = url
         self.hostname = self.get_hostname(url)
-        self.robots_text = RobotsText()
         self.page_list = PageList()
         self.config = Config()
+        self.robots_text = RobotsText(self.config.user_agent)
         self.database_connect()
+        self.wanted_content = "^({})" . format(self.config.wanted_content)
         atexit.register(self.cleanup)
 
         self.save_count = 0
@@ -70,15 +71,14 @@ class Robot:
 
     def crawl(self):
         self.robots_text.parse(self.base_url)
-
-        page = Page(self.base_url)
-        self.page_list.append(page)
+        self.page_list.append(self.robots_text.get_url())
+        self.page_list.append(self.base_url)
 
         for page in self.page_list:
             self.attempted += 1
             self.url = page.get_url()
             try:
-                downloader = Download(self.url, self.robots_text.version)
+                downloader = Download(self.url, self.config.user_agent)
                 (response, code) = downloader.get()
             except urllib.error.HTTPError as e:
                 logging.warning("Ignoring %s -> %i", self.url, e.code)
@@ -88,15 +88,18 @@ class Robot:
                 print("Unable to connect: {}" . format(e.reason))
                 break
             else:
-                content_type = response.headers["content-type"]
-                matches = re.search('^(text/html|text/plain);\s*charset=([a-zA-Z0-9-_]*)', content_type, re.IGNORECASE)
+                matches = re.search(self.wanted_content, response.headers['content-type'], re.IGNORECASE)
                 if not matches:
                     logging.warning("Ignoring %s as %s", self.url, content_type)
                 else:
                     # Have we redirected?
                     self.url = response.url
                     content_type = matches.group(1)
-                    encoding = matches.group(2)
+                    encoding = 'utf-8'
+                    matches = re.search('charset=([a-zA-Z0-9-_]*)', content_type, re.IGNORECASE)
+                    if matches:
+                        encoding = matches_charset.group(1)
+
                     data = response.read()
                     text = data.decode(encoding)
                     checksum = hashlib.md5(data)
@@ -117,8 +120,7 @@ class Robot:
                             url = urljoin(self.url, link)
                             hostname = self.get_hostname(url)
                             if hostname == self.hostname:
-                                page = Page(url)
-                                if self.page_list.append(page) is not None:
+                                if self.page_list.append(url) is not None:
                                     logging.info("Appending new url: %s", url)
                 page.set_visited(True)
                 time.sleep(self.config.crawl_interval)
