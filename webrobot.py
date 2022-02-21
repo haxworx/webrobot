@@ -15,6 +15,7 @@ from mysql.connector import errorcode
 from config import Config
 from pages import PageList, Page
 from robots_text import RobotsText
+from download import Download
 
 class Robot:
     def __init__(self, url):
@@ -68,6 +69,8 @@ class Robot:
         self.save_count += 1
 
     def crawl(self):
+        self.robots_text.parse(self.base_url)
+
         page = Page(self.base_url)
         self.page_list.append(page)
 
@@ -75,10 +78,8 @@ class Robot:
             self.attempted += 1
             self.url = page.get_url()
             try:
-                request = urllib.request.Request(self.url)
-                request.add_header('User-Agent', self.robots_text.version)
-                response = urllib.request.urlopen(request)
-                code = response.getcode()
+                downloader = Download(self.url, self.robots_text.version)
+                (response, code) = downloader.get()
             except urllib.error.HTTPError as e:
                 logging.warning("Ignoring %s -> %i", self.url, e.code)
                 page.set_visited(True)
