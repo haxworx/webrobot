@@ -12,6 +12,8 @@ class RobotsText:
     def __init__(self):
         self.version = "pythonbond/1.0"
         self.agents = dict()
+        self.allowed = []
+        self.disallowed = []
 
     def parse(self, url):
         parsed_url = urlparse(url)
@@ -35,10 +37,17 @@ class RobotsText:
                     agent = matches.group(1)
                     if agent not in self.agents:
                         self.agents[agent] = { 'allowed': [], 'disallowed': [] }
-                matches = re.search('Allow:\s+(.*?)$', line, re.IGNORECASE)
+                matches = re.search('^Allow:\s+(.*?)$', line, re.IGNORECASE)
                 if matches:
                     self.agents[agent]['allowed'].append(matches.group(1))
-                matches = re.search('Disallow:\s+(.*?)$', line, re.IGNORECASE)
+                matches = re.search('^Disallow:\s+(.*?)$', line, re.IGNORECASE)
                 if matches:
                     self.agents[agent]['disallowed'].append(matches.group(1))
+
+            for agent, values in self.agents.items():
+                if agent == '*' or agent == self.version:
+                    for path in values['allowed']:
+                        self.allowed.append(path)
+                    for path in values['disallowed']:
+                        self.disallowed.append(path)
 
