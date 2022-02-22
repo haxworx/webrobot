@@ -21,7 +21,7 @@ class Robot:
     def __init__(self, url):
         self.base_url = url
         self.path_limit = urlparse(url).path
-        if self.path_limit[len(self.path_limit)-1] == '/':
+        if len(self.path_limit) and self.path_limit[len(self.path_limit)-1] == '/':
             self.path_limit = self.path_limit[:len(self.path_limit)-1]
         self.hostname = self.get_hostname(url)
         self.page_list = PageList()
@@ -60,11 +60,13 @@ class Robot:
         return result.join(hostname)
 
     def valid_link(self, link):
-        if len(link) == 0 or link[0] != '/':
+        if len(link) and link[0] != '/':
             return False
+
         if len(self.path_limit) and not link.startswith(self.path_limit):
             self.log.warning("robots: Ignoring path outside crawl parameters {} -> {}." . format(link, self.path_limit))
             return False
+
         for rule in self.robots_text.disallowed:
             matches = re.search(rule, link)
             if matches:
@@ -94,10 +96,7 @@ class Robot:
         for page in self.page_list:
             self.attempted += 1
             self.url = page.get_url()
-            parsed_url = urlparse(self.url)
 
-            if not self.valid_link(parsed_url.path):
-                continue
             try:
                 downloader = Download(self.url, self.config.user_agent)
                 (response, code) = downloader.get()
@@ -125,6 +124,7 @@ class Robot:
                     data = response.read()
                     text = data.decode(encoding)
                     checksum = hashlib.md5(data)
+                    parsed_url = urlparse(self.url)
 
                     self.log.info("Saving %s", self.url)
 
@@ -143,9 +143,11 @@ class Robot:
                             if hostname == self.hostname:
                                 if self.page_list.append(url):
                                     self.log.info("Appending new url: %s", url)
+
                 page.set_visited(True)
                 time.sleep(self.config.crawl_interval)
                 response.close()
+
         self.log.info("Done! Saved %s, attempted %s, total %s", crawler.save_count, crawler.attempted, len(crawler.page_list))
 
 if __name__ == '__main__':
