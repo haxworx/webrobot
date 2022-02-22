@@ -6,7 +6,6 @@ import re
 import sys
 import atexit
 import time
-import string
 import logging
 import hashlib
 import mysql.connector
@@ -58,13 +57,14 @@ class Robot:
         return result.join(hostname)
 
     def valid_link(self, link):
-        if len(link) and link[0] == '/':
-            return True
+        if len(link) == 0 or link[0] != '/':
+            return False
         for rule in self.robots_text.disallowed:
             matches = re.search(rule, link)
             if matches:
                 self.log.warning("robots: Ignoring %s as rule: '%s'", link, rule)
-        return False
+                return False
+        return True
 
     def save_results(self, res):
         SQL = """
@@ -88,6 +88,10 @@ class Robot:
         for page in self.page_list:
             self.attempted += 1
             self.url = page.get_url()
+            parsed_url = urlparse(self.url)
+
+            if not self.valid_link(parsed_url.path):
+                continue
             try:
                 downloader = Download(self.url, self.config.user_agent)
                 (response, code) = downloader.get()
@@ -118,7 +122,6 @@ class Robot:
 
                     self.log.info("Saving %s", self.url)
 
-                    parsed_url = urlparse(self.url)
                     res = { 'domain': self.get_hostname(self.url), 'http_status_code': code, 'http_content_type': content_type,
                             'scheme': parsed_url.scheme, 'url': self.url, 'path': parsed_url.path,
                             'query_string': parsed_url.query, 'checksum': checksum.hexdigest(),
