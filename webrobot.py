@@ -20,6 +20,9 @@ import logs
 class Robot:
     def __init__(self, url):
         self.base_url = url
+        self.path_limit = urlparse(url).path
+        if self.path_limit[len(self.path_limit)-1] == '/':
+            self.path_limit = self.path_limit[:len(self.path_limit)-1]
         self.hostname = self.get_hostname(url)
         self.page_list = PageList()
         self.config = Config()
@@ -58,6 +61,9 @@ class Robot:
 
     def valid_link(self, link):
         if len(link) == 0 or link[0] != '/':
+            return False
+        if len(self.path_limit) and not link.startswith(self.path_limit):
+            self.log.warning("robots: Ignoring path outside crawl parameters {} -> {}." . format(link, self.path_limit))
             return False
         for rule in self.robots_text.disallowed:
             matches = re.search(rule, link)
