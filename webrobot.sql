@@ -15,3 +15,11 @@ CREATE TABLE `tbl_crawl_data` (
   `data` mediumtext,
   PRIMARY KEY (`id`)
 );
+
+DROP TABLE IF EXISTS `tbl_app_log`;
+CREATE TABLE `tbl_app_log` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `time_stamp` datetime DEFAULT NULL,
+  `message` text,
+  PRIMARY KEY(`id`)
+)

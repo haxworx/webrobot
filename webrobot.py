@@ -16,6 +16,7 @@ from config import Config
 from pages import PageList, Page
 from robots_text import RobotsText
 from download import Download
+import logs
 
 class Robot:
     def __init__(self, url):
@@ -57,7 +58,7 @@ class Robot:
             return True
         return False
 
-    def save_results(self, res)
+    def save_results(self, res):
         SQL = """
         INSERT INTO tbl_crawl_data (time_stamp, time_zone, domain, http_status_code, http_content_type, scheme, url, path, query_string, checksum, encoding, data)
             VALUES(NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -70,7 +71,11 @@ class Robot:
         self.save_count += 1
 
     def crawl(self):
-        logging.info("Crawling %s", self.base_url)
+        self.logger = logging.getLogger('crawl')
+        handler = logs.DatabaseHandler(self.cnx)
+        self.logger.addHandler(handler)
+
+        self.logger.info("Crawling %s", self.base_url)
         self.robots_text.parse(self.base_url)
         self.page_list.append(self.robots_text.get_url())
         self.page_list.append(self.base_url)
@@ -82,7 +87,7 @@ class Robot:
                 downloader = Download(self.url, self.config.user_agent)
                 (response, code) = downloader.get()
             except urllib.error.HTTPError as e:
-                logging.warning("Ignoring %s -> %i", self.url, e.code)
+                self.logger.warning("Ignoring %s -> %i", self.url, e.code)
                 page.set_visited(True)
                 response.close()
             except urllib.error.URLError as e:
@@ -91,7 +96,7 @@ class Robot:
             else:
                 matches = re.search(self.wanted_content, response.headers['content-type'], re.IGNORECASE)
                 if not matches:
-                    logging.warning("Ignoring %s as %s", self.url, content_type)
+                    self.logger.warning("Ignoring %s as %s", self.url, content_type)
                 else:
                     # Have we redirected?
                     self.url = response.url
@@ -105,7 +110,7 @@ class Robot:
                     text = data.decode(encoding)
                     checksum = hashlib.md5(data)
 
-                    logging.info("Saving %s", self.url)
+                    self.logger.info("Saving %s", self.url)
 
                     parsed_url = urlparse(self.url)
                     res = { 'domain': self.get_hostname(self.url), 'http_status_code': code, 'http_content_type': content_type,
@@ -122,11 +127,11 @@ class Robot:
                             hostname = self.get_hostname(url)
                             if hostname == self.hostname:
                                 if self.page_list.append(url):
-                                    logging.info("Appending new url: %s", url)
+                                    self.logger.info("Appending new url: %s", url)
                 page.set_visited(True)
                 time.sleep(self.config.crawl_interval)
                 response.close()
-        logging.info("Done! Saved %s, attempted %s, total %s", crawler.save_count, crawler.attempted, len(crawler.page_list))
+        self.logger.info("Done! Saved %s, attempted %s, total %s", crawler.save_count, crawler.attempted, len(crawler.page_list))
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
