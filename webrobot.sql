@@ -20,6 +20,8 @@ DROP TABLE IF EXISTS `tbl_app_log`;
 CREATE TABLE `tbl_app_log` (
   `id` int NOT NULL AUTO_INCREMENT,
   `time_stamp` datetime DEFAULT NULL,
+  `level_number` INT DEFAULT NULL,
+  `level_name` varchar(32) DEFAULT NULL,
   `message` text,
   PRIMARY KEY(`id`)
 )

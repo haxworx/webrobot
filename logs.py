@@ -9,8 +9,11 @@ class DatabaseHandler(StreamHandler):
 
     def emit(self, record):
         msg = self.format(record)
-        SQL = "INSERT INTO tbl_app_log (time_stamp, message) VALUES (NOW(), %s)"
+        level_name = record.levelname
+        level_number = record.levelno
+
+        SQL = "INSERT INTO tbl_app_log (time_stamp, level_number, level_name, message) VALUES (NOW(), %s, %s, %s)"
         cursor = self.cnx.cursor()
-        data = (msg, )
+        data = (level_number, level_name, msg)
         cursor.execute(SQL, data)
         self.cnx.commit()
