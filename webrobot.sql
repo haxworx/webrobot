@@ -9,7 +9,7 @@ CREATE TABLE `tbl_crawl_data` (
   `http_status_code` int DEFAULT NULL,
   `http_content_type` varchar(255) DEFAULT NULL,
   `path` text,
-  `query_string` text,
+  `query` text,
   `checksum` varchar(32) DEFAULT NULL,
   `encoding` varchar(32) DEFAULT NULL,
   `data` mediumtext,

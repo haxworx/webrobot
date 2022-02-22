@@ -80,10 +80,10 @@ class Robot:
 
     def save_results(self, res):
         SQL = """
-        INSERT INTO tbl_crawl_data (time_stamp, time_zone, domain, http_status_code, http_content_type, scheme, url, path, query_string, checksum, encoding, data)
+        INSERT INTO tbl_crawl_data (time_stamp, time_zone, domain, http_status_code, http_content_type, scheme, url, path, query, checksum, encoding, data)
             VALUES(NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        val = (res['domain'], res['http_status_code'], res['http_content_type'], res['scheme'], res['url'], res['path'], res['query_string'], res['checksum'], res['encoding'], res['data'])
+        val = (res['domain'], res['http_status_code'], res['http_content_type'], res['scheme'], res['url'], res['path'], res['query'], res['checksum'], res['encoding'], res['data'])
         cursor = self.cnx.cursor()
         cursor.execute(SQL, val)
         self.cnx.commit()
@@ -134,7 +134,7 @@ class Robot:
 
                     res = { 'domain': self.get_domain(self.url), 'http_status_code': code, 'http_content_type': content_type,
                             'scheme': parsed_url.scheme, 'url': self.url, 'path': parsed_url.path,
-                            'query_string': parsed_url.query, 'checksum': checksum.hexdigest(),
+                            'query': parsed_url.query, 'checksum': checksum.hexdigest(),
                             'data': text, 'encoding': encoding,
                     }
                     self.save_results(res)
