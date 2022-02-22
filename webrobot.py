@@ -10,6 +10,7 @@ import logging
 import hashlib
 import mysql.connector
 from mysql.connector import errorcode
+import socket
 
 from config import Config
 from pages import PageList, Page
@@ -18,7 +19,7 @@ from download import Download
 import logs
 
 class Robot:
-    def __init__(self, url):
+    def __init__(self, url, name):
         self.base_url = url
         self.path_limit = urlparse(url).path
         if len(self.path_limit) and self.path_limit[len(self.path_limit)-1] == '/':
@@ -27,12 +28,15 @@ class Robot:
         self.page_list = PageList()
         self.config = Config()
         self.robots_text = RobotsText(self.config.user_agent)
+        self.hostname = socket.gethostname()
+        self.ip_address = socket.gethostbyname(self.hostname)
         self.database_connect()
         self.wanted_content = "^({})" . format(self.config.wanted_content)
+        self.name = name
         atexit.register(self.cleanup)
 
-        self.log = logging.getLogger('crawl')
-        handler = logs.DatabaseHandler(self.cnx)
+        self.log = logging.getLogger(self.name)
+        handler = logs.DatabaseHandler(self)
         self.log.addHandler(handler)
 
         self.save_count = 0
@@ -157,6 +161,6 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    crawler = Robot(sys.argv[1])
+    crawler = Robot(sys.argv[1], 'crawler')
     crawler.crawl()
 
