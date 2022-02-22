@@ -29,6 +29,10 @@ class Robot:
         self.wanted_content = "^({})" . format(self.config.wanted_content)
         atexit.register(self.cleanup)
 
+        self.log = logging.getLogger('crawl')
+        handler = logs.DatabaseHandler(self.cnx)
+        self.log.addHandler(handler)
+
         self.save_count = 0
         self.attempted = 0
 
@@ -71,11 +75,8 @@ class Robot:
         self.save_count += 1
 
     def crawl(self):
-        self.logger = logging.getLogger('crawl')
-        handler = logs.DatabaseHandler(self.cnx)
-        self.logger.addHandler(handler)
 
-        self.logger.info("Crawling %s", self.base_url)
+        self.log.info("Crawling %s", self.base_url)
         self.robots_text.parse(self.base_url)
         self.page_list.append(self.robots_text.get_url())
         self.page_list.append(self.base_url)
@@ -87,7 +88,7 @@ class Robot:
                 downloader = Download(self.url, self.config.user_agent)
                 (response, code) = downloader.get()
             except urllib.error.HTTPError as e:
-                self.logger.warning("Ignoring %s -> %i", self.url, e.code)
+                self.log.warning("Ignoring %s -> %i", self.url, e.code)
                 page.set_visited(True)
                 response.close()
             except urllib.error.URLError as e:
@@ -96,7 +97,7 @@ class Robot:
             else:
                 matches = re.search(self.wanted_content, response.headers['content-type'], re.IGNORECASE)
                 if not matches:
-                    self.logger.warning("Ignoring %s as %s", self.url, content_type)
+                    self.log.warning("Ignoring %s as %s", self.url, response.headers['content-type'])
                 else:
                     # Have we redirected?
                     self.url = response.url
@@ -110,7 +111,7 @@ class Robot:
                     text = data.decode(encoding)
                     checksum = hashlib.md5(data)
 
-                    self.logger.info("Saving %s", self.url)
+                    self.log.info("Saving %s", self.url)
 
                     parsed_url = urlparse(self.url)
                     res = { 'domain': self.get_hostname(self.url), 'http_status_code': code, 'http_content_type': content_type,
@@ -127,11 +128,11 @@ class Robot:
                             hostname = self.get_hostname(url)
                             if hostname == self.hostname:
                                 if self.page_list.append(url):
-                                    self.logger.info("Appending new url: %s", url)
+                                    self.log.info("Appending new url: %s", url)
                 page.set_visited(True)
                 time.sleep(self.config.crawl_interval)
                 response.close()
-        self.logger.info("Done! Saved %s, attempted %s, total %s", crawler.save_count, crawler.attempted, len(crawler.page_list))
+        self.log.info("Done! Saved %s, attempted %s, total %s", crawler.save_count, crawler.attempted, len(crawler.page_list))
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
