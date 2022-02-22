@@ -60,6 +60,10 @@ class Robot:
     def valid_link(self, link):
         if len(link) and link[0] == '/':
             return True
+        for rule in self.robots_text.disallowed:
+            matches = re.search(rule, link)
+            if matches:
+                self.log.warning("robots: Ignoring %s as rule: '%s'", link, rule)
         return False
 
     def save_results(self, res):
@@ -95,15 +99,16 @@ class Robot:
                 print("Unable to connect: {}" . format(e.reason))
                 break
             else:
-                matches = re.search(self.wanted_content, response.headers['content-type'], re.IGNORECASE)
+                content_type = response.headers['content-type']
+                matches = re.search(self.wanted_content, content_type, re.IGNORECASE)
                 if not matches:
-                    self.log.warning("Ignoring %s as %s", self.url, response.headers['content-type'])
+                    self.log.warning("Ignoring %s as %s", self.url, content_type)
                 else:
                     # Have we redirected?
                     self.url = response.url
                     content_type = matches.group(1)
                     encoding = 'utf-8'
-                    matches = re.search('charset=([a-zA-Z0-9-_]*)', response.headers['content-type'], re.IGNORECASE)
+                    matches = re.search('charset=([a-zA-Z0-9-_]*)', content_type, re.IGNORECASE)
                     if matches:
                         encoding = matches.group(1)
 

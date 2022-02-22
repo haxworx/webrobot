@@ -48,8 +48,10 @@ class RobotsText:
             for agent, values in self.agents.items():
                 if agent == '*' or agent == self.user_agent:
                     for path in values['allowed']:
+                        path = path.replace('*', '.*')
                         self.allowed.append(path)
                     for path in values['disallowed']:
+                        path = path.replace('*', '.*')
                         self.disallowed.append(path)
     def get_url(self):
         return self.url
