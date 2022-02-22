@@ -24,7 +24,7 @@ class Robot:
         self.path_limit = urlparse(url).path
         if len(self.path_limit) and self.path_limit[len(self.path_limit)-1] == '/':
             self.path_limit = self.path_limit[:len(self.path_limit)-1]
-        self.hostname = self.get_hostname(url)
+        self.domain = self.get_domain(url)
         self.page_list = PageList()
         self.config = Config()
         self.robots_text = RobotsText(self.config.user_agent)
@@ -54,14 +54,14 @@ class Robot:
         except mysql.connector.Error as err:
             raise e
 
-    def get_hostname(self, url):
+    def get_domain(self, url):
         netloc = urlparse(url).netloc
-        hostname = netloc.split('.')
+        domain = netloc.split('.')
         result = '.'
-        for i, subhostname in enumerate(hostname):
-            if subhostname == "www":
-                hostname.pop(i)
-        return result.join(hostname)
+        for i, subdomain in enumerate(domain):
+            if subdomain == "www":
+                domain.pop(i)
+        return result.join(domain)
 
     def valid_link(self, link):
         if len(link) and link[0] != '/':
@@ -132,7 +132,7 @@ class Robot:
 
                     self.log.info("Saving %s", self.url)
 
-                    res = { 'domain': self.get_hostname(self.url), 'http_status_code': code, 'http_content_type': content_type,
+                    res = { 'domain': self.get_domain(self.url), 'http_status_code': code, 'http_content_type': content_type,
                             'scheme': parsed_url.scheme, 'url': self.url, 'path': parsed_url.path,
                             'query_string': parsed_url.query, 'checksum': checksum.hexdigest(),
                             'data': text, 'encoding': encoding,
@@ -143,8 +143,8 @@ class Robot:
                     for link in links:
                         if self.valid_link(link):
                             url = urljoin(self.url, link)
-                            hostname = self.get_hostname(url)
-                            if hostname == self.hostname:
+                            domain = self.get_domain(url)
+                            if domain == self.domain:
                                 if self.page_list.append(url):
                                     self.log.info("Appending new url: %s", url)
 
