@@ -12,7 +12,7 @@ CREATE TABLE `tbl_crawl_data` (
   `query` text,
   `checksum` varchar(32) DEFAULT NULL,
   `encoding` varchar(32) DEFAULT NULL,
-  `data` mediumtext,
+  `data` mediumblob,
   PRIMARY KEY (`id`)
 );
 

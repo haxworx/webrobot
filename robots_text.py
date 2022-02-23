@@ -9,8 +9,9 @@ class RobotsText:
     """
     Handle robots.txt.
     """
-    def __init__(self, user_agent):
-        self.user_agent = user_agent
+    def __init__(self, crawler):
+        self.crawler = crawler
+        self.user_agent = crawler.config.user_agent
         self.agents = dict()
         self.allowed = []
         self.disallowed = []
@@ -23,13 +24,14 @@ class RobotsText:
             downloader = Download(url, self.user_agent)
             (response, code) = downloader.get()
         except urllib.error.HTTPError as e:
-            logging.warning("Ignoring %s -> %i", url, e.code)
+            self.crawler.log.warning("Ignoring %s -> %i", url, e.code)
         except urllib.error.URLError as e:
             print("Unable to connect: {}" . format(e.reason))
         else:
             data = response.read()
             text = data.decode('utf-8')
             lines = text.split('\n')
+            agent = None
             for line in lines:
                 unwanted = '\r\n'
                 line = line.translate({ord(i): None for i in unwanted})
@@ -38,6 +40,8 @@ class RobotsText:
                     agent = matches.group(1)
                     if agent not in self.agents:
                         self.agents[agent] = { 'allowed': [], 'disallowed': [] }
+                if agent is None:
+                    continue
                 matches = re.search('^Allow:\s+(.*?)$', line, re.IGNORECASE)
                 if matches:
                     self.agents[agent]['allowed'].append(matches.group(1))

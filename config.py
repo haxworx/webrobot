@@ -22,11 +22,12 @@ class Config:
                 self.db_name = parser['database']['name']
                 self.db_user = parser['database']['user']
                 self.db_pass = parser['database']['pass']
-                if not all (key in parser['crawling'] for key in ('interval', 'user-agent', 'wanted-content')):
+                if not all (key in parser['crawling'] for key in ('interval', 'user-agent', 'wanted-content', 'ignore-query')):
                     raise Exception("Missing crawling config field.")
                 self.crawl_interval = float(parser['crawling']['interval'])
                 self.user_agent = parser['crawling']['user-agent']
                 self.wanted_content = parser['crawling']['wanted-content']
+                self.ignore_query = bool(parser['crawling']['ignore-query'])
         except OSError as e:
             print("Unable to open '{}' -> {}" . format(CONFIG_FILE, e), file=sys.stderr)
             sys.exit(1)

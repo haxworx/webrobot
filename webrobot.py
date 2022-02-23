@@ -20,14 +20,14 @@ import logs
 
 class Robot:
     def __init__(self, url, name):
+        self.config = Config()
         self.base_url = url
         self.path_limit = urlparse(url).path
         if len(self.path_limit) and self.path_limit[len(self.path_limit)-1] == '/':
             self.path_limit = self.path_limit[:len(self.path_limit)-1]
         self.domain = self.get_domain(url)
         self.page_list = PageList()
-        self.config = Config()
-        self.robots_text = RobotsText(self.config.user_agent)
+        self.robots_text = RobotsText(self)
         self.hostname = socket.gethostname()
         self.ip_address = socket.gethostbyname(self.hostname)
         self.database_connect()
@@ -100,6 +100,10 @@ class Robot:
         for page in self.page_list:
             self.attempted += 1
             self.url = page.get_url()
+            parsed_url = urlparse(self.url)
+            if self.config.ignore_query and len(parsed_url.query):
+                self.log.warning("Ignoring URL '%s' with query string", self.url)
+                continue
 
             try:
                 downloader = Download(self.url, self.config.user_agent)
@@ -107,7 +111,6 @@ class Robot:
             except urllib.error.HTTPError as e:
                 self.log.warning("Ignoring %s -> %i", self.url, e.code)
                 page.set_visited(True)
-                response.close()
             except urllib.error.URLError as e:
                 print("Unable to connect: {}" . format(e.reason))
                 break
@@ -128,7 +131,6 @@ class Robot:
                     data = response.read()
                     text = data.decode(encoding)
                     checksum = hashlib.md5(data)
-                    parsed_url = urlparse(self.url)
 
                     self.log.info("Saving %s", self.url)
 
