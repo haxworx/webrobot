@@ -21,10 +21,8 @@ import logs
 class Robot:
     def __init__(self, url, name):
         self.config = Config()
-        self.base_url = url
-        self.path_limit = urlparse(url).path
-        if len(self.path_limit) and self.path_limit[len(self.path_limit)-1] == '/':
-            self.path_limit = self.path_limit[:len(self.path_limit)-1]
+        self.starting_url = url
+
         self.domain = self.get_domain(url)
         self.page_list = PageList()
         self.robots_text = RobotsText(self)
@@ -33,14 +31,21 @@ class Robot:
         self.database_connect()
         self.wanted_content = "^({})" . format(self.config.wanted_content)
         self.name = name
-        atexit.register(self.cleanup)
 
         self.log = logging.getLogger(self.name)
         handler = logs.DatabaseHandler(self)
         self.log.addHandler(handler)
 
+        self.path_limit = urlparse(url).path
+        if len(self.path_limit) and self.path_limit[len(self.path_limit)-1] == '/':
+            self.path_limit = self.path_limit[:len(self.path_limit)-1]
+
         self.save_count = 0
         self.attempted = 0
+        self.retry_count = 0
+        self.retry_max = self.config.retry_max
+
+        atexit.register(self.cleanup)
 
     def cleanup(self):
         self.cnx.close()
@@ -55,6 +60,10 @@ class Robot:
             raise e
 
     def get_domain(self, url):
+        """
+        Crudely obtain domain name of URL.
+        """
+
         netloc = urlparse(url).netloc
         domain = netloc.split('.')
         result = '.'
@@ -64,6 +73,10 @@ class Robot:
         return result.join(domain)
 
     def valid_link(self, link):
+        """
+        Is link a valid link to be attempted?
+        """
+
         if len(link) and link[0] != '/':
             return False
 
@@ -79,29 +92,47 @@ class Robot:
         return True
 
     def save_results(self, res):
+        """
+        Save crawl data into our database table.
+        """
+        everything_is_fine = True
+
         SQL = """
-        INSERT INTO tbl_crawl_data (time_stamp, time_zone, domain, http_status_code, http_content_type, scheme, url, path, query, checksum, encoding, data)
+        INSERT INTO tbl_crawl_data (time_stamp, time_zone, domain, scheme, status_code, content_type, url, path, query, checksum, encoding, data)
             VALUES(NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        val = (res['domain'], res['http_status_code'], res['http_content_type'], res['scheme'], res['url'], res['path'], res['query'], res['checksum'], res['encoding'], res['data'])
+        val = (res['domain'], res['scheme'], res['status_code'], res['content_type'], res['url'], res['path'], res['query'], res['checksum'], res['encoding'], res['data'])
         cursor = self.cnx.cursor()
-        cursor.execute(SQL, val)
-        self.cnx.commit()
+        try:
+           cursor.execute(SQL, val)
+           self.cnx.commit()
+        except mysql.connector.Error as e:
+            self.log.fatal("Database: (%i) -> %s", e.errno, e.msg)
+            everything_is_fine = False
 
+        cursor.close()
         self.save_count += 1
 
-    def crawl(self):
+        return everything_is_fine
 
-        self.log.info("Crawling %s", self.base_url)
-        self.robots_text.parse(self.base_url)
+    def crawl(self):
+        """
+        Crawling logic.
+        """
+
+        self.log.info("Crawling %s", self.starting_url)
+        self.robots_text.parse(self.starting_url)
         self.page_list.append(self.robots_text.get_url())
-        self.page_list.append(self.base_url)
+        self.page_list.append(self.starting_url)
 
         for page in self.page_list:
             self.attempted += 1
             self.url = page.get_url()
+
             parsed_url = urlparse(self.url)
-            if self.config.ignore_query and len(parsed_url.query):
+            (scheme, path, query) = (parsed_url.scheme, parsed_url.path, parsed_url.query)
+
+            if self.config.ignore_query and len(query):
                 self.log.warning("Ignoring URL '%s' with query string", self.url)
                 continue
 
@@ -112,9 +143,17 @@ class Robot:
                 self.log.warning("Ignoring %s -> %i", self.url, e.code)
                 page.set_visited(True)
             except urllib.error.URLError as e:
-                print("Unable to connect: {}" . format(e.reason))
-                break
+                self.log.error("Unable to connect: %s -> %s", e.reason, self.url)
+                self.retry_count += 1
+                if self.retry_count < self.retry_max:
+                    self.page_list.again()
+                    self.log.warning("Retrying: %s", self.url)
+                    continue
+                else:
+                    self.log.fatal("Terminating crawl. Retry limit reached: %i", self.config.retry_max)
+                    break
             else:
+                self.retry_count = 0
                 content_type = response.headers['content-type']
                 matches = re.search(self.wanted_content, content_type, re.IGNORECASE)
                 if not matches:
@@ -134,12 +173,16 @@ class Robot:
 
                     self.log.info("Saving %s", self.url)
 
-                    res = { 'domain': self.get_domain(self.url), 'http_status_code': code, 'http_content_type': content_type,
-                            'scheme': parsed_url.scheme, 'url': self.url, 'path': parsed_url.path,
-                            'query': parsed_url.query, 'checksum': checksum.hexdigest(),
+                    res = { 'domain': self.get_domain(self.url), 'scheme': scheme,
+                            'status_code': code, 'content_type': content_type,
+                            'url': self.url, 'path': path,
+                            'query': query, 'checksum': checksum.hexdigest(),
                             'data': text, 'encoding': encoding,
                     }
-                    self.save_results(res)
+
+                    if not self.save_results(res):
+                        self.log.fatal("Terminating crawl. Unable to save results.")
+                        break
 
                     links = re.findall("href=[\"\'](.*?)[\"\']", text)
                     for link in links:

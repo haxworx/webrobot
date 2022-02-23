@@ -18,3 +18,6 @@ wanted-content = text/plain|text/html|text/css
 
 # Ignore URLs with QUERY string.
 ignore-query = true
+
+# Maximum number of retries on connection error before terminating.
+retry-max = 5

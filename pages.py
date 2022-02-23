@@ -26,6 +26,10 @@ class PageList:
             return page
         raise StopIteration
 
+    def again(self):
+        if self.page_index > 0:
+            self.page_index -=1
+
     def append(self, url):
         """
         Append a URL to the page list.

@@ -24,9 +24,9 @@ class RobotsText:
             downloader = Download(url, self.user_agent)
             (response, code) = downloader.get()
         except urllib.error.HTTPError as e:
-            self.crawler.log.warning("Ignoring %s -> %i", url, e.code)
+            self.crawler.log.warning("RobotsText: Ignoring %s -> %i", url, e.code)
         except urllib.error.URLError as e:
-            print("Unable to connect: {}" . format(e.reason))
+            self.crawler.log.warning("RobotsText: Unable to connect -> %s", e.reason)
         else:
             data = response.read()
             text = data.decode('utf-8')
