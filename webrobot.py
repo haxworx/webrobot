@@ -82,7 +82,7 @@ class Robot:
             return False
 
         if len(self.path_limit) and not link.startswith(self.path_limit):
-            self.log.warning("robots: Ignoring path outside crawl parameters {} -> {}." . format(link, self.path_limit))
+            self.log.warning("Ignoring path outside crawl parameters {} -> {}." . format(link, self.path_limit))
             return False
 
         for rule in self.robots_text.allowed:
@@ -104,10 +104,10 @@ class Robot:
         everything_is_fine = True
 
         SQL = """
-        INSERT INTO tbl_crawl_data (time_stamp, time_zone, domain, scheme, status_code, url, path, query, content_type, checksum, encoding, content)
-            VALUES(NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO tbl_crawl_data (date, time_stamp, time_zone, domain, scheme, link_source, status_code, url, path, query, content_type, checksum, encoding, content)
+            VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, COMPRESS(%s))
         """
-        val = (res['domain'], res['scheme'], res['status_code'], res['url'], res['path'], res['query'], res['content_type'], res['checksum'], res['encoding'], res['content'])
+        val = (res['domain'], res['scheme'], res['link_source'], res['status_code'], res['url'], res['path'], res['query'], res['content_type'], res['checksum'], res['encoding'], res['content'])
         cursor = self.cnx.cursor()
         try:
            cursor.execute(SQL, val)
@@ -119,6 +119,25 @@ class Robot:
         cursor.close()
         self.save_count += 1
 
+        return everything_is_fine
+
+    def save_errors(self, res):
+        everything_is_fine = True
+
+        SQL = """
+        INSERT INTO tbl_crawl_errors (date, time_stamp, time_zone, status_code, url, link_source, description)
+            VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s)
+        """
+        val = (res['status_code'], res['url'], res['link_source'], res['description'])
+        cursor = self.cnx.cursor()
+        try:
+            cursor.execute(SQL, val)
+            self.cnx.commit()
+        except mysql.connector.Error as e:
+            self.log.fatal("Database: (%i) -> %s", e.errno, e.msg)
+            everything_is_fine = False
+
+        cursor.close()
         return everything_is_fine
 
     def crawl(self):
@@ -146,7 +165,14 @@ class Robot:
                 downloader = Download(self.url, self.config.user_agent)
                 (response, code) = downloader.get()
             except urllib.error.HTTPError as e:
-                self.log.warning("Ignoring %s -> %i", self.url, e.code)
+                self.log.info("Recording %s -> %i", self.url, e.code)
+                res = { 'status_code': e.code, 'url': self.url,
+                        'link_source': page.get_source(), 'description': e.reason
+                }
+                if not self.save_errors(res):
+                    self.log.fatal("Terminating crawl. Unable to save errors.")
+                    break
+
                 page.set_visited(True)
             except urllib.error.URLError as e:
                 self.log.error("Unable to connect: %s -> %s", e.reason, self.url)
@@ -178,7 +204,7 @@ class Robot:
                     checksum = hashlib.md5(data)
 
                     res = { 'domain': self.get_domain(self.url), 'scheme': scheme,
-                            'status_code': code, 'content_type': content_type,
+                            'link_source': page.get_source(), 'status_code': code, 'content_type': content_type,
                             'url': self.url, 'path': path,
                             'query': query, 'checksum': checksum.hexdigest(),
                             'content': content, 'encoding': encoding,
@@ -196,7 +222,7 @@ class Robot:
                             url = urljoin(self.url, link)
                             domain = self.get_domain(url)
                             if domain == self.domain:
-                                if self.page_list.append(url):
+                                if self.page_list.append(url, link_source=page.url):
                                     self.log.info("Appending new url: %s", url)
 
                 page.set_visited(True)
@@ -214,4 +240,3 @@ if __name__ == '__main__':
 
     crawler = Robot(sys.argv[1], 'crawler')
     crawler.crawl()
-

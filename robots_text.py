@@ -20,6 +20,7 @@ class RobotsText:
     def regexify(self, string):
         string = string.replace('*', '.*')
         string = string.replace('?', '\?')
+        string = string.replace('.', '\.')
         return string
 
     def parse(self, url):

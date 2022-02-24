@@ -15,7 +15,7 @@ class DatabaseHandler(StreamHandler):
         level_name = record.levelname
         level_number = record.levelno
 
-        SQL = "INSERT INTO tbl_app_log (time_stamp, crawler_name, hostname, ip_address, level_number, level_name, message) VALUES (NOW(), %s, %s, %s, %s, %s, %s)"
+        SQL = "INSERT INTO tbl_app_log (date, time_stamp, crawler_name, hostname, ip_address, level_number, level_name, message) VALUES (NOW(), NOW(), %s, %s, %s, %s, %s, %s)"
         cursor = self.cnx.cursor()
         data = (self.crawler.name, self.crawler.hostname, self.crawler.ip_address, level_number, level_name, msg)
         try:
