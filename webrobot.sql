@@ -7,12 +7,12 @@ CREATE TABLE `tbl_crawl_data` (
   `scheme` varchar(32) DEFAULT NULL,
   `url` varchar(8192) DEFAULT NULL,
   `status_code` int DEFAULT NULL,
-  `content_type` varchar(255) DEFAULT NULL,
   `path` text,
   `query` text,
+  `content_type` varchar(255) DEFAULT NULL,
   `checksum` varchar(32) DEFAULT NULL,
   `encoding` varchar(32) DEFAULT NULL,
-  `data` mediumblob,
+  `content` mediumblob,
   PRIMARY KEY (`id`)
 );
 

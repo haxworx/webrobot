@@ -98,10 +98,10 @@ class Robot:
         everything_is_fine = True
 
         SQL = """
-        INSERT INTO tbl_crawl_data (time_stamp, time_zone, domain, scheme, status_code, content_type, url, path, query, checksum, encoding, data)
+        INSERT INTO tbl_crawl_data (time_stamp, time_zone, domain, scheme, status_code, url, path, query, content_type, checksum, encoding, content)
             VALUES(NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        val = (res['domain'], res['scheme'], res['status_code'], res['content_type'], res['url'], res['path'], res['query'], res['checksum'], res['encoding'], res['data'])
+        val = (res['domain'], res['scheme'], res['status_code'], res['url'], res['path'], res['query'], res['content_type'], res['checksum'], res['encoding'], res['content'])
         cursor = self.cnx.cursor()
         try:
            cursor.execute(SQL, val)
@@ -168,23 +168,23 @@ class Robot:
                         encoding = matches.group(1)
 
                     data = response.read()
-                    text = data.decode(encoding)
+                    content = data.decode(encoding)
                     checksum = hashlib.md5(data)
-
-                    self.log.info("Saving %s", self.url)
 
                     res = { 'domain': self.get_domain(self.url), 'scheme': scheme,
                             'status_code': code, 'content_type': content_type,
                             'url': self.url, 'path': path,
                             'query': query, 'checksum': checksum.hexdigest(),
-                            'data': text, 'encoding': encoding,
+                            'content': content, 'encoding': encoding,
                     }
+
+                    self.log.info("Saving %s", self.url)
 
                     if not self.save_results(res):
                         self.log.fatal("Terminating crawl. Unable to save results.")
                         break
 
-                    links = re.findall("href=[\"\'](.*?)[\"\']", text)
+                    links = re.findall("href=[\"\'](.*?)[\"\']", content)
                     for link in links:
                         if self.valid_link(link):
                             url = urljoin(self.url, link)
