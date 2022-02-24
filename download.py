@@ -3,11 +3,20 @@
 import urllib
 
 class Download:
+    """
+    A simple HTTP download class.
+    """
     def __init__(self, url, user_agent):
         self.url = url
         self.user_agent = user_agent
 
     def get(self):
+        """
+        Make a HTTP request.
+
+        A wrapper to avoid code duplication.
+        Exceptions must be caught.
+        """
         request = urllib.request.Request(self.url)
         request.add_header('User-Agent', self.user_agent)
         response = urllib.request.urlopen(request)
@@ -15,6 +24,10 @@ class Download:
         return (response, code)
 
     def get_contents(self):
+        """
+        Download content without a load of exception
+        handling. Akin to file_get_contents in PHP.
+        """
         contents = None
         try:
             request = urllib.request.Request(self.url)

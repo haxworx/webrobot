@@ -10,6 +10,10 @@ from download import Download
 class RobotsText:
     """
     Handle robots.txt.
+
+    As of 2022-02-24 this handles as much of the robots.txt
+    spec as Google itself honours with their web crawlers.
+
     """
     def __init__(self, crawler):
         self.crawler = crawler
@@ -87,6 +91,10 @@ class RobotsText:
         return self.urls
 
 class SiteMaps:
+    """
+    Download, parse and collect sitemap URLs from
+    sitemap indexes and sitemaps.
+    """
     def __init__(self, sitemaps, user_agent):
         self.user_agent = user_agent
         self.sitemaps = sitemaps
@@ -111,7 +119,8 @@ class SiteMaps:
                     for node in nodes:
                         downloader = Download(node.firstChild.nodeValue, self.user_agent)
                         contents = downloader.get_contents()
-                        self.read_sitemap(contents)
+                        if contents is not None:
+                            self.read_sitemap(contents)
 
     def read_sitemap(self, contents):
         if contents is None:
