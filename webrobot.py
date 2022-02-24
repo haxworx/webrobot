@@ -226,6 +226,7 @@ class Robot:
                         self.log.fatal("Terminating crawl. Unable to save results.")
                         break
 
+                    # Don't scape links from sitemap listed URLs.
                     if not self.config.include_sitemaps or (self.config.include_sitemaps and not page.sitemap_source()):
                         links = re.findall("href=[\"\'](.*?)[\"\']", content)
                         for link in links:
