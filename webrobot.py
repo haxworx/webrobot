@@ -224,7 +224,8 @@ class Robot:
                     checksum = hashlib.md5(data)
 
                     res = { 'domain': self.get_domain(self.url), 'scheme': scheme,
-                            'link_source': page.get_source(), 'modified': modified, 'status_code': code, 'content_type': content_type,
+                            'link_source': page.get_source(), 'modified': modified,
+                            'status_code': code, 'content_type': content_type,
                             'url': self.url, 'path': path,
                             'query': query, 'checksum': checksum.hexdigest(),
                             'content': content, 'encoding': encoding,
