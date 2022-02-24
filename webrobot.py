@@ -156,6 +156,8 @@ class Robot:
         self.page_list.append(self.robots_text.get_url())
         self.page_list.append(self.starting_url)
 
+        if len(sitemap_urls):
+            self.log.info("Total number of sitemap listed urls: {}" . format(len(sitemap_urls)))
         for url in sitemap_urls:
             if self.page_list.append(url, sitemap_url=True):
                 self.log.info("Appending sitemap url: %s", url)
