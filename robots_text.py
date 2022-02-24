@@ -2,6 +2,8 @@
 import urllib
 from urllib.parse import urlparse
 import re
+import sys
+import xml.dom.minidom
 
 from download import Download
 
@@ -15,6 +17,8 @@ class RobotsText:
         self.agents = dict()
         self.allowed = []
         self.disallowed = []
+        self.sitemaps = []
+        self.urls = []
         self.url = None;
 
     def regexify(self, string):
@@ -35,6 +39,7 @@ class RobotsText:
             self.crawler.log.warning("RobotsText: Unable to connect -> %s", e.reason)
         else:
             data = response.read()
+            response.close()
             text = data.decode('utf-8')
             lines = text.split('\n')
             agent = None
@@ -54,6 +59,9 @@ class RobotsText:
                 matches = re.search('^Disallow:\s+(.*?)$', line, re.IGNORECASE)
                 if matches:
                     self.agents[agent]['disallowed'].append(matches.group(1))
+                matches = re.search('^Sitemap:\s+(.*?)$', line, re.IGNORECASE)
+                if matches:
+                    self.sitemaps.append(matches.group(1))
 
             for agent, values in self.agents.items():
                 if agent == '*' or agent == self.user_agent:
@@ -63,6 +71,33 @@ class RobotsText:
                     for path in values['disallowed']:
                         path = self.regexify(path)
                         self.disallowed.append(path)
+
+            sitemap = SiteMap(self.sitemaps, self.user_agent)
+            self.urls = sitemap.parse()
+
     def get_url(self):
         return self.url
 
+    def get_sitemap(self):
+        return self.urls
+
+class SiteMap:
+    def __init__(self, sitemaps, user_agent):
+        self.user_agent = user_agent
+        self.sitemaps = sitemaps
+        self.urls = []
+
+    def parse(self):
+        for sitemap in self.sitemaps:
+            downloader = Download(sitemap, self.user_agent)
+            contents = downloader.get_contents()
+            if contents is None:
+                continue
+            dom = xml.dom.minidom.parseString(contents)
+            urls = dom.getElementsByTagName('url')
+            for url in urls:
+                nodes = url.getElementsByTagName('loc')
+                for node in nodes:
+                    self.urls.append(node.firstChild.nodeValue)
+
+        return self.urls

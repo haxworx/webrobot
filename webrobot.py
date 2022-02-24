@@ -145,10 +145,20 @@ class Robot:
         Crawling logic.
         """
 
+        sitemap_urls = []
+
         self.log.info("Crawling %s", self.starting_url)
         self.robots_text.parse(self.starting_url)
+
+        if self.config.include_sitemaps:
+            sitemap_urls = self.robots_text.get_sitemap()
+
         self.page_list.append(self.robots_text.get_url())
         self.page_list.append(self.starting_url)
+
+        for url in sitemap_urls:
+            if self.page_list.append(url, sitemap_url=True):
+                self.log.info("Appending sitemap url: %s", url)
 
         for page in self.page_list:
             self.attempted += 1
@@ -216,14 +226,15 @@ class Robot:
                         self.log.fatal("Terminating crawl. Unable to save results.")
                         break
 
-                    links = re.findall("href=[\"\'](.*?)[\"\']", content)
-                    for link in links:
-                        if self.valid_link(link):
-                            url = urljoin(self.url, link)
-                            domain = self.get_domain(url)
-                            if domain == self.domain:
-                                if self.page_list.append(url, link_source=page.url):
-                                    self.log.info("Appending new url: %s", url)
+                    if not self.config.include_sitemaps or (self.config.include_sitemaps and not page.sitemap_source()):
+                        links = re.findall("href=[\"\'](.*?)[\"\']", content)
+                        for link in links:
+                            if self.valid_link(link):
+                                url = urljoin(self.url, link)
+                                domain = self.get_domain(url)
+                                if domain == self.domain:
+                                    if self.page_list.append(url, link_source=page.url):
+                                        self.log.info("Appending new url: %s", url)
 
                 page.set_visited(True)
                 time.sleep(self.config.crawl_interval)

@@ -21,3 +21,6 @@ ignore-query = true
 
 # Maximum number of retries on connection error before terminating.
 retry-max = 5
+
+# Include sitemap(s)
+include-sitemaps = True

@@ -30,12 +30,12 @@ class PageList:
         if self.page_index > 0:
             self.page_index -=1
 
-    def append(self, url, link_source=None):
+    def append(self, url, link_source=None, sitemap_url=False):
         """
         Append a URL to the page list.
         Only appends when url is unseen/new.
         """
-        page_new = Page(url, link_source=link_source)
+        page_new = Page(url, link_source=link_source, sitemap_url=sitemap_url)
         exists = False
         for page in self.page_list:
             if page_new.get_url() == page.get_url():
@@ -48,9 +48,10 @@ class PageList:
             return True
 
 class Page:
-    def __init__(self, url, visited=False, link_source=None):
+    def __init__(self, url, visited=False, link_source=None, sitemap_url=False):
         self.url = self.asciify_url(url)
         self.link_source = link_source
+        self.sitemap_url = sitemap_url
         self.visited = visited
 
     def asciify_url(self, url):
@@ -80,3 +81,6 @@ class Page:
 
     def get_source(self):
         return self.link_source
+
+    def sitemap_source(self):
+        return self.sitemap_url
