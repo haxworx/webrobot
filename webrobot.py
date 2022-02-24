@@ -4,6 +4,8 @@ import urllib.request
 from urllib.parse import urljoin, urlparse
 import re
 import sys
+import os
+import socket
 import atexit
 import time
 import signal
@@ -11,7 +13,6 @@ import logging
 import hashlib
 import mysql.connector
 from mysql.connector import errorcode
-import socket
 
 from config import Config
 from pages import PageList, Page
@@ -232,7 +233,7 @@ class Robot:
                         break
 
                     # Don't scape links from sitemap listed URLs.
-                    if not self.config.include_sitemaps or (self.config.include_sitemaps and not page.sitemap_source()):
+                    if not self.config.include_sitemaps or (self.config.include_sitemaps and not page.is_sitemap_source()):
                         links = re.findall("href=[\"\'](.*?)[\"\']", content)
                         for link in links:
                             if self.valid_link(link):
@@ -265,7 +266,11 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    signal.signal(signal.SIGINT, signal_handler)
+    try:
+        signal.signal(signal.SIGINT, signal_handler)
+    except OSError as e:
+        print("signal: {}" . format(e), file=sys.stderr)
+        sys.exit(1)
 
     crawler = Robot(sys.argv[1], 'crawler')
     crawler.crawl()

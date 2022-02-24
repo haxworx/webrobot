@@ -82,5 +82,5 @@ class Page:
     def get_source(self):
         return self.link_source
 
-    def sitemap_source(self):
+    def is_sitemap_source(self):
         return self.sitemap_url
