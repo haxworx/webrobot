@@ -169,7 +169,7 @@ class Robot:
                     self.url = response.url
                     content_type = matches.group(1)
                     encoding = 'iso-8859-1'
-                    matches = re.search('charset=([a-zA-Z0-9-_]*)', content_type, re.IGNORECASE)
+                    matches = re.search('charset=([a-zA-Z0-9-_]+)', response.headers['content-type'], re.IGNORECASE)
                     if matches:
                         encoding = matches.group(1)
 
