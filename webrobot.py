@@ -6,6 +6,7 @@ import re
 import sys
 import atexit
 import time
+import signal
 import logging
 import hashlib
 import mysql.connector
@@ -17,6 +18,8 @@ from pages import PageList, Page
 from robots_text import RobotsText
 from download import Download
 import logs
+
+shutdown_gracefully = False
 
 class Robot:
     def __init__(self, url, name):
@@ -243,7 +246,17 @@ class Robot:
                 time.sleep(self.config.crawl_interval)
                 response.close()
 
+                global shutdown_gracefully
+                if shutdown_gracefully:
+                    self.log.critical("Shutting down.")
+                    break
+
         self.log.info("Done! Saved %s, attempted %s, total %s", crawler.save_count, crawler.attempted, len(crawler.page_list))
+
+def signal_handler(signum, frame):
+    global shutdown_gracefully
+    if signum == signal.SIGINT:
+        shutdown_gracefully = True
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -251,6 +264,8 @@ if __name__ == '__main__':
         sys.exit(0)
 
     logging.basicConfig(level=logging.INFO)
+
+    signal.signal(signal.SIGINT, signal_handler)
 
     crawler = Robot(sys.argv[1], 'crawler')
     crawler.crawl()
