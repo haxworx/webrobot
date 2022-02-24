@@ -85,6 +85,11 @@ class Robot:
             self.log.warning("robots: Ignoring path outside crawl parameters {} -> {}." . format(link, self.path_limit))
             return False
 
+        for rule in self.robots_text.allowed:
+            matches = re.search(rule, link)
+            if matches:
+                return True
+
         for rule in self.robots_text.disallowed:
             matches = re.search(rule, link)
             if matches:
@@ -163,7 +168,7 @@ class Robot:
                     # Have we redirected?
                     self.url = response.url
                     content_type = matches.group(1)
-                    encoding = 'utf-8'
+                    encoding = 'iso-8859-1'
                     matches = re.search('charset=([a-zA-Z0-9-_]*)', content_type, re.IGNORECASE)
                     if matches:
                         encoding = matches.group(1)

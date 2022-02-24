@@ -1,6 +1,5 @@
 # Web Robot
 
 
-
 ## Requirements
- * mysql.connector
+ * mysql-connector-python
