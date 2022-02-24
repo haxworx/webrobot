@@ -111,7 +111,10 @@ class Robot:
         INSERT INTO tbl_crawl_data (date, time_stamp, time_zone, domain, scheme, link_source, modified, status_code, url, path, query, content_type, checksum, encoding, content)
             VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, COMPRESS(%s))
         """
-        val = (res['domain'], res['scheme'], res['link_source'], res['modified'], res['status_code'], res['url'], res['path'], res['query'], res['content_type'], res['checksum'], res['encoding'], res['content'])
+        val = (res['domain'], res['scheme'], res['link_source'],
+               res['modified'], res['status_code'], res['url'],
+               res['path'], res['query'], res['content_type'],
+               res['checksum'], res['encoding'], res['content'])
         cursor = self.cnx.cursor()
         try:
            cursor.execute(SQL, val)
