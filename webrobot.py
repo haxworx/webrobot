@@ -193,13 +193,13 @@ class Robot:
             except urllib.error.URLError as e:
                 self.log.error("Unable to connect: %s -> %s", e.reason, self.url)
                 self.retry_count += 1
-                if self.retry_count < self.retry_max:
+                if self.retry_count > self.retry_max:
+                    self.log.fatal("Terminating crawl. Retry limit reached: %i", self.config.retry_max)
+                    break
+                else:
                     self.page_list.again()
                     self.log.warning("Retrying: %s", self.url)
                     continue
-                else:
-                    self.log.fatal("Terminating crawl. Retry limit reached: %i", self.config.retry_max)
-                    break
             else:
                 self.retry_count = 0
                 content_type = response.headers['content-type']
