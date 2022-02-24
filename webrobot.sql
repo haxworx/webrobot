@@ -7,6 +7,7 @@ CREATE TABLE `tbl_crawl_data` (
   `domain` varchar(253) DEFAULT NULL,
   `scheme` varchar(32) DEFAULT NULL,
   `link_source` varchar(4096) DEFAULT NULL,
+  `modified` datetime DEFAULT NULL,
   `url` varchar(4096) DEFAULT NULL,
   `status_code` int DEFAULT NULL,
   `path` text,

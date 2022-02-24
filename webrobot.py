@@ -7,7 +7,7 @@ import sys
 import os
 import socket
 import atexit
-import time
+import time, datetime
 import signal
 import logging
 import hashlib
@@ -108,10 +108,10 @@ class Robot:
         everything_is_fine = True
 
         SQL = """
-        INSERT INTO tbl_crawl_data (date, time_stamp, time_zone, domain, scheme, link_source, status_code, url, path, query, content_type, checksum, encoding, content)
-            VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, COMPRESS(%s))
+        INSERT INTO tbl_crawl_data (date, time_stamp, time_zone, domain, scheme, link_source, modified, status_code, url, path, query, content_type, checksum, encoding, content)
+            VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, COMPRESS(%s))
         """
-        val = (res['domain'], res['scheme'], res['link_source'], res['status_code'], res['url'], res['path'], res['query'], res['content_type'], res['checksum'], res['encoding'], res['content'])
+        val = (res['domain'], res['scheme'], res['link_source'], res['modified'], res['status_code'], res['url'], res['path'], res['query'], res['content_type'], res['checksum'], res['encoding'], res['content'])
         cursor = self.cnx.cursor()
         try:
            cursor.execute(SQL, val)
@@ -203,6 +203,10 @@ class Robot:
             else:
                 self.retry_count = 0
                 content_type = response.headers['content-type']
+                modified = response.headers['last-modified']
+                if modified is not None:
+                    modified = datetime.datetime.strptime(modified, "%a, %d %b %Y %H:%M:%S %Z")
+
                 matches = re.search(self.wanted_content, content_type, re.IGNORECASE)
                 if not matches:
                     self.log.warning("Ignoring %s as %s", self.url, content_type)
@@ -220,7 +224,7 @@ class Robot:
                     checksum = hashlib.md5(data)
 
                     res = { 'domain': self.get_domain(self.url), 'scheme': scheme,
-                            'link_source': page.get_source(), 'status_code': code, 'content_type': content_type,
+                            'link_source': page.get_source(), 'modified': modified, 'status_code': code, 'content_type': content_type,
                             'url': self.url, 'path': path,
                             'query': query, 'checksum': checksum.hexdigest(),
                             'content': content, 'encoding': encoding,
