@@ -17,6 +17,11 @@ class RobotsText:
         self.disallowed = []
         self.url = None;
 
+    def regexify(self, string):
+        string = string.replace('*', '.*')
+        string = string.replace('?', '\?')
+        return string
+
     def parse(self, url):
         parsed_url = urlparse(url)
         self.url = url = parsed_url.scheme + '://' + parsed_url.netloc + '/robots.txt'
@@ -52,10 +57,10 @@ class RobotsText:
             for agent, values in self.agents.items():
                 if agent == '*' or agent == self.user_agent:
                     for path in values['allowed']:
-                        path = path.replace('*', '.*')
+                        path = self.regexify(path)
                         self.allowed.append(path)
                     for path in values['disallowed']:
-                        path = path.replace('*', '.*')
+                        path = self.regexify(path)
                         self.disallowed.append(path)
     def get_url(self):
         return self.url
