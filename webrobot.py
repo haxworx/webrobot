@@ -56,8 +56,9 @@ class Robot:
                                                password=self.config.db_pass,
                                                host=self.config.db_host,
                                                database=self.config.db_name)
-        except mysql.connector.Error as err:
-            raise e
+        except mysql.connector.Error as e:
+            print("Unable to connect ({}): {}" . format(e.errno, e.msg))
+            sys.exit(1)
 
     def get_domain(self, url):
         """
