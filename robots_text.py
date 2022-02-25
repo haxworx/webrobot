@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import urllib
 from urllib.parse import urlparse
 import re

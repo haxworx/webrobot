@@ -12,12 +12,10 @@ class DatabaseHandler(StreamHandler):
 
     def emit(self, record):
         msg = self.format(record)
-        level_name = record.levelname
-        level_number = record.levelno
 
         SQL = "INSERT INTO tbl_app_log (date, time_stamp, crawler_name, hostname, ip_address, level_number, level_name, message) VALUES (NOW(), NOW(), %s, %s, %s, %s, %s, %s)"
         cursor = self.cnx.cursor()
-        data = (self.crawler.name, self.crawler.hostname, self.crawler.ip_address, level_number, level_name, msg)
+        data = (self.crawler.name, self.crawler.hostname, self.crawler.ip_address, record.levelno, record.levelname, msg)
         try:
             cursor.execute(SQL, data)
             self.cnx.commit()

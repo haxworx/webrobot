@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import urllib.request
-from urllib.parse import urljoin, urlparse
-import re
 import sys
 import os
 import socket
@@ -10,9 +7,12 @@ import atexit
 import time, datetime
 import signal
 import logging
+import re
 import hashlib
 import mysql.connector
 from mysql.connector import errorcode
+from urllib import error
+from urllib.parse import urljoin, urlparse
 
 from config import Config
 from pages import PageList, Page
@@ -27,14 +27,21 @@ class Robot:
         self.config = Config()
         self.starting_url = url
 
+        self.name = name
         self.domain = self.get_domain(url)
         self.page_list = PageList()
         self.robots_text = RobotsText(self)
         self.hostname = socket.gethostname()
         self.ip_address = socket.gethostbyname(self.hostname)
         self.database_connect()
+        atexit.register(self.cleanup)
+
         self.wanted_content = "^({})" . format(self.config.wanted_content)
-        self.name = name
+        try:
+            self.wanted = re.compile(self.wanted_content)
+        except re.error as e:
+            print("Regex compilation failed: {}" . format(e), file=sys.stderr)
+            sys.exit(1)
 
         self.log = logging.getLogger(self.name)
         handler = logs.DatabaseHandler(self)
@@ -48,8 +55,6 @@ class Robot:
         self.attempted = 0
         self.retry_count = 0
         self.retry_max = self.config.retry_max
-
-        atexit.register(self.cleanup)
 
     def cleanup(self):
         self.cnx.close()
@@ -183,7 +188,7 @@ class Robot:
             try:
                 downloader = Download(self.url, self.config.user_agent)
                 (response, code) = downloader.get()
-            except urllib.error.HTTPError as e:
+            except error.HTTPError as e:
                 self.log.info("Recording %s -> %i", self.url, e.code)
                 res = { 'status_code': e.code, 'url': self.url,
                         'link_source': page.get_source(), 'description': e.reason
@@ -193,7 +198,7 @@ class Robot:
                     break
 
                 page.set_visited(True)
-            except urllib.error.URLError as e:
+            except error.URLError as e:
                 self.log.error("Unable to connect: %s -> %s", e.reason, self.url)
                 self.retry_count += 1
                 if self.retry_count > self.retry_max:
@@ -210,7 +215,7 @@ class Robot:
                 if modified is not None:
                     modified = datetime.datetime.strptime(modified, "%a, %d %b %Y %H:%M:%S %Z")
 
-                matches = re.search(self.wanted_content, content_type, re.IGNORECASE)
+                matches = self.wanted.search(content_type)
                 if not matches:
                     self.log.warning("Ignoring %s as %s", self.url, content_type)
                 else:

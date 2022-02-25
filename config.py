@@ -21,14 +21,16 @@ class Config:
 
                 if not all(key in parser['database'] for key in ('host', 'name', 'user', 'pass')):
                     raise Exception("Missing database config field.")
+
                 self.db_host = parser['database']['host']
                 self.db_name = parser['database']['name']
                 self.db_user = parser['database']['user']
                 self.db_pass = parser['database']['pass']
 
                 keys = ('interval', 'user-agent', 'wanted-content', 'ignore-query', 'retry-max', 'include-sitemaps')
-                if not all (key in parser['crawling'] for key in keys):
+                if not all(key in parser['crawling'] for key in keys):
                     raise Exception("Missing crawling config field.")
+
                 self.crawl_interval = float(parser['crawling']['interval'])
                 self.user_agent = parser['crawling']['user-agent']
                 self.wanted_content = parser['crawling']['wanted-content']
