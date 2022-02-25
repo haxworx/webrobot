@@ -28,7 +28,7 @@ class Robot:
         self.starting_url = url
 
         self.name = name
-        self.domain = self.get_domain(url)
+        self.domain = self.domain_parse(url)
         self.page_list = PageList()
         self.robots_text = RobotsText(self)
         self.hostname = socket.gethostname()
@@ -75,7 +75,7 @@ class Robot:
             print("Unable to connect ({}): {}" . format(e.errno, e.msg))
             sys.exit(1)
 
-    def get_domain(self, url):
+    def domain_parse(self, url):
         """
         Obtain domain name of URL.
         """
@@ -230,7 +230,7 @@ class Robot:
                     self.log.warning("Ignoring %s as %s", self.url, content_type)
                 else:
                     # Have we redirected?
-                    if self.domain.upper() != self.get_domain(response.url).upper():
+                    if self.domain.upper() != self.domain_parse(response.url).upper():
                         self.log.warning("Ignoring redirected URL: {}" . format(response.url))
                         continue
 
@@ -245,7 +245,7 @@ class Robot:
                     content = data.decode(encoding)
                     checksum = hashlib.md5(data)
 
-                    res = { 'domain': self.get_domain(self.url), 'scheme': scheme,
+                    res = { 'domain': self.domain_parse(self.url), 'scheme': scheme,
                             'link_source': page.get_link_source(), 'modified': modified,
                             'status_code': code, 'content_type': content_type,
                             'url': self.url, 'path': path,
@@ -265,7 +265,7 @@ class Robot:
                         for link in links:
                             if self.valid_link(link):
                                 url = urljoin(self.url, link)
-                                domain = self.get_domain(url)
+                                domain = self.domain_parse(url)
                                 if domain.upper() == self.domain.upper():
                                     if self.page_list.append(url, link_source=page.url):
                                         self.log.info("Appending new url: %s", url)
