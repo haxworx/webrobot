@@ -40,9 +40,12 @@ class RobotsText:
             downloader = Download(self._url, self._user_agent)
             (response, code) = downloader.get()
         except urllib.error.HTTPError as e:
-            self._crawler.log.warning("RobotsText: Ignoring %s -> %i", url, e.code)
+            self._crawler.log.warning("RobotsText: Ignoring %s -> %i",
+                                      url,
+                                      e.code)
         except urllib.error.URLError as e:
-            self._crawler.log.warning("RobotsText: Unable to connect -> %s", e.reason)
+            self._crawler.log.warning("RobotsText: Unable to connect -> %s",
+                                      e.reason)
         else:
             data = response.read()
             response.close()
@@ -55,11 +58,15 @@ class RobotsText:
                     continue
                 unwanted = '\r\n'
                 line = line.translate({ord(i): None for i in unwanted})
-                matches = re.search('^User-Agent:\s*(.*?)$', line, re.IGNORECASE)
+                matches = re.search('^User-Agent:\s*(.*?)$',
+                                    line,
+                                    re.IGNORECASE)
                 if matches:
                     agent = matches.group(1)
                     if agent not in self._agents:
-                        self._agents[agent] = {'allowed': [], 'disallowed': [], 'sitemaps': []}
+                        self._agents[agent] = {'allowed': [],
+                                               'disallowed': [],
+                                               'sitemaps': []}
                 if agent is None:
                     continue
                 matches = re.search('^Allow:\s+(.*?)$', line, re.IGNORECASE)
@@ -132,7 +139,8 @@ class SiteMaps:
                     nodes = url.getElementsByTagName('loc')
                     for node in nodes:
                         self._sitemap_indexes.append(node.firstChild.nodeValue)
-                        downloader = Download(node.firstChild.nodeValue, self._user_agent)
+                        downloader = Download(node.firstChild.nodeValue,
+                                              self._user_agent)
                         contents = downloader.contents()
                         if contents is not None:
                             self.read_sitemap(contents)

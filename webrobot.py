@@ -124,8 +124,11 @@ class Robot:
         everything_is_fine = True
 
         SQL = """
-        INSERT INTO tbl_crawl_data (date, time_stamp, time_zone, domain, scheme, link_source, modified, status_code, url, path, query, content_type, checksum, encoding, content)
-            VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, COMPRESS(%s))
+        INSERT INTO tbl_crawl_data (date, time_stamp, time_zone, domain,
+        scheme, link_source, modified, status_code, url, path, query,
+        content_type, checksum, encoding, content)
+        VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s,
+        %s, %s, %s, %s, %s, COMPRESS(%s))
         """
         val = (res['domain'], res['scheme'], res['link_source'],
                res['modified'], res['status_code'], res['url'],
@@ -148,8 +151,9 @@ class Robot:
         everything_is_fine = True
 
         SQL = """
-        INSERT INTO tbl_crawl_errors (date, time_stamp, time_zone, status_code, url, link_source, description)
-            VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s)
+        INSERT INTO tbl_crawl_errors (date, time_stamp, time_zone,
+        status_code, url, link_source, description)
+        VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s)
         """
         val = (res['status_code'], res['url'],
                res['link_source'], res['description'])
@@ -251,7 +255,8 @@ class Robot:
                                      content_type)
                 else:
                     # Have we redirected?
-                    if self.domain.upper() != self.domain_parse(response.url).upper():
+                    if self.domain.upper() != \
+                            self.domain_parse(response.url).upper():
                         self.log.warning("Ignoring redirected URL: {}"
                                          . format(response.url))
                         continue

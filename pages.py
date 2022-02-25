@@ -51,7 +51,8 @@ class PageList:
 
 
 class Page:
-    def __init__(self, url, visited=False, link_source=None, sitemap_url=False):
+    def __init__(self, url, visited=False, link_source=None,
+                 sitemap_url=False):
         self._url = self.asciify_url(url)
         self._link_source = link_source
         self._sitemap_url = sitemap_url
@@ -59,7 +60,8 @@ class Page:
 
     def asciify_url(self, url):
         if not url.isascii():
-            (scheme, netloc, path, query, fragment) = urllib.parse.urlsplit(url)
+            (scheme, netloc, path, query, fragment) = \
+                    urllib.parse.urlsplit(url)
             if not scheme.isascii():
                 scheme = urllib.parse.quote(scheme)
             if not netloc.isascii():
