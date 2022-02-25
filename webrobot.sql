@@ -13,6 +13,7 @@ CREATE TABLE `tbl_crawl_data` (
   `path` text,
   `query` text,
   `content_type` varchar(255) DEFAULT NULL,
+  `metadata` text DEFAULT NULL,
   `checksum` varchar(32) DEFAULT NULL,
   `encoding` varchar(32) DEFAULT NULL,
   `data` mediumblob,

@@ -126,14 +126,15 @@ class Robot:
         SQL = """
         INSERT INTO tbl_crawl_data (date, time_stamp, time_zone, domain,
         scheme, link_source, modified, status_code, url, path, query,
-        content_type, checksum, encoding, data)
+        content_type, metadata, checksum, encoding, data)
         VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s,
-        %s, %s, %s, %s, %s, COMPRESS(%s))
+        %s, %s, %s, %s, %s, %s, COMPRESS(%s))
         """
         val = (res['domain'], res['scheme'], res['link_source'],
                res['modified'], res['status_code'], res['url'],
                res['path'], res['query'], res['content_type'],
-               res['checksum'], res['encoding'], res['data'])
+               res['metadata'], res['checksum'], res['encoding'],
+               res['data'])
         cursor = self.cnx.cursor()
         try:
             cursor.execute(SQL, val)
@@ -167,6 +168,12 @@ class Robot:
 
         cursor.close()
         return everything_is_fine
+
+    def metadata_extract(self, headers):
+        metadata = ""
+        for name, value in headers.items():
+            metadata = metadata + name + ': ' + value + '\n'
+        return metadata
 
     def crawl(self):
         """
@@ -262,6 +269,7 @@ class Robot:
                         continue
 
                     self.url = response.url
+                    metadata = self.metadata_extract(response.headers)
                     content_type = matches.group(1)
                     encoding = 'iso-8859-1'
                     matches = self.charset.search(response.headers['content-type'])
@@ -277,6 +285,7 @@ class Robot:
                            'modified': modified,
                            'status_code': code,
                            'content_type': content_type,
+                           'metadata': metadata,
                            'url': self.url,
                            'path': path,
                            'query': query,
