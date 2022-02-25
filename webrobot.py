@@ -72,6 +72,9 @@ class Robot:
     def get_domain(self, url):
         """
         Crudely obtain domain name of URL.
+
+        In essence, it's acceptable to redirect
+        to and from www and the domain.
         """
 
         netloc = urlparse(url).netloc
