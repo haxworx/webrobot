@@ -168,9 +168,9 @@ class Robot:
 
         if len(sitemap_urls):
             self.log.info("Total number of sitemap listed urls: {}" . format(len(sitemap_urls)))
-        for url in sitemap_urls:
-            if self.page_list.append(url, sitemap_url=True):
-                self.log.info("Appending sitemap url: %s", url)
+            for url in sitemap_urls:
+                if self.page_list.append(url, sitemap_url=True):
+                    self.log.info("Appending sitemap url: %s", url)
 
         for page in self.page_list:
             self.attempted += 1
@@ -217,6 +217,10 @@ class Robot:
                     self.log.warning("Ignoring %s as %s", self.url, content_type)
                 else:
                     # Have we redirected?
+                    if self.domain != self.get_domain(response.url):
+                        self.log.warning("Ignoring redirected URL: {}" . format(response.url))
+                        continue
+
                     self.url = response.url
                     content_type = matches.group(1)
                     encoding = 'iso-8859-1'
