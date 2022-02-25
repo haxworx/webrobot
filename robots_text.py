@@ -22,8 +22,8 @@ class RobotsText:
         self.agents = dict()
         self.allowed = []
         self.disallowed = []
-        self.sitemaps = []
-        self.urls = []
+        self.sitemap_indexes = []
+        self.sitemap_urls = []
         self.url = None;
 
     def regexify(self, string):
@@ -34,7 +34,7 @@ class RobotsText:
 
     def parse(self, url):
         parsed_url = urlparse(url)
-        self.url = url = parsed_url.scheme + '://' + parsed_url.netloc + '/robots.txt'
+        self.url = parsed_url.scheme + '://' + parsed_url.netloc + '/robots.txt'
         try:
             downloader = Download(url, self.user_agent)
             (response, code) = downloader.get()
@@ -79,30 +79,34 @@ class RobotsText:
                         path = self.regexify(path)
                         self.disallowed.append(path)
                     for url in rules['sitemaps']:
-                        self.sitemaps.append(url)
+                        self.sitemap_indexes.append(url)
 
-            sitemaps = SiteMaps(self.sitemaps, self.user_agent)
+            sitemaps = SiteMaps(self.sitemap_indexes, self.user_agent)
             sitemaps.parse()
-            self.urls = sitemaps.get_urls()
+            self.sitemap_indexes.extend(sitemaps.get_sitemap_indexes())
+            self.sitemap_urls = sitemaps.get_urls()
 
     def get_url(self):
         return self.url
 
     def get_sitemap(self):
-        return self.urls
+        return self.sitemap_urls
+
+    def get_sitemap_indexes(self):
+        return self.sitemap_indexes
 
 class SiteMaps:
     """
     Download, parse and collect sitemap URLs from
     sitemap indexes and sitemaps.
     """
-    def __init__(self, sitemaps, user_agent):
+    def __init__(self, sitemap_indexes, user_agent):
         self.user_agent = user_agent
-        self.sitemaps = sitemaps
-        self.urls = []
+        self.sitemap_indexes = sitemap_indexes
+        self.sitemap_urls = []
 
     def parse(self):
-        for sitemap in self.sitemaps:
+        for sitemap in self.sitemap_indexes:
             downloader = Download(sitemap, self.user_agent)
             contents = downloader.get_contents()
             if contents is None:
@@ -118,6 +122,7 @@ class SiteMaps:
                 for url in sitemaps:
                     nodes = url.getElementsByTagName('loc')
                     for node in nodes:
+                        self.sitemap_indexes.append(node.firstChild.nodeValue)
                         downloader = Download(node.firstChild.nodeValue, self.user_agent)
                         contents = downloader.get_contents()
                         if contents is not None:
@@ -132,7 +137,10 @@ class SiteMaps:
         for url in urls:
             nodes = url.getElementsByTagName('loc')
             for node in nodes:
-                self.urls.append(node.firstChild.nodeValue)
+                self.sitemap_urls.append(node.firstChild.nodeValue)
 
     def get_urls(self):
-        return self.urls
+        return self.sitemap_urls
+
+    def get_sitemap_indexes(self):
+        return self.sitemap_indexes

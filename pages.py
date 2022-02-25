@@ -47,6 +47,10 @@ class PageList:
             self.page_list.append(page_new)
             return True
 
+    def extend(self, urls):
+        for url in urls:
+            self.append(url)
+
 class Page:
     def __init__(self, url, visited=False, link_source=None, sitemap_url=False):
         self.url = self.asciify_url(url)

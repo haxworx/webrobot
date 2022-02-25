@@ -154,6 +154,7 @@ class Robot:
         """
         Crawling logic.
         """
+        global shutdown_gracefully
 
         sitemap_urls = []
 
@@ -164,15 +165,23 @@ class Robot:
             sitemap_urls = self.robots_text.get_sitemap()
 
         self.page_list.append(self.robots_text.get_url())
-        self.page_list.append(self.starting_url)
 
-        if len(sitemap_urls):
-            self.log.info("Total number of sitemap listed urls: {}" . format(len(sitemap_urls)))
-            for url in sitemap_urls:
-                if self.page_list.append(url, sitemap_url=True):
-                    self.log.info("Appending sitemap url: %s", url)
+        for url in self.robots_text.get_sitemap_indexes():
+            if shutdown_gracefully:
+                break
+            if self.page_list.append(url, sitemap_url=True):
+                self.log.info("Appending sitemap index: %s", url)
+
+        self.page_list.append(self.starting_url)
+        for url in sitemap_urls:
+            if shutdown_gracefully:
+                break
+            if self.page_list.append(url, sitemap_url=True):
+                self.log.info("Appending sitemap url: %s", url)
 
         for page in self.page_list:
+            if shutdown_gracefully:
+                break
             self.attempted += 1
             self.url = page.get_url()
 
@@ -194,7 +203,6 @@ class Robot:
                 if not self.save_errors(res):
                     self.log.fatal("Terminating crawl. Unable to save errors.")
                     break
-
                 page.set_visited(True)
             except error.URLError as e:
                 self.log.error("Unable to connect: %s -> %s", e.reason, self.url)
@@ -217,7 +225,7 @@ class Robot:
                     self.log.warning("Ignoring %s as %s", self.url, content_type)
                 else:
                     # Have we redirected?
-                    if self.domain != self.get_domain(response.url):
+                    if self.domain.upper() != self.get_domain(response.url).upper():
                         self.log.warning("Ignoring redirected URL: {}" . format(response.url))
                         continue
 
@@ -253,7 +261,7 @@ class Robot:
                             if self.valid_link(link):
                                 url = urljoin(self.url, link)
                                 domain = self.get_domain(url)
-                                if domain == self.domain:
+                                if domain.upper() == self.domain.upper():
                                     if self.page_list.append(url, link_source=page.url):
                                         self.log.info("Appending new url: %s", url)
 
@@ -261,10 +269,8 @@ class Robot:
                 time.sleep(self.config.crawl_interval)
                 response.close()
 
-                global shutdown_gracefully
-                if shutdown_gracefully:
-                    self.log.critical("Shutting down.")
-                    break
+        if shutdown_gracefully:
+            self.log.critical("Shutting down.")
 
         self.log.info("Done! Saved %s, attempted %s, total %s", crawler.save_count, crawler.attempted, len(crawler.page_list))
 
