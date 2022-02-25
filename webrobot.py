@@ -40,10 +40,12 @@ class Robot:
         self.wanted_content = "^({})" . format(self.config.wanted_content)
         self.compile_regexes()
 
+        # Create and set up database log handler.
         self.log = logging.getLogger(self.name)
         handler = logs.DatabaseHandler(self)
         self.log.addHandler(handler)
 
+        # Restrict crawling based on starting url path (if exists).
         self.path_limit = urlparse(url).path
         if len(self.path_limit) and self.path_limit[len(self.path_limit)-1] == '/':
             self.path_limit = self.path_limit[:len(self.path_limit)-1]
@@ -76,10 +78,6 @@ class Robot:
             sys.exit(1)
 
     def domain_parse(self, url):
-        """
-        Obtain domain name of URL.
-        """
-
         domain = urlparse(url).netloc
         return domain
 
@@ -88,7 +86,10 @@ class Robot:
         Is link a valid link to be attempted?
         """
 
-        if len(link) and link[0] != '/':
+        if len(link) == 0:
+            return False
+
+        if link[0] != '/':
             return False
 
         if len(self.path_limit) and not link.startswith(self.path_limit):
