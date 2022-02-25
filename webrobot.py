@@ -74,19 +74,11 @@ class Robot:
 
     def get_domain(self, url):
         """
-        Crudely obtain domain name of URL.
-
-        In essence, it's acceptable to redirect
-        to and from www and the domain.
+        Obtain domain name of URL.
         """
 
-        netloc = urlparse(url).netloc
-        domain = netloc.split('.')
-        result = '.'
-        for i, subdomain in enumerate(domain):
-            if subdomain == "www":
-                domain.pop(i)
-        return result.join(domain)
+        domain = urlparse(url).netloc
+        return domain
 
     def valid_link(self, link):
         """
@@ -216,8 +208,7 @@ class Robot:
                     continue
             else:
                 self.retry_count = 0
-                content_type = response.headers['content-type']
-                modified = response.headers['last-modified']
+                (content_type, modified) = (response.headers['content-type'], response.headers['last-modified'])
                 if modified is not None:
                     modified = datetime.datetime.strptime(modified, "%a, %d %b %Y %H:%M:%S %Z")
 
