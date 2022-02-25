@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 from logging import StreamHandler
 import mysql.connector
 from mysql.connector import errorcode
