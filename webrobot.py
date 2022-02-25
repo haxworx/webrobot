@@ -36,9 +36,12 @@ class Robot:
         self.database_connect()
         atexit.register(self.cleanup)
 
+        # Compile regular expressions.
         self.wanted_content = "^({})" . format(self.config.wanted_content)
         try:
-            self.wanted = re.compile(self.wanted_content)
+            self.wanted = re.compile(self.wanted_content, re.IGNORECASE)
+            self.charset = re.compile('charset=([a-zA-Z0-9-_]+)', re.IGNORECASE)
+            self.hrefs = re.compile("href=[\"\'](.*?)[\"\']", re.IGNORECASE)
         except re.error as e:
             print("Regex compilation failed: {}" . format(e), file=sys.stderr)
             sys.exit(1)
@@ -226,7 +229,7 @@ class Robot:
                     self.url = response.url
                     content_type = matches.group(1)
                     encoding = 'iso-8859-1'
-                    matches = re.search('charset=([a-zA-Z0-9-_]+)', response.headers['content-type'], re.IGNORECASE)
+                    matches = self.charset.search(response.headers['content-type'])
                     if matches:
                         encoding = matches.group(1)
 
@@ -250,7 +253,7 @@ class Robot:
 
                     # Don't scape links from sitemap listed URLs.
                     if not self.config.include_sitemaps or (self.config.include_sitemaps and not page.is_sitemap_source()):
-                        links = re.findall("href=[\"\'](.*?)[\"\']", content)
+                        links = self.hrefs.findall(content)
                         for link in links:
                             if self.valid_link(link):
                                 url = urljoin(self.url, link)
