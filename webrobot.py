@@ -126,14 +126,14 @@ class Robot:
         SQL = """
         INSERT INTO tbl_crawl_data (date, time_stamp, time_zone, domain,
         scheme, link_source, modified, status_code, url, path, query,
-        content_type, checksum, encoding, content)
+        content_type, checksum, encoding, data)
         VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s,
         %s, %s, %s, %s, %s, COMPRESS(%s))
         """
         val = (res['domain'], res['scheme'], res['link_source'],
                res['modified'], res['status_code'], res['url'],
                res['path'], res['query'], res['content_type'],
-               res['checksum'], res['encoding'], res['content'])
+               res['checksum'], res['encoding'], res['data'])
         cursor = self.cnx.cursor()
         try:
             cursor.execute(SQL, val)
@@ -269,7 +269,6 @@ class Robot:
                         encoding = matches.group(1)
 
                     data = response.read()
-                    content = data.decode(encoding)
                     checksum = hashlib.md5(data)
 
                     res = {'domain': self.domain_parse(self.url),
@@ -282,12 +281,12 @@ class Robot:
                            'path': path,
                            'query': query,
                            'checksum': checksum.hexdigest(),
-                           'content': content,
-                           'encoding': encoding}
+                           'encoding': encoding,
+                           'data': data}
 
                     self.log.info("Saving %s", self.url)
 
-                    if self.save_results(res):
+                    if not self.save_results(res):
                         self.log.fatal("Terminating crawl. "
                                        "Unable to save results.")
                         break
@@ -295,6 +294,10 @@ class Robot:
                     # Don't scrape links from sitemap listed URLs.
                     if not self.config.include_sitemaps or \
                             (self.config.include_sitemaps and not page.is_sitemap_source()):
+                        try:
+                            content = data.decode(encoding)
+                        except UnicodeDecodeError as e:
+                            content = data.decode('iso-8859-1')
                         links = self.hrefs.findall(content)
                         for link in links:
                             if self.valid_link(link):
