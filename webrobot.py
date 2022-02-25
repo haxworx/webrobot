@@ -207,7 +207,7 @@ class Robot:
                     self.log.fatal("Terminating crawl. Unable to save errors.")
                     break
 
-                page.set_visited(True)
+                page.visited = True
             except error.URLError as e:
                 self.log.error("Unable to connect: %s -> %s", e.reason, self.url)
                 self.retry_count += 1
@@ -270,7 +270,7 @@ class Robot:
                                     if self.page_list.append(url, link_source=page.url()):
                                         self.log.info("Appending new url: %s", url)
 
-                page.set_visited(True)
+                page.visited = True
                 time.sleep(self.config.crawl_interval)
                 response.close()
 

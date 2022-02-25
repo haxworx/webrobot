@@ -71,11 +71,13 @@ class Page:
             url = urllib.parse.urlunsplit((scheme, netloc, path, query, fragment))
         return url
 
-    def set_visited(self, visited):
-        self._visited = visited
-
+    @property
     def visited(self):
         return self._visited
+
+    @visited.setter
+    def visited(self, visited):
+        self._visited = visited
 
     def url(self):
         return self._url
