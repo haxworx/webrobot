@@ -5,12 +5,12 @@ import os
 import socket
 import atexit
 import time
-import datetime
 import signal
 import logging
 import re
 import hashlib
 import mysql.connector
+from datetime import datetime as dt
 from mysql.connector import errorcode
 from urllib import error
 from urllib.parse import urljoin, urlparse
@@ -50,7 +50,8 @@ class Robot:
 
         # Restrict crawling based on starting url path (if exists).
         self.path_limit = urlparse(url).path
-        if len(self.path_limit) and self.path_limit[len(self.path_limit)-1] == '/':
+        if len(self.path_limit) and \
+                self.path_limit[len(self.path_limit)-1] == '/':
             self.path_limit = self.path_limit[:len(self.path_limit)-1]
 
         self.save_count = 0
@@ -60,9 +61,12 @@ class Robot:
 
     def compile_regexes(self):
         try:
-            self.wanted = re.compile(self.wanted_content, re.IGNORECASE)
-            self.charset = re.compile('charset=([a-zA-Z0-9-_]+)', re.IGNORECASE)
-            self.hrefs = re.compile("href=[\"\'](.*?)[\"\']", re.IGNORECASE)
+            self.wanted = re.compile(self.wanted_content,
+                                     re.IGNORECASE)
+            self.charset = re.compile('charset=([a-zA-Z0-9-_]+)',
+                                      re.IGNORECASE)
+            self.hrefs = re.compile("href=[\"\'](.*?)[\"\']",
+                                    re.IGNORECASE)
         except re.error as e:
             print("Regex compilation failed: {}" . format(e), file=sys.stderr)
             sys.exit(1)
@@ -96,7 +100,8 @@ class Robot:
             return False
 
         if len(self.path_limit) and not link.startswith(self.path_limit):
-            self.log.warning("Ignoring path outside crawl parameters {} -> {}." . format(link, self.path_limit))
+            self.log.warning("Ignoring path outside crawl parameters {} -> {}."
+                             . format(link, self.path_limit))
             return False
 
         for rule in self.robots_text.allowed():
@@ -107,7 +112,8 @@ class Robot:
         for rule in self.robots_text.disallowed():
             matches = re.search(rule, link)
             if matches:
-                self.log.warning("robots: Ignoring %s as rule: '%s'", link, rule)
+                self.log.warning("robots: Ignoring %s as rule: '%s'",
+                                 link, rule)
                 return False
         return True
 
@@ -145,7 +151,8 @@ class Robot:
         INSERT INTO tbl_crawl_errors (date, time_stamp, time_zone, status_code, url, link_source, description)
             VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s)
         """
-        val = (res['status_code'], res['url'], res['link_source'], res['description'])
+        val = (res['status_code'], res['url'],
+               res['link_source'], res['description'])
         cursor = self.cnx.cursor()
         try:
             cursor.execute(SQL, val)
@@ -193,10 +200,12 @@ class Robot:
             self.url = page.url()
 
             parsed_url = urlparse(self.url)
-            (scheme, path, query) = (parsed_url.scheme, parsed_url.path, parsed_url.query)
+            (scheme, path, query) = (parsed_url.scheme, parsed_url.path,
+                                     parsed_url.query)
 
             if self.config.ignore_query and len(query):
-                self.log.warning("Ignoring URL '%s' with query string", self.url)
+                self.log.warning("Ignoring URL '%s' with query string",
+                                 self.url)
                 continue
 
             try:
@@ -204,19 +213,24 @@ class Robot:
                 (response, code) = downloader.get()
             except error.HTTPError as e:
                 self.log.info("Recording %s -> %i", self.url, e.code)
-                res = {'status_code': e.code, 'url': self.url,
-                       'link_source': page.link_source(), 'description': e.reason}
+                res = {'status_code': e.code,
+                       'url': self.url,
+                       'link_source': page.link_source(),
+                       'description': e.reason}
                 if not self.save_errors(res):
                     self.log.fatal("Terminating crawl. Unable to save errors.")
                     break
 
                 page.visited = True
             except error.URLError as e:
-                self.log.error("Unable to connect: %s -> %s", e.reason, self.url)
+                self.log.error("Unable to connect: %s -> %s",
+                               e.reason, self.url)
                 self.retry_count += 1
 
                 if self.retry_count > self.retry_max:
-                    self.log.fatal("Terminating crawl. Retry limit reached: %i", self.config.retry_max)
+                    self.log.fatal("Terminating crawl. "
+                                   "Retry limit reached: %i",
+                                   self.config.retry_max)
                     break
                 else:
                     self.page_list.again()
@@ -224,17 +238,22 @@ class Robot:
                     continue
             else:
                 self.retry_count = 0
-                (content_type, modified) = (response.headers['content-type'], response.headers['last-modified'])
+                (content_type, modified) = (response.headers['content-type'],
+                                            response.headers['last-modified'])
                 if modified is not None:
-                    modified = datetime.datetime.strptime(modified, "%a, %d %b %Y %H:%M:%S %Z")
+                    modified = dt.strptime(modified,
+                                           "%a, %d %b %Y %H:%M:%S %Z")
 
                 matches = self.wanted.search(content_type)
                 if not matches:
-                    self.log.warning("Ignoring %s as %s", self.url, content_type)
+                    self.log.warning("Ignoring %s as %s",
+                                     self.url,
+                                     content_type)
                 else:
                     # Have we redirected?
                     if self.domain.upper() != self.domain_parse(response.url).upper():
-                        self.log.warning("Ignoring redirected URL: {}" . format(response.url))
+                        self.log.warning("Ignoring redirected URL: {}"
+                                         . format(response.url))
                         continue
 
                     self.url = response.url
@@ -248,29 +267,39 @@ class Robot:
                     content = data.decode(encoding)
                     checksum = hashlib.md5(data)
 
-                    res = {'domain': self.domain_parse(self.url), 'scheme': scheme,
-                           'link_source': page.link_source(), 'modified': modified,
-                           'status_code': code, 'content_type': content_type,
-                           'url': self.url, 'path': path,
-                           'query': query, 'checksum': checksum.hexdigest(),
-                           'content': content, 'encoding': encoding}
+                    res = {'domain': self.domain_parse(self.url),
+                           'scheme': scheme,
+                           'link_source': page.link_source(),
+                           'modified': modified,
+                           'status_code': code,
+                           'content_type': content_type,
+                           'url': self.url,
+                           'path': path,
+                           'query': query,
+                           'checksum': checksum.hexdigest(),
+                           'content': content,
+                           'encoding': encoding}
 
                     self.log.info("Saving %s", self.url)
 
                     if not self.save_results(res):
-                        self.log.fatal("Terminating crawl. Unable to save results.")
+                        self.log.fatal("Terminating crawl."
+                                       "Unable to save results.")
                         break
 
                     # Don't scrape links from sitemap listed URLs.
-                    if not self.config.include_sitemaps or (self.config.include_sitemaps and not page.is_sitemap_source()):
+                    if not self.config.include_sitemaps or \
+                            (self.config.include_sitemaps and not page.is_sitemap_source()):
                         links = self.hrefs.findall(content)
                         for link in links:
                             if self.valid_link(link):
                                 url = urljoin(self.url, link)
                                 domain = self.domain_parse(url)
                                 if domain.upper() == self.domain.upper():
-                                    if self.page_list.append(url, link_source=page.url()):
-                                        self.log.info("Appending new url: %s", url)
+                                    if self.page_list.append(url,
+                                                             link_source=page.url()):
+                                        self.log.info("Appending new url: %s",
+                                                      url)
 
                 page.visited = True
                 time.sleep(self.config.crawl_interval)
@@ -279,7 +308,10 @@ class Robot:
         if shutdown_gracefully:
             self.log.critical("Shutting down.")
 
-        self.log.info("Done! Saved %s, attempted %s, total %s", crawler.save_count, crawler.attempted, len(crawler.page_list))
+        self.log.info("Done! Saved %s, attempted %s, total %s",
+                      crawler.save_count,
+                      crawler.attempted,
+                      len(crawler.page_list))
 
 
 def signal_handler(signum, frame):
