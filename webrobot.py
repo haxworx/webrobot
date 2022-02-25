@@ -163,28 +163,28 @@ class Robot:
 
         self.log.info("Crawling %s", self.starting_url)
         self.robots_text.parse(self.starting_url)
+        self.page_list.append(self.robots_text.get_url())
 
         if self.config.include_sitemaps:
             sitemap_urls = self.robots_text.get_sitemap()
+            for url in self.robots_text.get_sitemap_indexes():
+                if shutdown_gracefully:
+                    break
+                if self.page_list.append(url, sitemap_url=True):
+                    self.log.info("Appending sitemap index: %s", url)
 
-        self.page_list.append(self.robots_text.get_url())
-
-        for url in self.robots_text.get_sitemap_indexes():
-            if shutdown_gracefully:
-                break
-            if self.page_list.append(url, sitemap_url=True):
-                self.log.info("Appending sitemap index: %s", url)
+            for url in sitemap_urls:
+                if shutdown_gracefully:
+                    break
+                if self.page_list.append(url, sitemap_url=True):
+                    self.log.info("Appending sitemap url: %s", url)
 
         self.page_list.append(self.starting_url)
-        for url in sitemap_urls:
-            if shutdown_gracefully:
-                break
-            if self.page_list.append(url, sitemap_url=True):
-                self.log.info("Appending sitemap url: %s", url)
 
         for page in self.page_list:
             if shutdown_gracefully:
                 break
+
             self.attempted += 1
             self.url = page.get_url()
 
@@ -201,15 +201,17 @@ class Robot:
             except error.HTTPError as e:
                 self.log.info("Recording %s -> %i", self.url, e.code)
                 res = { 'status_code': e.code, 'url': self.url,
-                        'link_source': page.get_source(), 'description': e.reason
+                        'link_source': page.get_link_source(), 'description': e.reason
                 }
                 if not self.save_errors(res):
                     self.log.fatal("Terminating crawl. Unable to save errors.")
                     break
+
                 page.set_visited(True)
             except error.URLError as e:
                 self.log.error("Unable to connect: %s -> %s", e.reason, self.url)
                 self.retry_count += 1
+
                 if self.retry_count > self.retry_max:
                     self.log.fatal("Terminating crawl. Retry limit reached: %i", self.config.retry_max)
                     break
@@ -249,7 +251,7 @@ class Robot:
                             'url': self.url, 'path': path,
                             'query': query, 'checksum': checksum.hexdigest(),
                             'content': content, 'encoding': encoding,
-                    }
+                            }
 
                     self.log.info("Saving %s", self.url)
 
@@ -257,7 +259,7 @@ class Robot:
                         self.log.fatal("Terminating crawl. Unable to save results.")
                         break
 
-                    # Don't scape links from sitemap listed URLs.
+                    # Don't scrape links from sitemap listed URLs.
                     if not self.config.include_sitemaps or (self.config.include_sitemaps and not page.is_sitemap_source()):
                         links = self.hrefs.findall(content)
                         for link in links:
