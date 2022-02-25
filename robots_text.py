@@ -17,14 +17,14 @@ class RobotsText:
 
     """
     def __init__(self, crawler):
-        self.crawler = crawler
-        self.user_agent = crawler.config.user_agent
-        self.agents = dict()
-        self.allowed = []
-        self.disallowed = []
-        self.sitemap_indexes = []
-        self.sitemap_urls = []
-        self.url = None;
+        self._crawler = crawler
+        self._user_agent = crawler.config.user_agent
+        self._agents = dict()
+        self._allowed = []
+        self._disallowed = []
+        self._sitemap_indexes = []
+        self._sitemap_urls = []
+        self._url = None;
 
     def regexify(self, string):
         string = string.replace('*', '.*')
@@ -34,14 +34,14 @@ class RobotsText:
 
     def parse(self, url):
         parsed_url = urlparse(url)
-        self.url = parsed_url.scheme + '://' + parsed_url.netloc + '/robots.txt'
+        self._url = parsed_url.scheme + '://' + parsed_url.netloc + '/robots.txt'
         try:
-            downloader = Download(self.url, self.user_agent)
+            downloader = Download(self._url, self._user_agent)
             (response, code) = downloader.get()
         except urllib.error.HTTPError as e:
-            self.crawler.log.warning("RobotsText: Ignoring %s -> %i", url, e.code)
+            self._crawler.log.warning("RobotsText: Ignoring %s -> %i", url, e.code)
         except urllib.error.URLError as e:
-            self.crawler.log.warning("RobotsText: Unable to connect -> %s", e.reason)
+            self._crawler.log.warning("RobotsText: Unable to connect -> %s", e.reason)
         else:
             data = response.read()
             response.close()
@@ -57,44 +57,50 @@ class RobotsText:
                 matches = re.search('^User-Agent:\s*(.*?)$', line, re.IGNORECASE)
                 if matches:
                     agent = matches.group(1)
-                    if agent not in self.agents:
-                        self.agents[agent] = { 'allowed': [], 'disallowed': [], 'sitemaps': [] }
+                    if agent not in self._agents:
+                        self._agents[agent] = { 'allowed': [], 'disallowed': [], 'sitemaps': [] }
                 if agent is None:
                     continue
                 matches = re.search('^Allow:\s+(.*?)$', line, re.IGNORECASE)
                 if matches:
-                    self.agents[agent]['allowed'].append(matches.group(1))
+                    self._agents[agent]['allowed'].append(matches.group(1))
                 matches = re.search('^Disallow:\s+(.*?)$', line, re.IGNORECASE)
                 if matches:
-                    self.agents[agent]['disallowed'].append(matches.group(1))
+                    self._agents[agent]['disallowed'].append(matches.group(1))
                 matches = re.search('^Sitemap:\s+(.*?)$', line, re.IGNORECASE)
                 if matches:
-                    self.agents[agent]['sitemaps'].append(matches.group(1))
+                    self._agents[agent]['sitemaps'].append(matches.group(1))
 
-            for agent, rules in self.agents.items():
-                if agent == '*' or agent == self.user_agent:
+            for agent, rules in self._agents.items():
+                if agent == '*' or agent == self._user_agent:
                     for path in rules['allowed']:
                         path = self.regexify(path)
-                        self.allowed.append(path)
+                        self._allowed.append(path)
                     for path in rules['disallowed']:
                         path = self.regexify(path)
-                        self.disallowed.append(path)
+                        self._disallowed.append(path)
                     for url in rules['sitemaps']:
-                        self.sitemap_indexes.append(url)
+                        self._sitemap_indexes.append(url)
 
-            sitemaps = SiteMaps(self.sitemap_indexes, self.user_agent)
+            sitemaps = SiteMaps(self._sitemap_indexes, self._user_agent)
             sitemaps.parse()
-            self.sitemap_indexes.extend(sitemaps.get_sitemap_indexes())
-            self.sitemap_urls = sitemaps.get_urls()
+            self._sitemap_indexes.extend(sitemaps.sitemap_indexes())
+            self._sitemap_urls = sitemaps.urls()
 
-    def get_url(self):
-        return self.url
+    def url(self):
+        return self._url
 
-    def get_sitemap(self):
-        return self.sitemap_urls
+    def allowed(self):
+        return self._allowed
 
-    def get_sitemap_indexes(self):
-        return self.sitemap_indexes
+    def disallowed(self):
+        return self._disallowed
+
+    def sitemap(self):
+        return self._sitemap_urls
+
+    def sitemap_indexes(self):
+        return self._sitemap_indexes
 
 class SiteMaps:
     """
@@ -102,14 +108,14 @@ class SiteMaps:
     sitemap indexes and sitemaps.
     """
     def __init__(self, sitemap_indexes, user_agent):
-        self.user_agent = user_agent
-        self.sitemap_indexes = sitemap_indexes
-        self.sitemap_urls = []
+        self._user_agent = user_agent
+        self._sitemap_indexes = sitemap_indexes
+        self._sitemap_urls = []
 
     def parse(self):
-        for sitemap in self.sitemap_indexes:
-            downloader = Download(sitemap, self.user_agent)
-            contents = downloader.get_contents()
+        for sitemap in self._sitemap_indexes:
+            downloader = Download(sitemap, self._user_agent)
+            contents = downloader.contents()
             if contents is None:
                 continue
 
@@ -123,9 +129,9 @@ class SiteMaps:
                 for url in sitemaps:
                     nodes = url.getElementsByTagName('loc')
                     for node in nodes:
-                        self.sitemap_indexes.append(node.firstChild.nodeValue)
-                        downloader = Download(node.firstChild.nodeValue, self.user_agent)
-                        contents = downloader.get_contents()
+                        self._sitemap_indexes.append(node.firstChild.nodeValue)
+                        downloader = Download(node.firstChild.nodeValue, self._user_agent)
+                        contents = downloader.contents()
                         if contents is not None:
                             self.read_sitemap(contents)
 
@@ -138,10 +144,10 @@ class SiteMaps:
         for url in urls:
             nodes = url.getElementsByTagName('loc')
             for node in nodes:
-                self.sitemap_urls.append(node.firstChild.nodeValue)
+                self._sitemap_urls.append(node.firstChild.nodeValue)
 
-    def get_urls(self):
-        return self.sitemap_urls
+    def urls(self):
+        return self._sitemap_urls
 
-    def get_sitemap_indexes(self):
-        return self.sitemap_indexes
+    def sitemap_indexes(self):
+        return self._sitemap_indexes

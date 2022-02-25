@@ -7,28 +7,29 @@ class PageList:
     Provides an iterator and append method.
     """
     def __init__(self):
-        self.page_list = []
-        self.page_index = 0
+        self._page_list = []
+        self._page_index = 0
 
     def __len__(self):
-        return len(self.page_list)
+        return len(self._page_list)
 
     def __iter__(self):
         return self
 
     def __next__(self):
         page = None
-        if len(self.page_list) == 0:
+        if len(self._page_list) == 0:
             raise StopIteration
-        if self.page_index == 0 or self.page_index < len(self.page_list):
-            page = self.page_list[self.page_index]
-            self.page_index += 1
+        if self._page_index == 0 or self._page_index < len(self._page_list):
+            page = self._page_list[self._page_index]
+            self._page_index += 1
             return page
+        self._page_index = 0
         raise StopIteration
 
     def again(self):
-        if self.page_index > 0:
-            self.page_index -=1
+        if self._page_index > 0:
+            self._page_index -=1
 
     def append(self, url, link_source=None, sitemap_url=False):
         """
@@ -37,26 +38,22 @@ class PageList:
         """
         page_new = Page(url, link_source=link_source, sitemap_url=sitemap_url)
         exists = False
-        for page in self.page_list:
-            if page_new.get_url() == page.get_url():
+        for page in self._page_list:
+            if page_new.url() == page.url():
                 exists = True
                 break
         if exists:
              return False
         else:
-            self.page_list.append(page_new)
+            self._page_list.append(page_new)
             return True
-
-    def extend(self, urls):
-        for url in urls:
-            self.append(url)
 
 class Page:
     def __init__(self, url, visited=False, link_source=None, sitemap_url=False):
-        self.url = self.asciify_url(url)
-        self.link_source = link_source
-        self.sitemap_url = sitemap_url
-        self.visited = visited
+        self._url = self.asciify_url(url)
+        self._link_source = link_source
+        self._sitemap_url = sitemap_url
+        self._visited = visited
 
     def asciify_url(self, url):
         if not url.isascii():
@@ -75,16 +72,16 @@ class Page:
         return url
 
     def set_visited(self, visited):
-        self.visited = visited
+        self._visited = visited
 
-    def get_visited(self):
-        return self.visited
+    def visited(self):
+        return self._visited
 
-    def get_url(self):
-        return self.url
+    def url(self):
+        return self._url
 
-    def get_link_source(self):
-        return self.link_source
+    def link_source(self):
+        return self._link_source
 
     def is_sitemap_source(self):
-        return self.sitemap_url
+        return self._sitemap_url

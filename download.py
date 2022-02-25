@@ -23,7 +23,7 @@ class Download:
         code = response.getcode()
         return (response, code)
 
-    def get_contents(self):
+    def contents(self):
         """
         Download content without a load of exception
         handling. Akin to file_get_contents in PHP.

@@ -95,12 +95,12 @@ class Robot:
             self.log.warning("Ignoring path outside crawl parameters {} -> {}." . format(link, self.path_limit))
             return False
 
-        for rule in self.robots_text.allowed:
+        for rule in self.robots_text.allowed():
             matches = re.search(rule, link)
             if matches:
                 return True
 
-        for rule in self.robots_text.disallowed:
+        for rule in self.robots_text.disallowed():
             matches = re.search(rule, link)
             if matches:
                 self.log.warning("robots: Ignoring %s as rule: '%s'", link, rule)
@@ -163,11 +163,11 @@ class Robot:
 
         self.log.info("Crawling %s", self.starting_url)
         self.robots_text.parse(self.starting_url)
-        self.page_list.append(self.robots_text.get_url())
+        self.page_list.append(self.robots_text.url())
 
         if self.config.include_sitemaps:
-            sitemap_urls = self.robots_text.get_sitemap()
-            for url in self.robots_text.get_sitemap_indexes():
+            sitemap_urls = self.robots_text.sitemap()
+            for url in self.robots_text.sitemap_indexes():
                 if shutdown_gracefully:
                     break
                 if self.page_list.append(url, sitemap_url=True):
@@ -186,7 +186,7 @@ class Robot:
                 break
 
             self.attempted += 1
-            self.url = page.get_url()
+            self.url = page.url()
 
             parsed_url = urlparse(self.url)
             (scheme, path, query) = (parsed_url.scheme, parsed_url.path, parsed_url.query)
@@ -201,7 +201,7 @@ class Robot:
             except error.HTTPError as e:
                 self.log.info("Recording %s -> %i", self.url, e.code)
                 res = { 'status_code': e.code, 'url': self.url,
-                        'link_source': page.get_link_source(), 'description': e.reason
+                        'link_source': page.link_source(), 'description': e.reason
                 }
                 if not self.save_errors(res):
                     self.log.fatal("Terminating crawl. Unable to save errors.")
@@ -246,7 +246,7 @@ class Robot:
                     checksum = hashlib.md5(data)
 
                     res = { 'domain': self.domain_parse(self.url), 'scheme': scheme,
-                            'link_source': page.get_link_source(), 'modified': modified,
+                            'link_source': page.link_source(), 'modified': modified,
                             'status_code': code, 'content_type': content_type,
                             'url': self.url, 'path': path,
                             'query': query, 'checksum': checksum.hexdigest(),
@@ -267,7 +267,7 @@ class Robot:
                                 url = urljoin(self.url, link)
                                 domain = self.domain_parse(url)
                                 if domain.upper() == self.domain.upper():
-                                    if self.page_list.append(url, link_source=page.url):
+                                    if self.page_list.append(url, link_source=page.url()):
                                         self.log.info("Appending new url: %s", url)
 
                 page.set_visited(True)
