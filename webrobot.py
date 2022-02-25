@@ -251,7 +251,7 @@ class Robot:
                             'url': self.url, 'path': path,
                             'query': query, 'checksum': checksum.hexdigest(),
                             'content': content, 'encoding': encoding,
-                            }
+                    }
 
                     self.log.info("Saving %s", self.url)
 
