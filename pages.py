@@ -1,6 +1,7 @@
 import sys
 import urllib
 
+
 class PageList:
     """
     Simple class to keep track of pages.
@@ -29,7 +30,7 @@ class PageList:
 
     def again(self):
         if self._page_index > 0:
-            self._page_index -=1
+            self._page_index -= 1
 
     def append(self, url, link_source=None, sitemap_url=False):
         """
@@ -43,10 +44,11 @@ class PageList:
                 exists = True
                 break
         if exists:
-             return False
+            return False
         else:
             self._page_list.append(page_new)
             return True
+
 
 class Page:
     def __init__(self, url, visited=False, link_source=None, sitemap_url=False):

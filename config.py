@@ -5,6 +5,7 @@ import configparser
 
 CONFIG_FILE = 'config.txt'
 
+
 class Config:
     def __init__(self):
         self.include_sitemaps = False
@@ -45,5 +46,3 @@ class Config:
         except Exception as e:
             print("Error parsing '{}' -> {}" . format(CONFIG_FILE, e), file=sys.stderr)
             sys.exit(1)
-
-

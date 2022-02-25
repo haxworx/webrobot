@@ -2,10 +2,13 @@
 
 import urllib.request
 
+
 class Download:
+
     """
     A simple HTTP download class.
     """
+
     def __init__(self, url, user_agent):
         self.url = url
         self.user_agent = user_agent
@@ -43,4 +46,3 @@ class Download:
             contents = data.decode('utf-8')
             response.close()
         return contents
-

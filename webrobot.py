@@ -4,7 +4,8 @@ import sys
 import os
 import socket
 import atexit
-import time, datetime
+import time
+import datetime
 import signal
 import logging
 import re
@@ -22,7 +23,9 @@ import logs
 
 shutdown_gracefully = False
 
+
 class Robot:
+
     def __init__(self, url, name):
         self.config = Config()
         self.starting_url = url
@@ -124,8 +127,8 @@ class Robot:
                res['checksum'], res['encoding'], res['content'])
         cursor = self.cnx.cursor()
         try:
-           cursor.execute(SQL, val)
-           self.cnx.commit()
+            cursor.execute(SQL, val)
+            self.cnx.commit()
         except mysql.connector.Error as e:
             self.log.fatal("Database: (%i) -> %s", e.errno, e.msg)
             everything_is_fine = False
@@ -201,9 +204,8 @@ class Robot:
                 (response, code) = downloader.get()
             except error.HTTPError as e:
                 self.log.info("Recording %s -> %i", self.url, e.code)
-                res = { 'status_code': e.code, 'url': self.url,
-                        'link_source': page.link_source(), 'description': e.reason
-                }
+                res = {'status_code': e.code, 'url': self.url,
+                       'link_source': page.link_source(), 'description': e.reason}
                 if not self.save_errors(res):
                     self.log.fatal("Terminating crawl. Unable to save errors.")
                     break
@@ -246,13 +248,12 @@ class Robot:
                     content = data.decode(encoding)
                     checksum = hashlib.md5(data)
 
-                    res = { 'domain': self.domain_parse(self.url), 'scheme': scheme,
-                            'link_source': page.link_source(), 'modified': modified,
-                            'status_code': code, 'content_type': content_type,
-                            'url': self.url, 'path': path,
-                            'query': query, 'checksum': checksum.hexdigest(),
-                            'content': content, 'encoding': encoding,
-                    }
+                    res = {'domain': self.domain_parse(self.url), 'scheme': scheme,
+                           'link_source': page.link_source(), 'modified': modified,
+                           'status_code': code, 'content_type': content_type,
+                           'url': self.url, 'path': path,
+                           'query': query, 'checksum': checksum.hexdigest(),
+                           'content': content, 'encoding': encoding}
 
                     self.log.info("Saving %s", self.url)
 
@@ -280,12 +281,15 @@ class Robot:
 
         self.log.info("Done! Saved %s, attempted %s, total %s", crawler.save_count, crawler.attempted, len(crawler.page_list))
 
+
 def signal_handler(signum, frame):
     global shutdown_gracefully
     if signum == signal.SIGINT:
         shutdown_gracefully = True
 
+
 if __name__ == '__main__':
+
     if len(sys.argv) != 2:
         print("Usage: {} <url>" . format(sys.argv[0]))
         sys.exit(0)

@@ -8,6 +8,7 @@ import xml.dom.minidom
 
 from download import Download
 
+
 class RobotsText:
     """
     Handle robots.txt.
@@ -24,7 +25,7 @@ class RobotsText:
         self._disallowed = []
         self._sitemap_indexes = []
         self._sitemap_urls = []
-        self._url = None;
+        self._url = None
 
     def regexify(self, string):
         string = string.replace('*', '.*')
@@ -58,7 +59,7 @@ class RobotsText:
                 if matches:
                     agent = matches.group(1)
                     if agent not in self._agents:
-                        self._agents[agent] = { 'allowed': [], 'disallowed': [], 'sitemaps': [] }
+                        self._agents[agent] = {'allowed': [], 'disallowed': [], 'sitemaps': []}
                 if agent is None:
                     continue
                 matches = re.search('^Allow:\s+(.*?)$', line, re.IGNORECASE)
@@ -101,6 +102,7 @@ class RobotsText:
 
     def sitemap_indexes(self):
         return self._sitemap_indexes
+
 
 class SiteMaps:
     """

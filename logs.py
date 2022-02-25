@@ -4,9 +4,10 @@ from logging import StreamHandler
 import mysql.connector
 from mysql.connector import errorcode
 
+
 class DatabaseHandler(StreamHandler):
     def __init__(self, crawler):
-        StreamHandler.__init__(self);
+        StreamHandler.__init__(self)
         self.crawler = crawler
         self.cnx = crawler.cnx
 
@@ -21,10 +22,10 @@ class DatabaseHandler(StreamHandler):
             self.cnx.commit()
         except mysql.connector.Error as e:
             with open("something_really_bad_happened.txt", "w") as f:
-                    f.write("Logging failed:\n"
-                            "\tError code: {}\n"
-                            "\tSQLSTATE:   {}\n"
-                            "\tMessage:    {}\n" . format(e.errno, e.sqlstate, e.msg))
+                f.write("Logging failed:\n"
+                        "\tError code: {}\n"
+                        "\tSQLSTATE:   {}\n"
+                        "\tMessage:    {}\n" . format(e.errno, e.sqlstate, e.msg))
             sys.exit(2)
 
         cursor.close()
