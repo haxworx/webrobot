@@ -36,7 +36,7 @@ class RobotsText:
         parsed_url = urlparse(url)
         self.url = parsed_url.scheme + '://' + parsed_url.netloc + '/robots.txt'
         try:
-            downloader = Download(url, self.user_agent)
+            downloader = Download(self.url, self.user_agent)
             (response, code) = downloader.get()
         except urllib.error.HTTPError as e:
             self.crawler.log.warning("RobotsText: Ignoring %s -> %i", url, e.code)
@@ -48,6 +48,7 @@ class RobotsText:
             text = data.decode('utf-8')
             lines = text.split('\n')
             agent = None
+
             for line in lines:
                 if len(line) and line[0] == '#':
                     continue

@@ -38,13 +38,7 @@ class Robot:
 
         # Compile regular expressions.
         self.wanted_content = "^({})" . format(self.config.wanted_content)
-        try:
-            self.wanted = re.compile(self.wanted_content, re.IGNORECASE)
-            self.charset = re.compile('charset=([a-zA-Z0-9-_]+)', re.IGNORECASE)
-            self.hrefs = re.compile("href=[\"\'](.*?)[\"\']", re.IGNORECASE)
-        except re.error as e:
-            print("Regex compilation failed: {}" . format(e), file=sys.stderr)
-            sys.exit(1)
+        self.compile_regexes()
 
         self.log = logging.getLogger(self.name)
         handler = logs.DatabaseHandler(self)
@@ -58,6 +52,15 @@ class Robot:
         self.attempted = 0
         self.retry_count = 0
         self.retry_max = self.config.retry_max
+
+    def compile_regexes(self):
+        try:
+            self.wanted = re.compile(self.wanted_content, re.IGNORECASE)
+            self.charset = re.compile('charset=([a-zA-Z0-9-_]+)', re.IGNORECASE)
+            self.hrefs = re.compile("href=[\"\'](.*?)[\"\']", re.IGNORECASE)
+        except re.error as e:
+            print("Regex compilation failed: {}" . format(e), file=sys.stderr)
+            sys.exit(1)
 
     def cleanup(self):
         self.cnx.close()
@@ -241,7 +244,7 @@ class Robot:
                     checksum = hashlib.md5(data)
 
                     res = { 'domain': self.get_domain(self.url), 'scheme': scheme,
-                            'link_source': page.get_source(), 'modified': modified,
+                            'link_source': page.get_link_source(), 'modified': modified,
                             'status_code': code, 'content_type': content_type,
                             'url': self.url, 'path': path,
                             'query': query, 'checksum': checksum.hexdigest(),
