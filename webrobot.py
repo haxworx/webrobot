@@ -287,8 +287,8 @@ class Robot:
 
                     self.log.info("Saving %s", self.url)
 
-                    if not self.save_results(res):
-                        self.log.fatal("Terminating crawl."
+                    if self.save_results(res):
+                        self.log.fatal("Terminating crawl. "
                                        "Unable to save results.")
                         break
 

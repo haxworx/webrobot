@@ -36,7 +36,6 @@ class Download:
             request = urllib.request.Request(self.url)
             request.add_header('User-Agent', self.user_agent)
             response = urllib.request.urlopen(request)
-            code = response.getcode()
         except urllib.error.HTTPError as e:
             pass
         except urllib.error.URLError as e:
