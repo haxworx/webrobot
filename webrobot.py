@@ -10,6 +10,7 @@ import logging
 import re
 import hashlib
 import mysql.connector
+import fcntl
 from datetime import datetime
 from mysql.connector import errorcode
 from urllib import error
@@ -27,6 +28,8 @@ shutdown_gracefully = False
 class Robot:
 
     def __init__(self, url, name):
+        self.acquire_lock()
+        atexit.register(self.cleanup)
         self.config = Config()
         self.starting_url = url
 
@@ -37,7 +40,6 @@ class Robot:
         self.hostname = socket.gethostname()
         self.ip_address = socket.gethostbyname(self.hostname)
         self.database_connect()
-        atexit.register(self.cleanup)
 
         # Compile regular expressions.
         self.wanted_content = "^({})" . format(self.config.wanted_content)
@@ -59,6 +61,18 @@ class Robot:
         self.retry_count = 0
         self.retry_max = self.config.retry_max
 
+
+    def acquire_lock(self):
+        try:
+            self.lock = lock = open('crawl.lock', 'w+')
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            print("Instance already running.", file=sys.stderr)
+            sys.exit(0)
+
+    def release_lock(self):
+        fcntl.flock(self.lock, fcntl.LOCK_UN)
+
     def compile_regexes(self):
         try:
             self.wanted = re.compile(self.wanted_content,
@@ -73,6 +87,7 @@ class Robot:
 
     def cleanup(self):
         self.cnx.close()
+        self.release_lock()
 
     def database_connect(self):
         try:
