@@ -46,6 +46,8 @@ class RobotsText:
         except urllib.error.URLError as e:
             self._crawler.log.warning("RobotsText: Unable to connect -> %s",
                                       e.reason)
+        except Exception as e:
+            self._crawler.log.warning("RobotsText: Caught exception (%s)-> %s", self._url, e)
         else:
             data = response.read()
             response.close()

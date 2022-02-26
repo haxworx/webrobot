@@ -42,6 +42,8 @@ class Download:
             pass
         except urllib.error.URLError as e:
             pass
+        except Exception as e:
+            pass
         else:
             data = response.read()
             contents = data.decode('utf-8')

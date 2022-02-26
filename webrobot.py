@@ -284,6 +284,10 @@ class Robot:
                     self.page_list.again()
                     self.log.warning("Retrying: %s", self.url)
                     continue
+            except Exception as e:
+                self.log.warning("Skipping due to exception: %s -> %s",
+                               self.url, e)
+                continue
             else:
                 self.retry_count = 0
                 content_type = response.headers['content-type']
