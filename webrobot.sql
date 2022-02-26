@@ -18,6 +18,7 @@ CREATE TABLE `tbl_crawl_data` (
   `metadata` text DEFAULT NULL,
   `checksum` varchar(32) DEFAULT NULL,
   `encoding` varchar(32) DEFAULT NULL,
+  `length` int DEFAULT NULL,
   `data` mediumblob,
   PRIMARY KEY (`id`)
 );

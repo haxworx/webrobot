@@ -145,14 +145,15 @@ class Robot:
         scan_date, scan_time_stamp, scan_time_zone, domain,
         scheme, link_source, modified, status_code, url, path,
         query, content_type, metadata, checksum, encoding,
-        data) VALUES(NOW(), NOW(), %s, %s, 'Europe/London', %s, %s,
-        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+        length, data) VALUES(NOW(), NOW(), %s, %s, 'Europe/London',
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
         COMPRESS(%s))
         """
         val = (now, now, res['domain'], res['scheme'],
                res['link_source'], res['modified'], res['status_code'],
                res['url'], res['path'], res['query'], res['content_type'],
-               res['metadata'], res['checksum'], res['encoding'], res['data'])
+               res['metadata'], res['checksum'], res['encoding'],
+               res['length'], res['data'])
         cursor = self.cnx.cursor()
         try:
             cursor.execute(SQL, val)
@@ -268,11 +269,14 @@ class Robot:
                     continue
             else:
                 self.retry_count = 0
-                (content_type, modified) = (response.headers['content-type'],
-                                            response.headers['last-modified'])
+                content_type = response.headers['content-type']
+                modified = response.headers['last-modified']
+                length = response.headers['content-length']
                 if modified is not None:
                     modified = datetime.strptime(modified,
                                                 "%a, %d %b %Y %H:%M:%S %Z")
+                if length is not None:
+                    length = int(length)
 
                 matches = self.wanted.search(content_type)
                 if not matches:
@@ -310,6 +314,7 @@ class Robot:
                            'query': query,
                            'checksum': checksum.hexdigest(),
                            'encoding': encoding,
+                           'length': length,
                            'data': data}
 
                     self.log.info("Saving %s", self.url)
