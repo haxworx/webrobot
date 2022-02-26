@@ -208,14 +208,13 @@ class Robot:
         self.page_list.append(self.robots_text.url())
 
         if self.config.include_sitemaps:
-            sitemap_urls = self.robots_text.sitemap()
             for url in self.robots_text.sitemap_indexes():
                 if shutdown_gracefully:
                     break
                 if self.page_list.append(url, sitemap_url=True):
                     self.log.info("Appending sitemap index: %s", url)
 
-            for url in sitemap_urls:
+            for url in self.robots_text.sitemap():
                 if shutdown_gracefully:
                     break
                 if self.page_list.append(url, sitemap_url=True):
