@@ -3,10 +3,10 @@
 import sys
 import configparser
 
-CONFIG_FILE = 'config.txt'
-
 
 class Config:
+    CONFIG_FILE = 'config.txt'
+
     def __init__(self):
         self.include_sitemaps = False
         self.ignore_query = False
@@ -15,7 +15,7 @@ class Config:
 
     def read(self):
         try:
-            with open(CONFIG_FILE, "r") as f:
+            with open(self.CONFIG_FILE, "r") as f:
                 content = f.read()
                 parser = configparser.ConfigParser()
                 parser.read_string(content)

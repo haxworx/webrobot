@@ -16,19 +16,16 @@ from mysql.connector import errorcode
 from urllib import error
 from urllib.parse import urljoin, urlparse
 
+import core
+import logs
 from config import Config
 from pages import PageList, Page
 from robots_text import RobotsText
 from download import Download
-import logs
-
-shutdown_gracefully = False
-
-LOCK_FILE = 'crawl.lock'
 
 
 class Robot:
-
+    LOCK_FILE = 'crawl.lock'
     def __init__(self, url, name):
         self.acquire_lock()
         atexit.register(self.cleanup)
@@ -65,7 +62,7 @@ class Robot:
 
     def acquire_lock(self):
         try:
-            self.lock = lock = open(LOCK_FILE, 'w+')
+            self.lock = lock = open(self.LOCK_FILE, 'w+')
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             print("Instance already running.", file=sys.stderr)
@@ -201,16 +198,14 @@ class Robot:
         return metadata
 
     def import_sitemaps(self):
-        global shutdown_gracefully
-
         for url in self.robots_text.sitemap_indexes():
-            if shutdown_gracefully:
+            if core.shutdown_gracefully():
                 break
             if self.page_list.append(url, sitemap_url=True):
                self.log.info("Appending sitemap index: %s", url)
 
         for url in self.robots_text.sitemap():
-            if shutdown_gracefully:
+            if core.shutdown_gracefully():
                 break
             if self.page_list.append(url, sitemap_url=True):
                 self.log.info("Appending sitemap url: %s", url)
@@ -222,8 +217,6 @@ class Robot:
         It's important to keep track of so many events.
 
         """
-        global shutdown_gracefully
-
         self.log.info("Crawling %s", self.starting_url)
         self.robots_text.parse(self.starting_url)
         self.page_list.append(self.robots_text.url())
@@ -234,7 +227,7 @@ class Robot:
         self.page_list.append(self.starting_url)
 
         for page in self.page_list:
-            if shutdown_gracefully:
+            if core.shutdown_gracefully():
                 break
 
             self.url = page.url()
@@ -359,7 +352,7 @@ class Robot:
                 time.sleep(self.config.crawl_interval)
                 response.close()
 
-        if shutdown_gracefully:
+        if core.shutdown_gracefully():
             self.log.critical("Shutting down.")
 
         self.log.info("Done! Saved %s, attempted %s, total %s",
@@ -369,18 +362,16 @@ class Robot:
 
 
 def signal_handler(signum, frame):
-    global shutdown_gracefully
     if signum == signal.SIGINT:
-        shutdown_gracefully = True
-
+        core.shutdown()
 
 if __name__ == '__main__':
-
     if len(sys.argv) != 2:
         print("Usage: {} <url>" . format(sys.argv[0]))
         sys.exit(0)
 
     logging.basicConfig(level=logging.INFO)
+    core.init()
 
     try:
         signal.signal(signal.SIGINT, signal_handler)

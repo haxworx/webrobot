@@ -6,6 +6,7 @@ import re
 import sys
 import xml.dom.minidom
 
+import core
 from download import Download
 
 
@@ -140,6 +141,8 @@ class SiteMaps:
                 for url in sitemap_index:
                     nodes = url.getElementsByTagName('loc')
                     for node in nodes:
+                        if core.shutdown_gracefully():
+                            return
                         self._sitemap_indexes.append(node.firstChild.nodeValue)
                         downloader = Download(node.firstChild.nodeValue,
                                               self._user_agent)
@@ -155,6 +158,8 @@ class SiteMaps:
         urls = dom.getElementsByTagName('url')
         for url in urls:
             nodes = url.getElementsByTagName('loc')
+            if core.shutdown_gracefully():
+                return
             for node in nodes:
                 self._sitemap_urls.append(node.firstChild.nodeValue)
 
