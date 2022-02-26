@@ -108,6 +108,15 @@ class Robot:
         domain = urlparse(url).netloc
         return domain
 
+    def valid_url(self, url):
+        parsed_url = urlparse(url)
+        if len(parsed_url.netloc) < 3:
+            return False
+        if len(parsed_url.scheme) < 4:
+            return False
+    
+        return True
+
     def valid_link(self, link):
         """
         Is link a valid link to be attempted?
@@ -206,6 +215,11 @@ class Robot:
         Crawling logic.
         """
         global shutdown_gracefully
+
+        if not self.valid_url(self.starting_url):
+            self.log.fatal("Invalid Starting URL -> %s",
+                           self.starting_url)
+            sys.exit(1)
 
         self.log.info("Crawling %s", self.starting_url)
         self.robots_text.parse(self.starting_url)
