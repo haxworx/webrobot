@@ -26,6 +26,7 @@ shutdown_gracefully = False
 
 LOCK_FILE = 'crawl.lock'
 
+
 class Robot:
 
     def __init__(self, url, name):
@@ -62,12 +63,10 @@ class Robot:
         self.retry_count = 0
         self.retry_max = self.config.retry_max
 
-
     def acquire_lock(self):
         try:
             self.lock = lock = open(LOCK_FILE, 'w+')
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-
         except BlockingIOError:
             print("Instance already running.", file=sys.stderr)
             sys.exit(0)
@@ -272,7 +271,7 @@ class Robot:
                     continue
             except Exception as e:
                 self.log.warning("Skipping due to exception: %s -> %s",
-                               self.url, e)
+                                 self.url, e)
                 continue
             else:
                 self.retry_count = 0
