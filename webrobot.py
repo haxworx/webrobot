@@ -200,9 +200,27 @@ class Robot:
             metadata = metadata + name + ': ' + value + '\n'
         return metadata
 
+    def import_sitemaps(self):
+        global shutdown_gracefully
+
+        for url in self.robots_text.sitemap_indexes():
+            if shutdown_gracefully:
+                break
+            if self.page_list.append(url, sitemap_url=True):
+               self.log.info("Appending sitemap index: %s", url)
+
+        for url in self.robots_text.sitemap():
+            if shutdown_gracefully:
+                break
+            if self.page_list.append(url, sitemap_url=True):
+                self.log.info("Appending sitemap url: %s", url)
+
     def crawl(self):
         """
         Crawling logic.
+
+        It's important to keep track of so many events.
+
         """
         global shutdown_gracefully
 
@@ -211,17 +229,7 @@ class Robot:
         self.page_list.append(self.robots_text.url())
 
         if self.config.include_sitemaps:
-            for url in self.robots_text.sitemap_indexes():
-                if shutdown_gracefully:
-                    break
-                if self.page_list.append(url, sitemap_url=True):
-                    self.log.info("Appending sitemap index: %s", url)
-
-            for url in self.robots_text.sitemap():
-                if shutdown_gracefully:
-                    break
-                if self.page_list.append(url, sitemap_url=True):
-                    self.log.info("Appending sitemap url: %s", url)
+            self.import_sitemaps()
 
         self.page_list.append(self.starting_url)
 
@@ -229,7 +237,6 @@ class Robot:
             if shutdown_gracefully:
                 break
 
-            self.attempted += 1
             self.url = page.url()
 
             parsed_url = urlparse(self.url)
@@ -240,7 +247,7 @@ class Robot:
                 self.log.warning("Ignoring URL '%s' with query string",
                                  self.url)
                 continue
-
+            self.attempted += 1
             try:
                 downloader = Download(self.url, self.config.user_agent)
                 (response, code) = downloader.get()
