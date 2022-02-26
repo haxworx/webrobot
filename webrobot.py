@@ -70,7 +70,7 @@ class Robot:
             print("Instance already running.", file=sys.stderr)
             sys.exit(0)
         except OSError as e:
-            print("Unable to open '{}': {}". format(LOCK_FILE, e), file=sys.stderr)
+            print("Unable to open '{}': {}". format(self.LOCK_FILE, e), file=sys.stderr)
             sys.exit(3)
 
     def release_lock(self):
