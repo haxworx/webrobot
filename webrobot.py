@@ -24,6 +24,7 @@ import logs
 
 shutdown_gracefully = False
 
+LOCK_FILE = 'crawl.lock'
 
 class Robot:
 
@@ -64,11 +65,15 @@ class Robot:
 
     def acquire_lock(self):
         try:
-            self.lock = lock = open('crawl.lock', 'w+')
+            self.lock = lock = open(LOCK_FILE, 'w+')
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
         except BlockingIOError:
             print("Instance already running.", file=sys.stderr)
             sys.exit(0)
+        except OSError as e:
+            print("Unable to open '{}': {}". format(LOCK_FILE, e))
+            sys.exit(3)
 
     def release_lock(self):
         fcntl.flock(self.lock, fcntl.LOCK_UN)
@@ -141,13 +146,12 @@ class Robot:
         now = datetime.now()
 
         SQL = """
-        INSERT INTO tbl_crawl_data (srv_date, srv_time_stamp,
-        scan_date, scan_time_stamp, scan_time_zone, domain,
-        scheme, link_source, modified, status_code, url, path,
-        query, content_type, metadata, checksum, encoding,
-        length, data) VALUES(NOW(), NOW(), %s, %s, 'Europe/London',
-        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-        COMPRESS(%s))
+        INSERT INTO tbl_crawl_data (scan_date, scan_time_stamp,
+        scan_time_zone, domain, scheme, link_source, modified,
+        status_code, url, path, query, content_type, metadata,
+        checksum, encoding, length, data) VALUES(%s, %s,
+        'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+        %s, %s, %s, COMPRESS(%s))
         """
         val = (now, now, res['domain'], res['scheme'],
                res['link_source'], res['modified'], res['status_code'],
@@ -173,10 +177,10 @@ class Robot:
         now = datetime.now()
 
         SQL = """
-        INSERT INTO tbl_crawl_errors (srv_date, srv_time_stamp,
-        scan_date, scan_time_stamp, scan_time_zone, status_code,
-        url, link_source, description) VALUES(NOW(), NOW(), %s,
-        %s, 'Europe/London', %s, %s, %s, %s)
+        INSERT INTO tbl_crawl_errors (scan_date,
+        scan_time_stamp, scan_time_zone, status_code,
+        url, link_source, description) VALUES(%s, %s,
+        'Europe/London', %s, %s, %s, %s)
         """
         val = (now, now, res['status_code'], res['url'],
                res['link_source'], res['description'])

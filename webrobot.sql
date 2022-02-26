@@ -1,8 +1,8 @@
 DROP TABLE IF EXISTS `tbl_crawl_data`;
 CREATE TABLE `tbl_crawl_data` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `srv_date` date DEFAULT NULL,
-  `srv_time_stamp` datetime DEFAULT NULL,
+  `srv_date` date DEFAULT(CURRENT_DATE),
+  `srv_time_stamp` datetime DEFAULT CURRENT_TIMESTAMP,
   `scan_date` date DEFAULT NULL,
   `scan_time_stamp` datetime DEFAULT NULL,
   `scan_time_zone` varchar(64) DEFAULT NULL,
@@ -26,8 +26,8 @@ CREATE TABLE `tbl_crawl_data` (
 DROP TABLE IF EXISTS `tbl_crawl_errors`;
 CREATE TABLE `tbl_crawl_errors` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `srv_date` date DEFAULT NULL,
-  `srv_time_stamp` datetime DEFAULT NULL,
+  `srv_date` date DEFAULT(CURRENT_DATE),
+  `srv_time_stamp` datetime DEFAULT CURRENT_TIMESTAMP,
   `scan_date` date DEFAULT NULL,
   `scan_time_stamp` datetime DEFAULT NULL,
   `scan_time_zone` varchar(64) DEFAULT NULL,
@@ -41,8 +41,8 @@ CREATE TABLE `tbl_crawl_errors` (
 DROP TABLE IF EXISTS `tbl_crawl_log`;
 CREATE TABLE `tbl_crawl_log` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `srv_date` date DEFAULT NULL,
-  `srv_time_stamp` datetime DEFAULT NULL,
+  `srv_date` date DEFAULT(CURRENT_DATE),
+  `srv_time_stamp` datetime DEFAULT CURRENT_TIMESTAMP,
   `scan_date` date DEFAULT NULL,
   `scan_time_stamp` datetime DEFAULT NULL,
   `crawler_name` varchar(32) DEFAULT NULL,

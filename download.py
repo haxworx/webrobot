@@ -20,6 +20,7 @@ class Download:
         A wrapper to avoid code duplication.
         Exceptions must be caught.
         """
+
         request = urllib.request.Request(self.url)
         request.add_header('User-Agent', self.user_agent)
         response = urllib.request.urlopen(request)
@@ -31,6 +32,7 @@ class Download:
         Download content without a load of exception
         handling. Akin to file_get_contents in PHP.
         """
+
         contents = None
         try:
             request = urllib.request.Request(self.url)
