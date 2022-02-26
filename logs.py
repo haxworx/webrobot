@@ -4,6 +4,7 @@ import sys
 from logging import StreamHandler
 import mysql.connector
 from mysql.connector import errorcode
+from datetime import datetime
 
 
 class DatabaseHandler(StreamHandler):
@@ -15,13 +16,15 @@ class DatabaseHandler(StreamHandler):
     def emit(self, record):
         msg = self.format(record)
 
+        now = datetime.now()
+
         SQL = """
-        INSERT INTO tbl_app_log (date, time_stamp, crawler_name,
-        hostname, ip_address, level_number, level_name, message)
-        VALUES (NOW(), NOW(), %s, %s, %s, %s, %s, %s)
+        INSERT INTO tbl_crawl_log (srv_date, srv_time_stamp, scan_date,
+        scan_time_stamp, crawler_name, hostname, ip_address, level_number,
+        level_name, message) VALUES (NOW(), NOW(), %s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor = self.cnx.cursor()
-        data = (self.crawler.name, self.crawler.hostname,
+        data = (now, now, self.crawler.name, self.crawler.hostname,
                 self.crawler.ip_address, record.levelno,
                 record.levelname, msg)
         try:

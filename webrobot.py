@@ -10,7 +10,7 @@ import logging
 import re
 import hashlib
 import mysql.connector
-from datetime import datetime as dt
+from datetime import datetime
 from mysql.connector import errorcode
 from urllib import error
 from urllib.parse import urljoin, urlparse
@@ -123,18 +123,21 @@ class Robot:
         """
         everything_is_fine = True
 
+        now = datetime.now()
+
         SQL = """
-        INSERT INTO tbl_crawl_data (date, time_stamp, time_zone, domain,
-        scheme, link_source, modified, status_code, url, path, query,
-        content_type, metadata, checksum, encoding, data)
-        VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s, %s, %s,
-        %s, %s, %s, %s, %s, %s, COMPRESS(%s))
+        INSERT INTO tbl_crawl_data (srv_date, srv_time_stamp,
+        scan_date, scan_time_stamp, scan_time_zone, domain,
+        scheme, link_source, modified, status_code, url, path,
+        query, content_type, metadata, checksum, encoding,
+        data) VALUES(NOW(), NOW(), %s, %s, 'Europe/London', %s, %s,
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+        COMPRESS(%s))
         """
-        val = (res['domain'], res['scheme'], res['link_source'],
-               res['modified'], res['status_code'], res['url'],
-               res['path'], res['query'], res['content_type'],
-               res['metadata'], res['checksum'], res['encoding'],
-               res['data'])
+        val = (now, now, res['domain'], res['scheme'],
+               res['link_source'], res['modified'], res['status_code'],
+               res['url'], res['path'], res['query'], res['content_type'],
+               res['metadata'], res['checksum'], res['encoding'], res['data'])
         cursor = self.cnx.cursor()
         try:
             cursor.execute(SQL, val)
@@ -151,12 +154,15 @@ class Robot:
     def save_errors(self, res):
         everything_is_fine = True
 
+        now = datetime.now()
+
         SQL = """
-        INSERT INTO tbl_crawl_errors (date, time_stamp, time_zone,
-        status_code, url, link_source, description)
-        VALUES(NOW(), NOW(), 'Europe/London', %s, %s, %s, %s)
+        INSERT INTO tbl_crawl_errors (srv_date, srv_time_stamp,
+        scan_date, scan_time_stamp, scan_time_zone, status_code,
+        url, link_source, description) VALUES(NOW(), NOW(), %s,
+        %s, 'Europe/London', %s, %s, %s, %s)
         """
-        val = (res['status_code'], res['url'],
+        val = (now, now, res['status_code'], res['url'],
                res['link_source'], res['description'])
         cursor = self.cnx.cursor()
         try:
@@ -252,8 +258,8 @@ class Robot:
                 (content_type, modified) = (response.headers['content-type'],
                                             response.headers['last-modified'])
                 if modified is not None:
-                    modified = dt.strptime(modified,
-                                           "%a, %d %b %Y %H:%M:%S %Z")
+                    modified = datetime.strptime(modified,
+                                                "%a, %d %b %Y %H:%M:%S %Z")
 
                 matches = self.wanted.search(content_type)
                 if not matches:
