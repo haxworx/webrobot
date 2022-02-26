@@ -131,11 +131,11 @@ class SiteMaps:
             # Check DOM to determine whether this is a sitemap
             # index or a list of URLs.
             dom = xml.dom.minidom.parseString(contents)
-            sitemaps = dom.getElementsByTagName('sitemap')
-            if not sitemaps:
+            sitemap_index = dom.getElementsByTagName('sitemap')
+            if not sitemap_index:
                 self.read_sitemap(contents)
             else:
-                for url in sitemaps:
+                for url in sitemap_index:
                     nodes = url.getElementsByTagName('loc')
                     for node in nodes:
                         self._sitemap_indexes.append(node.firstChild.nodeValue)
