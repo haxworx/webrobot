@@ -26,6 +26,7 @@ from download import Download
 
 class Robot:
     LOCK_FILE = 'crawl.lock'
+    cnx = None
 
     def __init__(self, url, name):
         self.acquire_lock()
@@ -69,7 +70,7 @@ class Robot:
             print("Instance already running.", file=sys.stderr)
             sys.exit(0)
         except OSError as e:
-            print("Unable to open '{}': {}". format(LOCK_FILE, e))
+            print("Unable to open '{}': {}". format(LOCK_FILE, e), file=sys.stderr)
             sys.exit(3)
 
     def release_lock(self):
@@ -88,7 +89,8 @@ class Robot:
             sys.exit(1)
 
     def cleanup(self):
-        self.cnx.close()
+        if self.cnx is not None:
+            self.cnx.close()
         self.release_lock()
 
     def database_connect(self):
@@ -98,7 +100,7 @@ class Robot:
                                                host=self.config.db_host,
                                                database=self.config.db_name)
         except mysql.connector.Error as e:
-            print("Unable to connect ({}): {}" . format(e.errno, e.msg))
+            print("Unable to connect ({}): {}" . format(e.errno, e.msg), file=sys.stderr)
             sys.exit(1)
 
     def domain_parse(self, url):
@@ -222,7 +224,7 @@ class Robot:
         self.robots_text.parse(self.starting_url)
         self.page_list.append(self.robots_text.url())
 
-        if self.config.include_sitemaps:
+        if self.config.import_sitemaps:
             self.import_sitemaps()
 
         self.page_list.append(self.starting_url)

@@ -11,9 +11,9 @@ class Config:
         self.include_sitemaps = False
         self.ignore_query = False
 
-        self.read()
+        self._read()
 
-    def read(self):
+    def _read(self):
         try:
             with open(self.CONFIG_FILE, "r") as f:
                 content = f.read()
@@ -30,7 +30,7 @@ class Config:
                 self.db_pass = parser['database']['pass']
 
                 keys = ('interval', 'user-agent', 'wanted-content',
-                        'ignore-query', 'retry-max', 'include-sitemaps')
+                        'ignore-query', 'retry-max', 'import-sitemaps')
                 if not all(key in parser['crawling'] for key in keys):
                     raise Exception("Missing crawling config field.")
 
@@ -40,13 +40,13 @@ class Config:
                 if parser['crawling']['ignore-query'].upper() == 'TRUE':
                     self.ignore_query = True
                 self.retry_max = int(parser['crawling']['retry-max'])
-                if parser['crawling']['include-sitemaps'].upper() == 'TRUE':
-                    self.include_sitemaps = True
+                if parser['crawling']['import-sitemaps'].upper() == 'TRUE':
+                    self.import_sitemaps = True
         except OSError as e:
-            print("Unable to open '{}' -> {}" . format(CONFIG_FILE, e),
+            print("Unable to open '{}' -> {}" . format(self.CONFIG_FILE, e),
                   file=sys.stderr)
             sys.exit(1)
         except Exception as e:
-            print("Error parsing '{}' -> {}" . format(CONFIG_FILE, e),
+            print("Error parsing '{}' -> {}" . format(self.CONFIG_FILE, e),
                   file=sys.stderr)
             sys.exit(1)
