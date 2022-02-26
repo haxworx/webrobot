@@ -26,6 +26,7 @@ from download import Download
 
 class Robot:
     LOCK_FILE = 'crawl.lock'
+
     def __init__(self, url, name):
         self.acquire_lock()
         atexit.register(self.cleanup)
@@ -202,7 +203,7 @@ class Robot:
             if core.shutdown_gracefully():
                 break
             if self.page_list.append(url, sitemap_url=True):
-               self.log.info("Appending sitemap index: %s", url)
+                self.log.info("Appending sitemap index: %s", url)
 
         for url in self.robots_text.sitemap():
             if core.shutdown_gracefully():
@@ -280,7 +281,7 @@ class Robot:
                 length = response.headers['content-length']
                 if modified is not None:
                     modified = datetime.strptime(modified,
-                                                "%a, %d %b %Y %H:%M:%S %Z")
+                                                 "%a, %d %b %Y %H:%M:%S %Z")
                 if length is not None:
                     length = int(length)
 
@@ -301,7 +302,8 @@ class Robot:
                     metadata = self.metadata_extract(response.headers)
                     content_type = matches.group(1)
                     encoding = 'iso-8859-1'
-                    matches = self.charset.search(response.headers['content-type'])
+                    matches = self.charset.search(
+                        response.headers['content-type'])
                     if matches:
                         encoding = matches.group(1)
 
@@ -364,6 +366,7 @@ class Robot:
 def signal_handler(signum, frame):
     if signum == signal.SIGINT:
         core.shutdown()
+
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:

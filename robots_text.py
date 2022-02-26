@@ -18,6 +18,7 @@ class RobotsText:
     spec as Google itself honours with their web crawlers.
 
     """
+
     def __init__(self, crawler):
         self._crawler = crawler
         self._user_agent = crawler.config.user_agent
@@ -48,7 +49,8 @@ class RobotsText:
             self._crawler.log.warning("RobotsText: Unable to connect -> %s",
                                       e.reason)
         except Exception as e:
-            self._crawler.log.warning("RobotsText: Caught exception (%s)-> %s", self._url, e)
+            self._crawler.log.warning(
+                "RobotsText: Caught exception (%s)-> %s", self._url, e)
         else:
             data = response.read()
             response.close()
@@ -119,6 +121,7 @@ class SiteMaps:
     Download, parse and collect sitemap URLs from
     sitemap indexes and sitemaps.
     """
+
     def __init__(self, sitemap_indexes, user_agent):
         self._user_agent = user_agent
         self._sitemap_indexes = sitemap_indexes
