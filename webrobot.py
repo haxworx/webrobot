@@ -202,8 +202,6 @@ class Robot:
         """
         global shutdown_gracefully
 
-        sitemap_urls = []
-
         self.log.info("Crawling %s", self.starting_url)
         self.robots_text.parse(self.starting_url)
         self.page_list.append(self.robots_text.url())
