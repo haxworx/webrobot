@@ -2,3 +2,4 @@
 *.lock
 __pycache__/*
 something_really_bad_happened.txt
+config.txt

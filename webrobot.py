@@ -18,6 +18,7 @@ from urllib.parse import urljoin, urlparse
 
 import core
 import logs
+from hypertext import Http
 from config import Config
 from pages import PageList, Page
 from robots_text import RobotsText
@@ -337,11 +338,9 @@ class Robot:
             else:
                 self.retry_count = 0
                 content_type = response.headers['content-type']
-                modified = response.headers['last-modified']
                 length = response.headers['content-length']
-                if modified is not None:
-                    modified = datetime.strptime(modified,
-                                                 "%a, %d %b %Y %H:%M:%S %Z")
+                modified = Http.date(response.headers['last-modified'])
+
                 if length is not None:
                     length = int(length)
 
