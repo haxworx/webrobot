@@ -337,12 +337,9 @@ class Robot:
                 continue
             else:
                 self.retry_count = 0
-                content_type = response.headers['content-type']
-                length = response.headers['content-length']
+                content_type = Http.string(response.headers['content-type'])
+                length = Http.int(response.headers['content-length'])
                 modified = Http.date(response.headers['last-modified'])
-
-                if length is not None:
-                    length = int(length)
 
                 matches = self.wanted.search(content_type)
                 if not matches:
