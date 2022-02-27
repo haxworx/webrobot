@@ -33,7 +33,7 @@ class Robot:
     _url = None
     _starting_url = None
 
-    def __init__(self, url, name):
+    def __init__(self, url):
         self.acquire_lock()
         atexit.register(self.cleanup)
         self.config = Config()
@@ -442,5 +442,5 @@ if __name__ == '__main__':
         print("signal: {}" . format(e), file=sys.stderr)
         sys.exit(1)
 
-    crawler = Robot(sys.argv[1], 'crawler')
+    crawler = Robot(sys.argv[1])
     crawler.crawl()
