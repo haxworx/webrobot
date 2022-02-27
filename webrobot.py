@@ -41,11 +41,12 @@ class Robot:
         self.url = url
         self.name = self.domain_parse(url)
         self.domain = self.domain_parse(url)
-        self.page_list = PageList()
-        self.robots_text = RobotsText(self)
         self.hostname = socket.gethostname()
         self.ip_address = socket.gethostbyname(self.hostname)
         self.database_connect()
+
+        self.page_list = PageList()
+        self.robots_text = RobotsText(self)
 
         # Compile regular expressions.
         self.wanted_content = "^({})" . format(self.config.wanted_content)
@@ -115,6 +116,11 @@ class Robot:
     def cnx(self, cnx):
         self._cnx = cnx
 
+    @cnx.deleter
+    def cnx(self):
+        if self._cnx is not None:
+            self._cnx.close()
+
     def acquire_lock(self):
         try:
             self.lock = lock = open(self.LOCK_FILE, 'w+')
@@ -142,8 +148,7 @@ class Robot:
             sys.exit(1)
 
     def cleanup(self):
-        if self.cnx is not None:
-            self.cnx.close()
+        del self.cnx
         self.release_lock()
 
     def database_connect(self):
@@ -304,7 +309,7 @@ class Robot:
                 self.log.info("Recording %s -> %i", self.url, e.code)
                 res = {'status_code': e.code,
                        'url': self.url,
-                       'link_source': page.link_source(),
+                       'link_source': page.link_source,
                        'description': e.reason}
                 if not self.save_errors(res):
                     self.log.fatal("Terminating crawl. Unable to save errors.")
