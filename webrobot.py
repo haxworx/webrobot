@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import os
@@ -26,15 +26,20 @@ from download import Download
 
 class Robot:
     LOCK_FILE = 'crawl.lock'
-    cnx = None
+    _cnx = None
+    _name = None
+    _domain = None
+    _ip_address = None
+    _url = None
+    _starting_url = None
 
     def __init__(self, url, name):
         self.acquire_lock()
         atexit.register(self.cleanup)
         self.config = Config()
         self.starting_url = url
-
-        self.name = name
+        self.url = url
+        self.name = self.domain_parse(url)
         self.domain = self.domain_parse(url)
         self.page_list = PageList()
         self.robots_text = RobotsText(self)
@@ -61,6 +66,54 @@ class Robot:
         self.attempted = 0
         self.retry_count = 0
         self.retry_max = self.config.retry_max
+
+    @property
+    def url(self):
+        return self._url
+
+    @url.setter
+    def url(self, value):
+        self._url = value
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+
+    @property
+    def hostname(self):
+        return self._hostname
+
+    @hostname.setter
+    def hostname(self, hostname):
+        self._hostname = hostname
+
+    @property
+    def ip_address(self):
+        return self._ip_address
+
+    @ip_address.setter
+    def ip_address(self, ip_address):
+        self._ip_address = ip_address
+
+    @property
+    def starting_url(self):
+        return self._starting_url
+
+    @starting_url.setter
+    def starting_url(self, url):
+        self._starting_url = url
+
+    @property
+    def cnx(self):
+        return self._cnx
+
+    @cnx.setter
+    def cnx(self, cnx):
+        self._cnx = cnx
 
     def acquire_lock(self):
         try:
@@ -220,20 +273,20 @@ class Robot:
         It's important to keep track of so many events.
 
         """
-        self.log.info("Crawling %s", self.starting_url)
-        self.robots_text.parse(self.starting_url)
+        self.log.info("Crawling %s", self.url)
+        self.robots_text.parse(self.url)
         self.page_list.append(self.robots_text.url())
 
         if self.config.import_sitemaps:
             self.import_sitemaps()
 
-        self.page_list.append(self.starting_url)
+        self.page_list.append(self.url)
 
         for page in self.page_list:
             if core.shutdown_gracefully():
                 break
 
-            self.url = page.url()
+            self.url = page.url
 
             parsed_url = urlparse(self.url)
             (scheme, path, query) = (parsed_url.scheme, parsed_url.path,
@@ -314,7 +367,7 @@ class Robot:
 
                     res = {'domain': self.domain_parse(self.url),
                            'scheme': scheme,
-                           'link_source': page.link_source(),
+                           'link_source': page.link_source,
                            'modified': modified,
                            'status_code': code,
                            'content_type': content_type,
@@ -348,7 +401,7 @@ class Robot:
                                 domain = self.domain_parse(url)
                                 if domain.upper() == self.domain.upper():
                                     if self.page_list.append(url,
-                                                             link_source=page.url()):
+                                                             link_source=page.url):
                                         self.log.info("Appending new url: %s",
                                                       url)
 

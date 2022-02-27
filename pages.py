@@ -40,7 +40,7 @@ class PageList:
         page_new = Page(url, link_source=link_source, sitemap_url=sitemap_url)
         exists = False
         for page in self._page_list:
-            if page_new.url() == page.url():
+            if page_new.url == page.url:
                 exists = True
                 break
         if exists:
@@ -83,11 +83,18 @@ class Page:
     def visited(self, visited):
         self._visited = visited
 
+    @property
     def url(self):
         return self._url
 
+    @url.setter
+    def url(self, url):
+        self._url = url
+
+    @property
     def link_source(self):
         return self._link_source
 
+    @property
     def is_sitemap_source(self):
         return self._sitemap_url

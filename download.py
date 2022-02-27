@@ -13,6 +13,23 @@ class Download:
         self.url = url
         self.user_agent = user_agent
 
+    @property
+    def url(self):
+        return self._url
+
+    @url.setter
+    def url(self, url):
+        self._url = url
+
+    @property
+    def user_agent(self):
+        return self._user_agent
+
+    @user_agent.setter
+    def user_agent(self, user_agent):
+        self._user_agent = user_agent
+
+
     def get(self):
         """
         Make a HTTP request.
