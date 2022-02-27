@@ -236,7 +236,7 @@ class Robot:
         SQL = """
         INSERT INTO tbl_crawl_errors (scan_date,
         scan_time_stamp, scan_time_zone, status_code,
-        url, link_source, description) VALUES(%s, %s,
+        url, link_source, description) VALUES (%s, %s,
         'Europe/London', %s, %s, %s, %s)
         """
         val = (now, now, res['status_code'], res['url'],
