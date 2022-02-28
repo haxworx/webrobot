@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 import mysql.connector
 from mysql.connector import errorcode
@@ -9,6 +10,7 @@ import database
 from config import Config
 
 def main(url):
+    ret = 1
     config = Config()
 
     parsed_url = urlparse(url)
@@ -33,15 +35,15 @@ def main(url):
 
     scan_count = rows[0]
     if scan_count == 0:
-        print("Can run")
-    else:
-        print("Cannot run")
+        ret = os.system("python3 webrobot.py {}" . format(url))
 
     cursor.close()
     dbh.close()
 
+    sys.exit(ret)
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        sys.exit(1)
+        sys.exit(4)
 
     main(sys.argv[1])
