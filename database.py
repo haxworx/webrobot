@@ -5,10 +5,6 @@ import mysql.connector
 from mysql.connector import errorcode
 
 class Connect:
-    username = ""
-    password = ""
-    name = ""
-    hostname = ""
     cnx = None
 
     def __init__(self, db_user="", db_pass="", db_host="", db_name=""):
