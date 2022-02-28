@@ -100,18 +100,23 @@ class RobotsText:
             self._sitemap_indexes.extend(sitemaps.sitemap_indexes())
             self._sitemap_urls = sitemaps.urls()
 
+    @property
     def url(self):
         return self._url
 
+    @property
     def allowed(self):
         return self._allowed
 
+    @property
     def disallowed(self):
         return self._disallowed
 
+    @property
     def sitemap(self):
         return self._sitemap_urls
 
+    @property
     def sitemap_indexes(self):
         return self._sitemap_indexes
 

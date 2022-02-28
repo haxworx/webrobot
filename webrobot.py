@@ -182,12 +182,12 @@ class Robot:
                              . format(link, self.path_limit))
             return False
 
-        for rule in self.robots_text.allowed():
+        for rule in self.robots_text.allowed:
             matches = re.search(rule, link)
             if matches:
                 return True
 
-        for rule in self.robots_text.disallowed():
+        for rule in self.robots_text.disallowed:
             matches = re.search(rule, link)
             if matches:
                 self.log.warning("robots: Ignoring %s as rule: '%s'",
@@ -260,13 +260,13 @@ class Robot:
         return metadata
 
     def import_sitemaps(self):
-        for url in self.robots_text.sitemap_indexes():
+        for url in self.robots_text.sitemap_indexes:
             if core.shutdown_gracefully():
                 break
             if self.page_list.append(url, sitemap_url=True):
                 self.log.info("Appending sitemap index: %s", url)
 
-        for url in self.robots_text.sitemap():
+        for url in self.robots_text.sitemap:
             if core.shutdown_gracefully():
                 break
             if self.page_list.append(url, sitemap_url=True):
@@ -281,7 +281,7 @@ class Robot:
         """
         self.log.info("Crawling %s", self.url)
         self.robots_text.parse(self.url)
-        self.page_list.append(self.robots_text.url())
+        self.page_list.append(self.robots_text.url)
 
         if self.config.import_sitemaps:
             self.import_sitemaps()
