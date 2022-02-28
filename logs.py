@@ -11,7 +11,7 @@ class DatabaseHandler(StreamHandler):
     def __init__(self, crawler):
         StreamHandler.__init__(self)
         self.crawler = crawler
-        self.cnx = crawler.cnx
+        self.cnx = crawler.dbh.cnx
 
     def emit(self, record):
         msg = self.format(record)

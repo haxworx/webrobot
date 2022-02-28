@@ -9,21 +9,19 @@ import signal
 import logging
 import re
 import hashlib
-import mysql.connector
 import fcntl
 from datetime import datetime
-from mysql.connector import errorcode
 from urllib import error
 from urllib.parse import urljoin, urlparse
 
 import core
 import logs
+import database
 from hypertext import Http
 from config import Config
 from pages import PageList, Page
 from robots_text import RobotsText
 from download import Download
-
 
 class Robot:
     LOCK_FILE = 'crawl.lock'
@@ -33,6 +31,7 @@ class Robot:
     _ip_address = None
     _url = None
     _starting_url = None
+    dbh = None
 
     def __init__(self, url):
         self.acquire_lock()
@@ -44,7 +43,8 @@ class Robot:
         self.domain = self.domain_parse(url)
         self.hostname = socket.gethostname()
         self.ip_address = socket.gethostbyname(self.hostname)
-        self.database_connect()
+        self.dbh = database.Connect(self.config.db_user, self.config.db_pass,
+                                    self.config.db_host, self.config.db_name)
 
         self.page_list = PageList()
         self.robots_text = RobotsText(self)
@@ -109,19 +109,6 @@ class Robot:
     def starting_url(self, url):
         self._starting_url = url
 
-    @property
-    def cnx(self):
-        return self._cnx
-
-    @cnx.setter
-    def cnx(self, cnx):
-        self._cnx = cnx
-
-    @cnx.deleter
-    def cnx(self):
-        if self._cnx is not None:
-            self._cnx.close()
-
     def acquire_lock(self):
         try:
             self.lock = lock = open(self.LOCK_FILE, 'w+')
@@ -135,6 +122,7 @@ class Robot:
 
     def release_lock(self):
         fcntl.flock(self.lock, fcntl.LOCK_UN)
+        os.unlink(self.LOCK_FILE)
 
     def compile_regexes(self):
         try:
@@ -149,18 +137,9 @@ class Robot:
             sys.exit(1)
 
     def cleanup(self):
-        del self.cnx
+        if self.dbh is not None:
+            self.dbh.close()
         self.release_lock()
-
-    def database_connect(self):
-        try:
-            self.cnx = mysql.connector.connect(user=self.config.db_user,
-                                               password=self.config.db_pass,
-                                               host=self.config.db_host,
-                                               database=self.config.db_name)
-        except mysql.connector.Error as e:
-            print("Unable to connect ({}): {}" . format(e.errno, e.msg), file=sys.stderr)
-            sys.exit(1)
 
     def domain_parse(self, url):
         domain = urlparse(url).netloc
@@ -216,10 +195,10 @@ class Robot:
                res['url'], res['path'], res['query'], res['content_type'],
                res['metadata'], res['checksum'], res['encoding'],
                res['length'], res['data'])
-        cursor = self.cnx.cursor()
+        cursor = self.dbh.cnx.cursor()
         try:
             cursor.execute(SQL, val)
-            self.cnx.commit()
+            self.dbh.cnx.commit()
         except mysql.connector.Error as e:
             self.log.fatal("Database: (%i) -> %s", e.errno, e.msg)
             everything_is_fine = False
@@ -242,10 +221,10 @@ class Robot:
         """
         val = (now, now, res['status_code'], res['url'],
                res['link_source'], res['description'])
-        cursor = self.cnx.cursor()
+        cursor = self.dbh.cnx.cursor()
         try:
             cursor.execute(SQL, val)
-            self.cnx.commit()
+            self.dbh.cnx.commit()
         except mysql.connector.Error as e:
             self.log.fatal("Database: (%i) -> %s", e.errno, e.msg)
             everything_is_fine = False
