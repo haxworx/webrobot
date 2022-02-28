@@ -35,7 +35,8 @@ def main(url):
 
     scan_count = rows[0]
     if scan_count == 0:
-        ret = os.system("python3 webrobot.py {}" . format(url))
+        os.environ['ROBOT_START'] = "1"
+        ret = os.system("python3 main.py {}" . format(url))
 
     cursor.close()
     dbh.close()

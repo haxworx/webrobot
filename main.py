@@ -38,13 +38,19 @@ class Robot:
     def __init__(self, url):
         self.acquire_lock()
         atexit.register(self.cleanup)
-        self.config = Config()
         self.starting_url = url
         self.url = url
+        self.scheme = self.scheme_parse(url)
         self.name = self.domain_parse(url)
         self.domain = self.domain_parse(url)
         self.hostname = socket.gethostname()
         self.ip_address = socket.gethostbyname(self.hostname)
+
+        if self.name is None or self.scheme is None:
+            print("Invalid URL: {}" . format(url), file=sys.stderr)
+            sys.exit(1)
+
+        self.config = Config()
         self.dbh = database.Connect(self.config.db_user, self.config.db_pass,
                                     self.config.db_host, self.config.db_name)
 
@@ -145,7 +151,15 @@ class Robot:
 
     def domain_parse(self, url):
         domain = urlparse(url).netloc
+        if len(domain) == 0:
+            return None
         return domain
+
+    def scheme_parse(self, url):
+        scheme = urlparse(url).scheme
+        if len(scheme) == 0:
+            return None
+        return scheme
 
     def valid_link(self, link):
         """
@@ -406,6 +420,11 @@ def signal_handler(signum, frame):
 
 
 if __name__ == '__main__':
+    ROBOT_START = os.getenv('ROBOT_START')
+    if ROBOT_START is None:
+        print("This tool should not be launched directly.", file=sys.stderr)
+        sys.exit(1)
+
     if len(sys.argv) != 2:
         print("Usage: {} <url>" . format(sys.argv[0]))
         sys.exit(0)
