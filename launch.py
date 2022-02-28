@@ -1,15 +1,47 @@
 #!/usr/bin/env python3
 
+import sys
+import mysql.connector
+from mysql.connector import errorcode
+from urllib.parse import urlparse
+
 import database
 from config import Config
 
-def main():
+def main(url):
     config = Config()
+
+    parsed_url = urlparse(url)
+    (scheme, domain) = (parsed_url.scheme, parsed_url.netloc)
+    if len(scheme) == 0:
+        sys.exit(3)
 
     dbh = database.Connect(config.db_user, config.db_pass,
                            config.db_host, config.db_name)
 
+    SQL = """
+    SELECT COUNT(*) FROM tbl_crawl_data WHERE domain = %s
+    AND scan_date = DATE(NOW())
+    """
+    cursor = dbh.cnx.cursor()
+    try:
+        cursor.execute(SQL, (domain,))
+        rows = cursor.fetchone()
+    except mysql.connector.Error as e:
+        print("Error: ({}) STATE: ({}) Message: ({})" . format(e.errno, e.sqlstate, e.msg))
+        sys.exit(2)
+
+    scan_count = rows[0]
+    if scan_count == 0:
+        print("Can run")
+    else:
+        print("Cannot run")
+
+    cursor.close()
     dbh.close()
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) != 2:
+        sys.exit(1)
+
+    main(sys.argv[1])
