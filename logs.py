@@ -31,6 +31,8 @@ class DatabaseHandler(StreamHandler):
             cursor.execute(SQL, data)
             self.cnx.commit()
         except mysql.connector.Error as e:
+            print("Logging failed: see 'something_really_bad_happened.txt'",
+                  file=sys.stderr)
             with open("something_really_bad_happened.txt", "w") as f:
                 f.write("Logging failed:\n"
                         "\tError code: {}\n"

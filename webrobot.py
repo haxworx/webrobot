@@ -10,9 +10,11 @@ import logging
 import re
 import hashlib
 import fcntl
+import mysql.connector
 from datetime import datetime
 from urllib import error
 from urllib.parse import urljoin, urlparse
+from mysql.connector import errorcode
 
 import core
 import logs
