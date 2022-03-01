@@ -27,6 +27,7 @@ from download import Download
 
 class Robot:
     LOCK_FILE = 'data/crawl.lock'
+    PIDFILE = 'data/crawl.pid'
     _cnx = None
     _name = None
     _domain = None
@@ -37,6 +38,7 @@ class Robot:
 
     def __init__(self, url):
         self.acquire_lock()
+        self.pidfile_create();
         atexit.register(self.cleanup)
         self.starting_url = url
         self.url = url
@@ -117,6 +119,15 @@ class Robot:
     def starting_url(self, url):
         self._starting_url = url
 
+    def pidfile_create(self):
+        pid = str(os.getpid())
+        with open(self.PIDFILE, 'w') as f:
+            f.write(pid)
+
+    def pidfile_delete(self):
+        if os.path.isfile(self.PIDFILE):
+            os.unlink(self.PIDFILE)
+
     def acquire_lock(self):
         try:
             self.lock = lock = open(self.LOCK_FILE, 'w+')
@@ -147,6 +158,7 @@ class Robot:
     def cleanup(self):
         if self.dbh is not None:
             self.dbh.close()
+        self.pidfile_delete()
         self.release_lock()
 
     def domain_parse(self, url):
