@@ -41,10 +41,10 @@ def main(url):
     cursor.close()
     dbh.close()
 
-    sys.exit(ret)
+    return ret
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         sys.exit(4)
 
-    main(sys.argv[1])
+    sys.exit(main(sys.argv[1]))

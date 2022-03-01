@@ -26,7 +26,7 @@ from robots_text import RobotsText
 from download import Download
 
 class Robot:
-    LOCK_FILE = 'crawl.lock'
+    LOCK_FILE = 'data/crawl.lock'
     _cnx = None
     _name = None
     _domain = None
@@ -427,7 +427,7 @@ if __name__ == '__main__':
 
     if len(sys.argv) != 2:
         print("Usage: {} <url>" . format(sys.argv[0]))
-        sys.exit(0)
+        sys.exit(1)
 
     logging.basicConfig(level=logging.INFO)
     core.init()
