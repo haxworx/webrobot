@@ -1,7 +1,7 @@
 [database]
 
 # MySQL database credentials.
-host = 10.42.0.160
+host = datacentre
 name = crawl
 user = test
 pass = password
