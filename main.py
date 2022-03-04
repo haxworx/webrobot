@@ -323,7 +323,6 @@ class Robot:
                     self.log.fatal("Terminating crawl. Unable to save errors.")
                     break
 
-                page.visited = True
             except error.URLError as e:
                 self.log.error("Unable to connect: %s -> %s",
                                e.reason, self.url)
@@ -354,11 +353,10 @@ class Robot:
                                      self.url,
                                      content_type)
                 else:
-                    # Have we redirected?
                     if self.domain.upper() != \
                             self.domain_parse(response.url).upper():
-                        self.log.warning("Ignoring redirected URL: {}"
-                                         . format(response.url))
+                        self.log.warning("Ignoring redirected URL: %s",
+                                         response.url)
                         continue
 
                     self.url = response.url
@@ -413,7 +411,6 @@ class Robot:
                                         self.log.info("Appending new url: %s",
                                                       url)
 
-                page.visited = True
                 time.sleep(self.config.crawl_interval)
                 response.close()
 

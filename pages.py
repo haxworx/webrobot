@@ -10,6 +10,9 @@ class PageList:
     def __init__(self):
         self._page_list = []
         self._page_index = 0
+        # XXX This uses more memory but we cannot keep order with a dict
+        # when iterating. It's fine.
+        self._seen = dict()
 
     def __len__(self):
         return len(self._page_list)
@@ -26,6 +29,7 @@ class PageList:
             self._page_index += 1
             return page
         self._page_index = 0
+        self._seen = dict()
         raise StopIteration
 
     def again(self):
@@ -37,26 +41,20 @@ class PageList:
         Append a URL to the page list.
         Only appends when url is unseen/new.
         """
-        page_new = Page(url, link_source=link_source, sitemap_url=sitemap_url)
-        exists = False
-        for page in self._page_list:
-            if page_new.url == page.url:
-                exists = True
-                break
-        if exists:
+        if url in self._seen:
             return False
         else:
+            self._seen[url] = 1
+            page_new = Page(url, link_source=link_source, sitemap_url=sitemap_url)
             self._page_list.append(page_new)
             return True
 
 
 class Page:
-    def __init__(self, url, visited=False, link_source=None,
-                 sitemap_url=False):
+    def __init__(self, url, link_source=None, sitemap_url=False):
         self._url = self.asciify_url(url)
         self._link_source = link_source
         self._sitemap_url = sitemap_url
-        self._visited = visited
 
     def asciify_url(self, url):
         if not url.isascii():
@@ -74,14 +72,6 @@ class Page:
                 fragment = urllib.parse.quote(fragment)
             url = urllib.parse.urlunsplit((scheme, netloc, path, query, fragment))
         return url
-
-    @property
-    def visited(self):
-        return self._visited
-
-    @visited.setter
-    def visited(self, visited):
-        self._visited = visited
 
     @property
     def url(self):
