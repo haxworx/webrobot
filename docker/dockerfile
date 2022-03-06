@@ -1,0 +1,3 @@
+from debian
+COPY setup.sh .
+RUN ./setup.sh

@@ -1,10 +1,10 @@
 [database]
 
 # MySQL database credentials.
-host = a
-name = a
-user = a
-pass = a
+host = {}
+name = {}
+user = {}
+pass = {}
 
 [crawling]
 # Delay between download attempts.
