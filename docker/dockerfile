@@ -1,3 +1,4 @@
 from debian
 COPY setup.sh .
+COPY run.sh .
 RUN ./setup.sh
