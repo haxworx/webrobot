@@ -63,9 +63,11 @@ class Robot:
         self.wanted_content = "^({})" . format(self.config.wanted_content)
         self.compile_regexes()
 
-        # Create and set up database log handler.
+        # Create and set up database and MQTT log handler.
         self.log = logging.getLogger(self.name)
         handler = logs.DatabaseHandler(self)
+        self.log.addHandler(handler)
+        handler = logs.MQTTHandler(self)
         self.log.addHandler(handler)
 
         # Restrict crawling based on starting url path (if exists).

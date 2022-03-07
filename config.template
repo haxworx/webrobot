@@ -1,10 +1,16 @@
 [database]
 
 # MySQL database credentials.
-host = {}
-name = {}
-user = {}
-pass = {}
+host = {0}
+name = {1}
+user = {2}
+pass = {3}
+
+[mqtt]
+# MQTT settings.
+host = {0}
+port = 1883
+topic = testing
 
 [crawling]
 # Delay between download attempts.

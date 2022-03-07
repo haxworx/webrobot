@@ -1,10 +1,16 @@
 [database]
 
 # MySQL database credentials.
-host = datacentre
-name = crawl
-user = test
-pass = password
+host = a
+name = b
+user = c
+pass = d
+
+[mqtt]
+# MQTT settings.
+host = a
+port = 1883
+topic = testing
 
 [crawling]
 # Delay between download attempts.

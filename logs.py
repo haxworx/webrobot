@@ -5,7 +5,7 @@ from logging import StreamHandler
 import mysql.connector
 from mysql.connector import errorcode
 from datetime import datetime
-
+import paho.mqtt.publish
 
 class DatabaseHandler(StreamHandler):
     def __init__(self, crawler):
@@ -42,3 +42,21 @@ class DatabaseHandler(StreamHandler):
             sys.exit(2)
 
         cursor.close()
+
+class MQTTHandler(StreamHandler):
+    def __init__(self, crawler):
+        StreamHandler.__init__(self)
+        self.crawler = crawler
+        self.host = crawler.config.mqtt_host
+        self.port = crawler.config.mqtt_port
+        self.topic = crawler.config.mqtt_topic
+
+    def emit(self, record):
+        msg = self.format(record)
+
+        now = datetime.now()
+
+        try:
+            paho.mqtt.publish.single(self.topic, msg, hostname=self.host, port=self.port)
+        except:
+            pass

@@ -29,6 +29,14 @@ class Config:
                 self.db_user = parser['database']['user']
                 self.db_pass = parser['database']['pass']
 
+                keys = ('host', 'port', 'topic')
+                if not all(key in parser['mqtt'] for key in keys):
+                    raise Exception("Missing MQTT config field.")
+
+                self.mqtt_host = parser['mqtt']['host']
+                self.mqtt_topic = parser['mqtt']['topic']
+                self.mqtt_port = int(parser['mqtt']['port'])
+
                 keys = ('interval', 'user-agent', 'wanted-content',
                         'ignore-query', 'retry-max', 'import-sitemaps')
                 if not all(key in parser['crawling'] for key in keys):
