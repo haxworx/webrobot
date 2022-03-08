@@ -1,14 +1,14 @@
 [database]
 
 # MySQL database credentials.
-host = a
-name = b
-user = c
-pass = d
+host = datacentre
+name = crawl
+user = test
+pass = password
 
 [mqtt]
 # MQTT settings.
-host = a
+host = datacentre
 port = 1883
 topic = testing
 

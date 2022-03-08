@@ -187,8 +187,7 @@ class Robot:
             return False
 
         if len(self.path_limit) and not link.startswith(self.path_limit):
-            self.log.warning("Ignoring path outside crawl parameters {} -> {}."
-                             . format(link, self.path_limit))
+            # Ignore path outside path limit (if set from initial URL).
             return False
 
         for rule in self.robots_text.allowed:
@@ -199,8 +198,8 @@ class Robot:
         for rule in self.robots_text.disallowed:
             matches = re.search(rule, link)
             if matches:
-                self.log.warning("robots: Ignoring %s as rule: '%s'",
-                                 link, rule)
+                self.log.warning("/%s/%s/warning/robots/rule/ignore/%s",
+                                 self.hostname, self.domain, link)
                 return False
         return True
 
@@ -230,7 +229,7 @@ class Robot:
             cursor.execute(SQL, val)
             self.dbh.cnx.commit()
         except mysql.connector.Error as e:
-            self.log.fatal("Database: (%i) -> %s", e.errno, e.msg)
+            self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
             everything_is_fine = False
 
         cursor.close()
@@ -256,7 +255,7 @@ class Robot:
             cursor.execute(SQL, val)
             self.dbh.cnx.commit()
         except mysql.connector.Error as e:
-            self.log.fatal("Database: (%i) -> %s", e.errno, e.msg)
+            self.log.critical("/%s/%s/critical/database/save/errors/%i/%s", self.hostname, self.domain, e.errno, e.msg)
             everything_is_fine = False
 
         cursor.close()
@@ -273,13 +272,14 @@ class Robot:
             if core.shutdown_gracefully():
                 break
             if self.page_list.append(url, sitemap_url=True):
-                self.log.info("Appending sitemap index: %s", url)
+                self.log.info("/%s/%s/info/sitemap/index/%s",
+                              self.hostname, self.domain, url)
 
         for url in self.robots_text.sitemap:
             if core.shutdown_gracefully():
                 break
             if self.page_list.append(url, sitemap_url=True):
-                self.log.info("Appending sitemap url: %s", url)
+                self.log.info("/%s/%s/info/sitemap/url/%s", self.hostname, self.domain, url)
 
     def crawl(self):
         """
@@ -288,7 +288,7 @@ class Robot:
         It's important to keep track of so many events.
 
         """
-        self.log.info("Crawling %s", self.url)
+        self.log.info("/%s/%s/info/start", self.hostname, self.domain)
         self.robots_text.parse(self.url)
         self.page_list.append(self.robots_text.url)
 
@@ -308,8 +308,8 @@ class Robot:
                                      parsed_url.query)
 
             if self.config.ignore_query and len(query):
-                self.log.warning("Ignoring URL '%s' with query string",
-                                 self.url)
+#                self.log.warning("Ignoring URL '%s' with query string",
+#                                 self.url)
                 continue
             self.attempted += 1
             try:
@@ -322,26 +322,25 @@ class Robot:
                        'link_source': page.link_source,
                        'description': e.reason}
                 if not self.save_errors(res):
-                    self.log.fatal("Terminating crawl. Unable to save errors.")
+                    self.log.critical("/%s/%s/critical/database/errors/save", self.hostname, self.domain)
                     break
 
             except error.URLError as e:
-                self.log.error("Unable to connect: %s -> %s",
-                               e.reason, self.url)
+                self.log.error("/%s/%s/error/connect/%s/%s",
+                               self.hostname, self.domain, e.reason, self.url)
                 self.retry_count += 1
 
                 if self.retry_count > self.retry_max:
-                    self.log.fatal("Terminating crawl. "
-                                   "Retry limit reached: %i",
-                                   self.config.retry_max)
+                    self.log.critical("/%s/%s/critical/connect/retry_max/%i",
+                                      self.hostname, self.domain, self.config.retry_max)
                     break
                 else:
                     self.page_list.again()
-                    self.log.warning("Retrying: %s", self.url)
+                    self.log.warning("/%s/%s/warning/retry/%s", self.hostname, self.domain, self.url)
                     continue
             except Exception as e:
-                self.log.warning("Skipping due to exception: %s -> %s",
-                                 self.url, e)
+                self.log.warning("/%s/%s/warning/exception/%s/%s",
+                                 self.hostname, self.domain, self.url, e)
                 continue
             else:
                 self.retry_count = 0
@@ -350,15 +349,11 @@ class Robot:
                 modified = Http.date(response.headers['last-modified'])
 
                 matches = self.wanted.search(content_type)
-                if not matches:
-                    self.log.warning("Ignoring %s as %s",
-                                     self.url,
-                                     content_type)
-                else:
+                if matches:
                     if self.domain.upper() != \
                             self.domain_parse(response.url).upper():
-                        self.log.warning("Ignoring redirected URL: %s",
-                                         response.url)
+                        #self.log.warning("Ignoring redirected URL: %s",
+                        #                response.url)
                         continue
 
                     self.url = response.url
@@ -388,13 +383,14 @@ class Robot:
                            'length': length,
                            'data': data}
 
-                    self.log.info("Saving %s", self.url)
+                    self.log.info("/%s/%s/save/%s", self.hostname, self.domain, self.url)
 
                     if not self.save_results(res):
-                        self.log.fatal("Terminating crawl. "
-                                       "Unable to save results.")
+                        self.log.critical("/%s/%s/critical/database/data/save",
+                                          self.hostname, self.domain)
                         break
 
+                    count = 0
                     # Don't scrape links from sitemap listed URLs.
                     if not self.config.include_sitemaps or \
                             (self.config.include_sitemaps and not page.is_sitemap_source()):
@@ -410,19 +406,19 @@ class Robot:
                                 if domain.upper() == self.domain.upper():
                                     if self.page_list.append(url,
                                                              link_source=page.url):
-                                        self.log.info("Appending new url: %s",
-                                                      url)
+                                        count += 1
+                        #                self.log.info("Appending new url: %s",
+                        #                              url)
+                        if count:
+                            self.log.info("/%s/%s/info/found/%i/%s", self.hostname, self.domain, count, self.url)
 
                 time.sleep(self.config.crawl_interval)
                 response.close()
 
         if core.shutdown_gracefully():
-            self.log.critical("Shutting down.")
+            self.log.critical("/%s/%s/critical/interrupted", self.hostname, self.domain)
 
-        self.log.info("Done! Saved %s, attempted %s, total %s",
-                      crawler.save_count,
-                      crawler.attempted,
-                      len(crawler.page_list))
+        self.log.info("/%s/%s/info/saved/%i", self.hostname, self.domain, crawler.save_count)
 
 
 def signal_handler(signum, frame):
@@ -439,8 +435,10 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: {} <url>" . format(sys.argv[0]))
         sys.exit(1)
+    fmt = '/%(asctime)s%(message)s'
+    datefmt = "%Y-%m-%d"
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format=fmt, datefmt=datefmt)
     core.init()
 
     try:
