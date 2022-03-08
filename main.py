@@ -308,8 +308,6 @@ class Robot:
                                      parsed_url.query)
 
             if self.config.ignore_query and len(query):
-#                self.log.warning("Ignoring URL '%s' with query string",
-#                                 self.url)
                 continue
             self.attempted += 1
             try:
@@ -350,10 +348,9 @@ class Robot:
 
                 matches = self.wanted.search(content_type)
                 if matches:
+                    # Ignore redirects outside domain.
                     if self.domain.upper() != \
                             self.domain_parse(response.url).upper():
-                        #self.log.warning("Ignoring redirected URL: %s",
-                        #                response.url)
                         continue
 
                     self.url = response.url
