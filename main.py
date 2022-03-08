@@ -383,7 +383,7 @@ class Robot:
                            'length': length,
                            'data': data}
 
-                    self.log.info("/%s/%s/save/%s", self.hostname, self.domain, self.url)
+                    self.log.info("/%s/%s/info/save/%s", self.hostname, self.domain, self.url)
 
                     if not self.save_results(res):
                         self.log.critical("/%s/%s/critical/database/data/save",
@@ -418,7 +418,7 @@ class Robot:
         if core.shutdown_gracefully():
             self.log.critical("/%s/%s/critical/interrupted", self.hostname, self.domain)
 
-        self.log.info("/%s/%s/info/saved/%i", self.hostname, self.domain, crawler.save_count)
+        self.log.info("/%s/%s/info/finished/saved/%i", self.hostname, self.domain, crawler.save_count)
 
 
 def signal_handler(signum, frame):
