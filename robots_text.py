@@ -42,15 +42,18 @@ class RobotsText:
             downloader = Download(self._url, self._user_agent)
             (response, code) = downloader.get()
         except urllib.error.HTTPError as e:
-            self._crawler.log.warning("RobotsText: Ignoring %s -> %i",
-                                      url,
-                                      e.code)
+            self._crawler.log.warning("/%s/%s/warning/robots/%i/%s",
+                                      self._crawler.hostname,
+                                      self._crawler.domain,
+                                      e.code, self._url)
         except urllib.error.URLError as e:
-            self._crawler.log.warning("RobotsText: Unable to connect -> %s",
+            self._crawler.log.warning("/%s/%s/warning/robots/connect/%s",
+                                      self._crawler.hostname,
+                                      self._crawler.domain,
                                       e.reason)
         except Exception as e:
-            self._crawler.log.warning(
-                "RobotsText: Caught exception (%s)-> %s", self._url, e)
+            self._crawler.log.warning("/%s/%s/warning/robots/exception/%s",
+                self._crawler.hostname, self._crawler.domain, e)
         else:
             data = response.read()
             response.close()
