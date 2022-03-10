@@ -5,7 +5,7 @@ import configparser
 
 
 class Config:
-    CONFIG_FILE = 'config.txt'
+    CONFIG_FILE = 'config.ini';
 
     def __init__(self):
         self.include_sitemaps = False
