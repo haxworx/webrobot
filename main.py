@@ -215,7 +215,7 @@ class Robot:
         INSERT INTO tbl_crawl_data (scan_date, scan_time_stamp,
         scan_time_zone, domain, scheme, link_source, modified,
         status_code, url, path, query, content_type, metadata,
-        checksum, encoding, length, data) VALUES(%s, %s,
+        checksum, encoding, length, data) VALUES (%s, %s,
         'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
         %s, %s, %s, COMPRESS(%s))
         """
@@ -404,8 +404,6 @@ class Robot:
                                     if self.page_list.append(url,
                                                              link_source=page.url):
                                         count += 1
-                        #                self.log.info("Appending new url: %s",
-                        #                              url)
                         if count:
                             self.log.info("/%s/%s/info/found/%i/%s", self.hostname, self.domain, count, self.url)
 
@@ -432,6 +430,7 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: {} <url>" . format(sys.argv[0]))
         sys.exit(1)
+
     fmt = '/%(asctime)s%(message)s'
     datefmt = "%Y-%m-%d"
 
