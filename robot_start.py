@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 import database
 from config import Config
 
-def main(url):
+def main(url, user_agent):
     ret = 1
     config = Config()
 
@@ -36,7 +36,7 @@ def main(url):
     scan_count = rows[0]
     if scan_count == 0:
         os.environ['ROBOT_START'] = "1"
-        ret = os.system("python3 main.py {}" . format(url))
+        ret = os.system("python3 main.py {} '{}'" . format(url, user_agent))
 
     cursor.close()
     dbh.close()
@@ -44,7 +44,7 @@ def main(url):
     return ret
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         sys.exit(4)
 
-    sys.exit(main(sys.argv[1]))
+    sys.exit(main(sys.argv[1], sys.argv[2]))

@@ -36,12 +36,13 @@ class Robot:
     _starting_url = None
     dbh = None
 
-    def __init__(self, url):
+    def __init__(self, url, user_agent):
         self.acquire_lock()
         self.pidfile_create();
         atexit.register(self.cleanup)
         self.starting_url = url
         self.url = url
+        self.user_agent = user_agent;
         self.scheme = self.scheme_parse(url)
         self.name = self.domain_parse(url)
         self.domain = self.domain_parse(url)
@@ -311,7 +312,7 @@ class Robot:
                 continue
             self.attempted += 1
             try:
-                downloader = Download(self.url, self.config.user_agent)
+                downloader = Download(self.url, self.user_agent)
                 (response, code) = downloader.get()
             except error.HTTPError as e:
                 self.log.info("Recording %s -> %i", self.url, e.code)
@@ -427,8 +428,8 @@ if __name__ == '__main__':
         print("This tool should not be launched directly.", file=sys.stderr)
         sys.exit(1)
 
-    if len(sys.argv) != 2:
-        print("Usage: {} <url>" . format(sys.argv[0]))
+    if len(sys.argv) != 3:
+        print("Usage: {} <url> <user-agent>" . format(sys.argv[0]))
         sys.exit(1)
 
     fmt = '/%(asctime)s%(message)s'
@@ -443,5 +444,5 @@ if __name__ == '__main__':
         print("signal: {}" . format(e), file=sys.stderr)
         sys.exit(1)
 
-    crawler = Robot(sys.argv[1])
+    crawler = Robot(sys.argv[1], sys.argv[2])
     crawler.crawl()
