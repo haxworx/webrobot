@@ -1,32 +1,34 @@
-[database]
+[main]
+max_crawlers = 5
+debug = true
 
-# MySQL database credentials.
+[database]
+; MySQL database credentials.
 host = {0}
 name = {1}
 user = {2}
 pass = {3}
 
 [mqtt]
-# MQTT settings.
+; MQTT settings.
 host = {0}
 port = 1883
 topic = testing
 
 [crawling]
-# Delay between download attempts.
+; Delay between download attempts.
 interval = 0.5
 
-# User-Agent string to advertise.
-user-agent = pythonbond/0.1
-
-# Pipe delimited content type to slurp.
+; Pipe delimited content type to slurp.
 wanted-content = text/plain|text/html|text/css|application/xml|text/xml
 
-# Ignore URLs with QUERY string.
+; Ignore URLs with QUERY string.
 ignore-query = true
 
-# Maximum number of retries on connection error before terminating.
+; Maximum number of retries on connection error before terminating.
 retry-max = 5
 
-# Import sitemap(s)
+; Import sitemap(s)
 import-sitemaps = True
+
+
