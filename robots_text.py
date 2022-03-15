@@ -21,7 +21,7 @@ class RobotsText:
 
     def __init__(self, crawler):
         self._crawler = crawler
-        self._user_agent = crawler.config.user_agent
+        self._user_agent = crawler.user_agent
         self._agents = dict()
         self._allowed = []
         self._disallowed = []

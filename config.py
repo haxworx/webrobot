@@ -37,13 +37,12 @@ class Config:
                 self.mqtt_topic = parser['mqtt']['topic']
                 self.mqtt_port = int(parser['mqtt']['port'])
 
-                keys = ('interval', 'user-agent', 'wanted-content',
-                        'ignore-query', 'retry-max', 'import-sitemaps')
+                keys = ('interval', 'wanted-content', 'ignore-query',
+                        'retry-max', 'import-sitemaps')
                 if not all(key in parser['crawling'] for key in keys):
                     raise Exception("Missing crawling config field.")
 
                 self.crawl_interval = float(parser['crawling']['interval'])
-                self.user_agent = parser['crawling']['user-agent']
                 self.wanted_content = parser['crawling']['wanted-content']
                 if parser['crawling']['ignore-query'].upper() == 'TRUE':
                     self.ignore_query = True

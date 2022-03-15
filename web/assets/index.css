@@ -45,6 +45,8 @@ tr:nth-child(even) {
 }
 
 .create_input, .create_label, .create_submit {
+  font-family: "IBM Plex Sans", Sans, sans-serif;
+  font-size: 8pt;
   display: block;
   width: 100%;
   margin-top: 10px;
