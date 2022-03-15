@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $# != 3 ]]; then
+if [ $# != 3 ]; then
 	echo "Usage: $0 <host> <user-agent>"
 	exit 1
 fi
