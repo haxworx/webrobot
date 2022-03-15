@@ -1,5 +1,4 @@
 
-
 def init():
     global terminate_program
 

@@ -1,0 +1,20 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+
+<table class="crawlers"><thead class="crawlers"><tr><th>domain</th><th>launch</th><th>frequency</th><th>user-agent<th>actions</th></tr></thead>
+{% for robot in robots %}
+<tr><td>{{robot.domain}}</td><td>{{robot.start_time}}</td>
+{% if robot.weekday == null %}
+<td>daily</td>
+{% else %}
+<td>{{ robot.weekday }}</td>
+{% endif %}
+<td>{{ robot.agent }}</td>
+<td><a href="/delete/?extid={{robot.extid}}">delete?</a></td>
+</tr>
+{% endfor %}
+</table>
+
+
+{% endblock %}
