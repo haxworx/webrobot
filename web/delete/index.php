@@ -15,6 +15,7 @@ if (!isset($_GET['domain']) || empty($_GET['domain'])) {
 	header("Location: /");
 	return;
 }
+
 $extid = $_GET['extid'];
 if (!preg_match('/^[A-Za-z0-9]{32}$/', $extid)) {
 	header("Location: / ");

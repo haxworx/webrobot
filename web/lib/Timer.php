@@ -40,7 +40,9 @@ class Timer
 				print "Unable to create directory $dir\n";
 			}
 		}
+
 		$executable = project_root_directory() . '/robot_start.py';
+
 		$data =
 		"[Unit]\n".
 		"Description=Web Robot depoloyment service\n" .
@@ -52,6 +54,7 @@ class Timer
 		"\n" .
 		"[Install]\n" .
 		"WantedBy=multi-user.target\n";
+
 		$path = "$dir/$this->identifier.service";
 		$f = fopen($path, 'w');
 		if ($f !== false) {
