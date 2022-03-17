@@ -43,7 +43,7 @@ function valid_time($time)
 
 $allowed = [ 'address', 'agent', 'time', 'frequency'];
 $frequency_allowed = [ 'daily', 'weekly' ];
-$weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ];
+$weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ];
 $daily = 0;
 $weekly = 0;
 
@@ -156,12 +156,12 @@ try {
 }
 
 $args = [
-	'domain' => $domain,
+	'domain'  => $domain,
 	'address' => $address,
-	'agent' => $agent,
-	'daily' => $daily,
+	'agent'   => $agent,
+	'daily'   => $daily,
 	'weekday' => $weekday,
-	'time' => $start_time,
+	'time'    => $start_time,
 ];
 
 $timer = new Timer($args);

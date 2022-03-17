@@ -31,6 +31,7 @@ class Timer
 		$day = ucfirst($day);
 		return $day;
 	}
+
 	public function Create()
 	{
 		$home = getenv('HOME');
