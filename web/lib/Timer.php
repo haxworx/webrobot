@@ -37,7 +37,7 @@ class Timer
 		$dir = $home . '/.config/systemd/user';
 		if (!file_exists($dir)) {
 			if (!mkdir($dir, 0755, true)) {
-				print "Unable to create directory $dir\n";
+				error_log(__FILE__ . ':' . __LINE__ . ':' . "Unable to create directory: $dir\n";
 			}
 		}
 
@@ -45,7 +45,7 @@ class Timer
 
 		$data =
 		"[Unit]\n".
-		"Description=Web Robot depoloyment service\n" .
+		"Description=Web Robot deployment service\n" .
 		"Wants=$this->identifier.timer\n" .
 		"\n" .
 		"[Service]\n" .
