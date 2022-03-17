@@ -7,6 +7,16 @@ set_include_path($path);
 
 function project_root_directory()
 {
+	static $path = NULL;
+
+	if ($path === null) {
+		$path = realpath(__DIR__ . '/../..');
+	}
+	return $path;
+}
+
+function project_web_root_directory()
+{
 	static $path = null;
 
 	if ($path === null) {
