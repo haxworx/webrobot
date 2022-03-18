@@ -42,7 +42,7 @@ try:
         while not ok:
             print(question['text'], end= '');
             answer = input();
-            matches = re.search('^[A-Za-z0-9_]+$', answer)
+            matches = re.search('^[A-Za-z0-9\._]+$', answer)
             if not matches:
                 error_count += 1
                 if error_count >= MAX_ERRORS:
