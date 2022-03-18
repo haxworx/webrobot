@@ -165,12 +165,8 @@ $args = [
 	'agent'   => $agent,
 	'daily'   => $daily,
 	'weekday' => $weekday,
-<<<<<<< HEAD
 	'time'    => $start_time,
-=======
-	'time' => $start_time,
 	'docker_image' => $docker_image,
->>>>>>> 59df31d (install: installer scripts to bootstrap.)
 ];
 
 $timer = new Timer($args);
