@@ -1,14 +1,14 @@
 body {
   font-family: "IBM Plex Sans", Sans, sans-serif;
   font-size: 10pt;
-  background-color: Beige;
+  background-color: #dbe4b7;
 }
 
 ul.menu {
    list-style-type: none;
    margin: 0;
    padding: 0;
-   background-color: OliveDrab;
+   background-color: #7ea02b;
    overflow: hidden;
 }
 
@@ -19,10 +19,9 @@ li.menu {
 
 li.menu, a.menu {
   display: block;
-  color: white;
+  color: black;
   text-align: center;
   text-decoration: none;
-  font-weight: bold;
 }
 
 #content {
@@ -37,7 +36,7 @@ table.crawlers {
 }
 
 a {
-  color: HotPink;
+  color: #89ac26;
 }
 
 th, td {
@@ -48,27 +47,28 @@ th, td {
 .create_input, .create_label, .create_submit {
   font-family: "IBM Plex Sans", Sans, sans-serif;
   font-size: 10pt;
+  font-weight: bold;
   display: block;
   width: 100%;
   margin-top: 10px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  border: none;
 }
 
 .create_submit {
   font-family: "IBM Plex Sans", Sans, sans-serif;
-  background-color: HotPink;
+  background-color: #89ac26;
   color: white;
   font-weight: bold;
   border: none;
-  margin-top: 20px;
-  padding-top: 7px;
-  padding-bottom: 7px;
   width: 120px;
 }
 
 .create_submit:hover {
   color: white;
   cursor: pointer;
-  background-color: GreenYellow;
+  background-color: #9abd37;;
 }
 
 .create_radio {
