@@ -1,13 +1,14 @@
 body {
   font-family: "IBM Plex Sans", Sans, sans-serif;
-  font-size: 8pt;
+  font-size: 10pt;
+  background-color: Beige;
 }
 
 ul.menu {
    list-style-type: none;
    margin: 0;
    padding: 0;
-   background-color: #007fd9;
+   background-color: OliveDrab;
    overflow: hidden;
 }
 
@@ -21,9 +22,10 @@ li.menu, a.menu {
   color: white;
   text-align: center;
   text-decoration: none;
+  font-weight: bold;
 }
 
-.content {
+#content {
   width: 90%;
   padding-top: 10px;
   padding-left: 10px;
@@ -34,19 +36,18 @@ table.crawlers {
   padding-right: 10px;
 }
 
-th {
-  padding-right: 80px;
+a {
+  color: HotPink;
 }
 
-tr:nth-child(odd) {
-}
-
-tr:nth-child(even) {
+th, td {
+  padding-right: 40px;
+  border-bottom: 1px solid #cdcdcd;
 }
 
 .create_input, .create_label, .create_submit {
   font-family: "IBM Plex Sans", Sans, sans-serif;
-  font-size: 8pt;
+  font-size: 10pt;
   display: block;
   width: 100%;
   margin-top: 10px;
@@ -54,19 +55,20 @@ tr:nth-child(even) {
 
 .create_submit {
   font-family: "IBM Plex Sans", Sans, sans-serif;
-  font-size: 8pt;
-  background-color: #ebebeb;
-  color: black;
-  border: 1px solid black;
+  background-color: HotPink;
+  color: white;
+  font-weight: bold;
+  border: none;
   margin-top: 20px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding-top: 7px;
+  padding-bottom: 7px;
   width: 120px;
 }
 
 .create_submit:hover {
   color: white;
   cursor: pointer;
+  background-color: GreenYellow;
 }
 
 .create_radio {
