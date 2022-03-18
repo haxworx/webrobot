@@ -1,4 +1,5 @@
 [main]
+docker_image = spiderz
 max_crawlers = 5
 debug = true
 

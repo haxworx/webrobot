@@ -14,6 +14,7 @@ class Timer
 	public $daily;
 	public $weekday;
 	public $time;
+	public $docker_image;
 
 	public function __construct($args)
 	{
@@ -23,6 +24,7 @@ class Timer
 		$this->daily = $args['daily'];
 		$this->weekday = $args['weekday'];
 		$this->time = $args['time'];
+		$this->docker_image = $args['docker_image'];
 	}
 
 	private function DayString()
@@ -38,7 +40,7 @@ class Timer
 		$dir = $home . '/.config/systemd/user';
 		if (!file_exists($dir)) {
 			if (!mkdir($dir, 0755, true)) {
-				error_log(__FILE__ . ':' . __LINE__ . ':' . "Unable to create directory: $dir\n";
+				error_log(__FILE__ . ':' . __LINE__ . ':' . "Unable to create directory: $dir\n");
 			}
 		}
 
@@ -51,7 +53,7 @@ class Timer
 		"\n" .
 		"[Service]\n" .
 		"Type=oneshot\n" .
-		"ExecStart=python3 $executable\n" .
+		"ExecStart=docker run $this->docker_image $this->address $this->agent\n" .
 		"\n" .
 		"[Install]\n" .
 		"WantedBy=multi-user.target\n";

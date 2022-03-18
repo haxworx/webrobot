@@ -12,5 +12,5 @@ mkdir -p /opt/crawler
 cd /opt/crawler
 git clone https://github.com/haxworx/webrobot --depth 1
 cd /opt/crawler/webrobot
-python3 make_config.py datacentre crawl test password
+python3 make_config.py {0} {1} {2} {3}
 

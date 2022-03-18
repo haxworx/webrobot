@@ -1,18 +1,18 @@
 [main]
-docker_image = spiderz
+docker_image = {docker_image}
 max_crawlers = 5
 debug = true
 
 [database]
 ; MySQL database credentials.
-host = datacentre
-name = crawl
-user = test
-pass = password
+host = {0}
+name = {1}
+user = {2}
+pass = {3}
 
 [mqtt]
 ; MQTT settings.
-host = datacentre
+host = {0}
 port = 1883
 topic = testing
 
