@@ -11,6 +11,11 @@ if (!isset($_GET['extid']) || empty($_GET['extid'])) {
 	return;
 }
 
+if (!isset($_GET['scheme']) || empty($_GET['scheme'])) {
+	header("Location: /");
+	return;
+}
+
 if (!isset($_GET['domain']) || empty($_GET['domain'])) {
 	header("Location: /");
 	return;
@@ -24,6 +29,7 @@ if (!preg_match('/^[A-Za-z0-9]{32}$/', $extid)) {
 
 # XXX Check this.
 $domain = $_GET['domain'];
+$scheme = $_GET['scheme'];
 
 try {
 	$db = new DB();
@@ -34,7 +40,7 @@ try {
 	error_log(__FILE__ . ':' . __LINE__ . ':' . $e->getMessage());
 }
 
-Timer::Remove($domain);
+Timer::Remove($scheme, $domain);
 
 header("Location: /");
 ?>

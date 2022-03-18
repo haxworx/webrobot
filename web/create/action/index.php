@@ -18,7 +18,7 @@ require_once 'lib/Config.php';
 
 function valid_address($address)
 {
-	if (preg_match('/^(http|https):\/\/((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$/', strtolower($address))) {
+	if (preg_match('/^(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/', strtolower($address))) {
 		return true;
 	}
 	return false;
@@ -116,6 +116,7 @@ if ($frequency === "daily") {
 }
 
 $domain = parse_url($address, PHP_URL_HOST);
+$scheme = parse_url($address, PHP_URL_SCHEME);
 
 try {
 	$config = new Config();
@@ -145,11 +146,11 @@ try {
 	$extid = md5($address . $domain . $start_time . $agent . $weekly . $daily . $weekday);
 	$SQL = "
 	INSERT IGNORE INTO tbl_crawl_launch
-	(extid, address, domain, start_time, agent, weekly, daily, weekday)
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+	(extid, scheme, address, domain, start_time, agent, weekly, daily, weekday)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ";
 	$stmt = $db->pdo->prepare($SQL);
-	$stmt->execute([$extid, $address, $domain, $start_time, $agent, $weekly, $daily, $weekday]);
+	$stmt->execute([$extid, $scheme, $address, $domain, $start_time, $agent, $weekly, $daily, $weekday]);
 } catch (Exception $e) {
 	error_log(__FILE__ . ':' .  __LINE__ . ':' . $e->getMessage());
 	http_response_code(500);
@@ -162,6 +163,7 @@ $docker_image = $config->settings['main']['docker_image'];
 $args = [
 	'domain'  => $domain,
 	'address' => $address,
+	'scheme'  => $scheme,
 	'agent'   => $agent,
 	'daily'   => $daily,
 	'weekday' => $weekday,

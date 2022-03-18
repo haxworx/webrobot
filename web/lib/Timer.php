@@ -2,14 +2,11 @@
 
 require_once 'common.php';
 
-# XXX: This needs more error checking.
-# Create a SystemD timer unit/service.
-# Create() and Remove().
-
 class Timer
 {
 	public $identifier;
 	public $address;
+	public $scheme;
 	public $agent;
 	public $daily;
 	public $weekday;
@@ -18,7 +15,8 @@ class Timer
 
 	public function __construct($args)
 	{
-		$this->identifier = $args['domain'];
+		$this->scheme = $args['scheme'];
+		$this->identifier = $args['domain'] . '.' . $this->scheme;
 		$this->address = $args['address'];
 		$this->agent = $args['agent'];
 		$this->daily = $args['daily'];
@@ -64,7 +62,7 @@ class Timer
 			fprintf($f, $data);
 			fclose($f);
 		}
-	
+
 		if ($this->daily) {
 			$onCalendar = "OnCalendar=*-*-* $this->time:00\n";
 		} else {
@@ -93,9 +91,9 @@ class Timer
 		}
 	}
 
-	public static function Remove($domain)
+	public static function Remove($scheme, $domain)
 	{
-        	$files = [ $domain . ".service", $domain . ".timer" ];
+		$files = [ "$domain.$scheme.service", "$domain.$scheme.timer" ];
 		$home = getenv('HOME');
 
 		system("systemctl --user stop $domain.timer");

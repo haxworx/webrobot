@@ -7,11 +7,12 @@ $robots = [];
 
 try {
 	$db = new DB;
-	$SQL = "SELECT extid, address, domain, start_time, agent, weekday FROM tbl_crawl_launch";
+	$SQL = "SELECT extid, scheme, address, domain, start_time, agent, weekday FROM tbl_crawl_launch";
 	$stmt = $db->pdo->prepare($SQL);
 	$stmt->execute();
 	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 		$robots[] = [ 'extid' => $row['extid'],
+			      'scheme' => $row['scheme'],
 			      'address' => $row['address'],
 			      'domain' => $row['domain'],
 			      'start_time' => $row['start_time'],

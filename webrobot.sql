@@ -58,6 +58,7 @@ DROP TABLE IF EXISTS `tbl_crawl_launch`;
 CREATE TABLE `tbl_crawl_launch` (
   `id` int NOT NULL AUTO_INCREMENT,
   `extid` varchar(32) DEFAULT NULL,
+  `scheme` varchar(32) DEFAULT NULL,
   `address` varchar(260) DEFAULT NULL,
   `domain` varchar(253) DEFAULT NULL,
   `agent` varchar(255) DEFAULT NULL,
