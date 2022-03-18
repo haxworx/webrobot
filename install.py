@@ -10,9 +10,6 @@ import os
 #
 # Create settings and docker image for slurping.
 
-class Error(Exception):
-    pass
-
 class CatOnKeyboardError(Exception):
     def __init__(self, message="Exception: Cat on keyboard!!!"):
         self.message = message
@@ -22,14 +19,14 @@ class CatOnKeyboardError(Exception):
 
 MAX_ERRORS = 3
 
-keys = ('db_host', 'db_name', 'db_user', 'db_pass', 'img')
+keys = ('db_host', 'db_name', 'db_user', 'db_pass', 'docker_image')
 
 questions = [
-    { 'text': 'Please enter database host: ', 'key': 'db_host', 'answer': None },
-    { 'text': 'Please enter database name: ', 'key': 'db_name', 'answer': None },
-    { 'text': 'Please enter database user: ', 'key': 'db_user', 'answer': None },
-    { 'text': 'Please enter database pass: ', 'key': 'db_pass', 'answer': None },
-    { 'text': 'Enter docker image name: ',    'key': 'img', 'answer': None},
+    {'text': 'Please enter database host: ', 'key': 'db_host', 'answer': None},
+    {'text': 'Please enter database name: ', 'key': 'db_name', 'answer': None},
+    {'text': 'Please enter database user: ', 'key': 'db_user', 'answer': None},
+    {'text': 'Please enter database pass: ', 'key': 'db_pass', 'answer': None},
+    {'text': 'Enter docker image name: ', 'key': 'docker_image', 'answer': None},
 ]
 
 error_count = 0
@@ -64,13 +61,24 @@ for key, value in answers.items():
 
 with open('docker/setup.sh.template', 'r') as f:
     text = f.read()
-    text = text . format(answers['db_host'], answers['db_name'], answers['db_user'], answers['db_pass'], answers['img'])
+    text = text . format(answers['db_host'],
+                         answers['db_name'],
+                         answers['db_user'],
+                         answers['db_pass'],
+                         answers['docker_image'])
     with open('docker/setup.sh', 'w') as of:
         of.write(text)
 with open('config.template.base', 'r') as f:
         text = f.read()
-        text = text . format("{0}", "{1}", "{2}", "{3}", docker_image=answers['img'])
+        text = text . format("{0}", "{1}", "{2}", "{3}",
+                             docker_image=answers['docker_image'])
         with open('config.template', 'w') as of:
             of.write(text)
-os.system("python3 make_config.py {} {} {} {}" . format(answers['db_host'], answers['db_name'], answers['db_user'], answers['db_pass']))
-sys.exit(os.system("docker build --no-cache docker/ -t {}" . format(answers['img'])))
+
+os.system("python3 make_config.py {} {} {} {}" .
+          format(answers['db_host'],
+                 answers['db_name'],
+                 answers['db_user'],
+                 answers['db_pass']))
+
+sys.exit(os.system("docker build --no-cache docker/ -t {}" . format(answers['docker_image'])))
