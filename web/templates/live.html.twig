@@ -7,15 +7,17 @@ const xmlhttp = new XMLHttpRequest();
 xmlhttp.open("GET", "/live/stream.php");
 xmlhttp.onreadystatechange = function() {
 	textarea = document.getElementById('log');
-    	textarea.innerHTML += xmlhttp.responseText;
-	textarea.scrollTop = textarea.scrollHeight;
+	if (xmlhttp.readyState === 3) {
+		textarea.innerHTML += xmlhttp.responseText;
+		textarea.scrollTop = textarea.scrollHeight;
+	}
 	
 }
 xmlhttp.send();
 </script>
-
-<textarea id="log">
-
-</textarea>
+<div id="log-div">
+  <textarea id="log" readonly>
+  </textarea>
+</div>
 
 {% endblock %}
