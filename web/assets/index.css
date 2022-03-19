@@ -68,6 +68,11 @@ th, td {
    text-align: left;
 }
 
+#create_error {
+  color: #FF4500;
+  display: none;
+}
+
 .create_input, .confirm_cancel, .create_label, .create_submit {
   font-family: "Fjalla One", Sans, sans-serif;
   font-size: 12t;
@@ -86,7 +91,7 @@ th, td {
 
 .confirm_cancel {
   display: inline-block;
-  background-color: #FF7F50;
+  background-color: #FF4500;
   font-family: "Fjalla One", Sans, sans-serif;
   color: white;
   font-weight: bold;
@@ -102,10 +107,15 @@ th, td {
   width: 120px;
 }
 
-.create_submit:hover, .confirm_cancel:hover {
+.create_submit:hover {
   color: white;
   cursor: pointer;
   background-color: #9abd37;;
+}
+
+.confirm_cancel:hover {
+  background-color: #FF7F50;
+  cursor: pointer;
 }
 
 .create_radio {

@@ -11,7 +11,7 @@
   <input type="time" id="time" name="time" class="create_input">
 
   <label for="daily" class="create_label">Daily</label>
-  <input type="radio" id="daily" name="frequency" class="create_radio" value="daily">
+  <input type="radio" id="daily" name="frequency" class="create_radio" value="daily" checked>
 
   <label for="weekly" class="create_label">Weekly</label>
   <input type="radio" id="weekly" name="frequency" class="create_radio" value="weekly">
@@ -32,6 +32,7 @@
     <input type="radio" id="sunday" name="weekly" value="sunday">
     <label for="sunday" class="create_radio">Sunday</label>
   </div>
+  <p id="create_error"></p>
   <input type="submit" class="create_submit" value="Create">
 </form>
 
