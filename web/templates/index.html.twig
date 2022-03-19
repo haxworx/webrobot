@@ -11,7 +11,7 @@
 <td>{{ robot.weekday }}</td>
 {% endif %}
 <td>{{ robot.agent }}</td>
-<td><a href="/delete/?extid={{robot.extid}}&domain={{robot.domain}}&scheme={{robot.scheme}}">delete?</a></td>
+<td><a href="/confirm/?action=delete&extid={{robot.extid}}&domain={{robot.domain}}&scheme={{robot.scheme}}">delete?</a></td>
 </tr>
 {% endfor %}
 </table>
