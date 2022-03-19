@@ -2,19 +2,28 @@
 
 {% block content %}
 
-<table class="crawlers"><thead class="crawlers"><tr><th>address</th><th>launch</th><th>frequency</th><th>user-agent<th>actions</th></tr></thead>
+<table class="crawlers">
+  <thead class="crawlers">
+    <tr>
+      <th>address</th>
+      <th>launch</th>
+      <th>frequency</th>
+      <th>user-agent<th>actions</th>
+    </tr>
+  </thead>
 {% for robot in robots %}
-<tr><td>{{robot.address}}</td><td>{{robot.start_time}}</td>
+  <tr>
+    <td>{{robot.address}}</td>
+    <td>{{robot.start_time}}</td>
 {% if robot.weekday == null %}
-<td>daily</td>
+    <td>daily</td>
 {% else %}
-<td>{{ robot.weekday }}</td>
+    <td>{{ robot.weekday }}</td>
 {% endif %}
-<td>{{ robot.agent }}</td>
-<td><a href="/confirm/?action=delete&extid={{robot.extid}}&domain={{robot.domain}}&scheme={{robot.scheme}}">delete?</a></td>
-</tr>
+    <td>{{ robot.agent }}</td>
+    <td><a href="/confirm/?action=delete&extid={{robot.extid}}&domain={{robot.domain}}&scheme={{robot.scheme}}">delete?</a></td>
+  </tr>
 {% endfor %}
 </table>
-
 
 {% endblock %}

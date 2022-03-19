@@ -35,7 +35,7 @@ li.menu, a.menu {
 
 #content {
   width: 90%;
-  padding-top: 10px;
+  padding-top: 40px;
   padding-left: 10px;
 }
 
@@ -50,7 +50,7 @@ a {
 
 th, td {
   padding-right: 40px;
-  border-bottom: 1px solid #cdcdcd;
+  border-bottom: 1px solid #7ea02b;
 }
 
 #confirm { 
