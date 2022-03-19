@@ -1,5 +1,9 @@
 {% extends "base.html.twig" %}
 
+{% block head %}
+  <script type="text/javascript" src="/assets/create.js"></script>
+{% endblock %}
+
 {% block content %}
 
 <form onsubmit="return create_validate(this);" action="/create/action/" name="create_form" method="post">
