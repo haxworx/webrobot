@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<form action="/create/action/" name="create_form" method="post">
+<form onsubmit="return create_validate(this);" action="/create/action/" name="create_form" method="post">
   <label for="address" class="create_label">Address</label>
   <input type="text" id="address" name="address" class="create_input">
   <label for="agent" class="create_label">User Agent (name/version) e.g. (bot/1.0)</label>
@@ -11,37 +11,27 @@
   <input type="time" id="time" name="time" class="create_input">
 
   <label for="daily" class="create_label">Daily</label>
-  <input type="radio" id="daily" name="frequency" class="create_radio" value="daily" onclick="window.location=window.location.pathname"
-  {% if weekly == false %}
-  checked 
-  {% endif %}
-  >
-  
-  <label for="weekly" class="create_label">Weekly</label>
-  <input type="radio" id="weekly" name="frequency" class="create_radio" value="weekly" onclick="window.location=window.location.pathname + '?weekly=true'"
-  {% if weekly == true %}
-  checked
-  {% endif %}
-  >
+  <input type="radio" id="daily" name="frequency" class="create_radio" value="daily">
 
-  {% if weekly == true %}
-  <div class="weekly_block">
-  <input type="radio" id="monday" name="weekly" value="monday"> 
-  <label for="monday" class="create_radio">Monday</label>
-  <input type="radio" id="tuesday" name="weekly" value="tuesday"> 
-  <label for="tuesday" class="create_radio">Tuesday</label>
-  <input type="radio" id="wednesday" name="weekly" value="wednesday"> 
-  <label for="wednesday" class="create_radio">Wednesday</label>
-  <input type="radio" id="thursday" name="weekly" value="thursday"> 
-  <label for="thursaday" class="create_radio">Thursday</label>
-  <input type="radio" id="friday" name="weekly" value="friday"> 
-  <label for="friday" class="create_radio">Friday</label>
-  <input type="radio" id="saturday" name="weekly" value="saturday"> 
-  <label for="saturday" class="create_radio">Saturday</label>
-  <input type="radio" id="sunday" name="weekly" value="sunday"> 
-  <label for="sunday" class="create_radio">Sunday</label>
+  <label for="weekly" class="create_label">Weekly</label>
+  <input type="radio" id="weekly" name="frequency" class="create_radio" value="weekly">
+
+  <div id="weekly_block" class="weekly_block">
+    <input type="radio" id="monday" name="weekly" value="monday">
+    <label for="monday" class="create_radio">Monday</label>
+    <input type="radio" id="tuesday" name="weekly" value="tuesday">
+    <label for="tuesday" class="create_radio">Tuesday</label>
+    <input type="radio" id="wednesday" name="weekly" value="wednesday">
+    <label for="wednesday" class="create_radio">Wednesday</label>
+    <input type="radio" id="thursday" name="weekly" value="thursday">
+    <label for="thursday" class="create_radio">Thursday</label>
+    <input type="radio" id="friday" name="weekly" value="friday">
+    <label for="friday" class="create_radio">Friday</label>
+    <input type="radio" id="saturday" name="weekly" value="saturday">
+    <label for="saturday" class="create_radio">Saturday</label>
+    <input type="radio" id="sunday" name="weekly" value="sunday">
+    <label for="sunday" class="create_radio">Sunday</label>
   </div>
-  {% endif %}
   <input type="submit" class="create_submit" value="Create">
 </form>
 
