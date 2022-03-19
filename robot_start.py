@@ -23,12 +23,12 @@ def main(url, user_agent):
                            config.db_host, config.db_name)
 
     SQL = """
-    SELECT COUNT(*) FROM tbl_crawl_data WHERE domain = %s
-    AND scan_date = DATE(NOW())
+    SELECT COUNT(*) FROM tbl_crawl_data WHERE scheme = %s
+    AND domain = %s AND scan_date = DATE(NOW())
     """
     cursor = dbh.cnx.cursor()
     try:
-        cursor.execute(SQL, (domain,))
+        cursor.execute(SQL, (scheme, domain))
         rows = cursor.fetchone()
     except mysql.connector.Error as e:
         print("Error: ({}) STATE: ({}) Message: ({})" . format(e.errno, e.sqlstate, e.msg), file=sys.stderr)
