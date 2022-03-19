@@ -1,0 +1,21 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+
+<script>
+const xmlhttp = new XMLHttpRequest();
+xmlhttp.open("GET", "/live/stream.php");
+xmlhttp.onreadystatechange = function() {
+	textarea = document.getElementById('log');
+    	textarea.innerHTML += xmlhttp.responseText;
+	textarea.scrollTop = textarea.scrollHeight;
+	
+}
+xmlhttp.send();
+</script>
+
+<textarea id="log">
+
+</textarea>
+
+{% endblock %}

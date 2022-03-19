@@ -87,7 +87,6 @@ class Timer
 			fprintf($f, $data);
 			fclose($f);
 			system("systemctl --user enable $this->identifier.timer");
-			system("systemctl --user start $this->identifier.timer");
 		}
 	}
 

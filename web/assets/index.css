@@ -53,6 +53,11 @@ th, td {
   border-bottom: 1px solid #7ea02b;
 }
 
+textarea {
+   width: 100%;
+   height: 480px;
+}
+
 #confirm { 
    text-align: left;
 }

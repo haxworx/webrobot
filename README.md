@@ -13,5 +13,6 @@ Python3 and the following modules:
 
 cd web
 composer require twig/twig
+composer require php-mqtt/client
 
 See scripts/web.sh for PHP built-in web server.
