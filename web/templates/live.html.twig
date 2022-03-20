@@ -8,7 +8,7 @@ xmlhttp.open("GET", "/live/stream.php");
 xmlhttp.onreadystatechange = function() {
 	textarea = document.getElementById('log');
 	if (xmlhttp.readyState === 3) {
-		textarea.value += xmlhttp.responseText;
+		textarea.value = xmlhttp.responseText;
 		textarea.scrollTop = textarea.scrollHeight;
 		if (textarea.value.length > 16384) {
 			textarea.value = textarea.value.slice(textarea.value.length - 16384, textarea.value.length);
