@@ -12,6 +12,7 @@ Python3 and the following modules:
 ```
 python3 -m pip install mysql-connector-python
 python3 -m pip install paho-mqtt
+python3 -m pip install boto3
 ```
 
 ## Web Interface
