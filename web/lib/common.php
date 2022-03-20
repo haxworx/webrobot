@@ -1,9 +1,9 @@
 <?php
 
-require_once 'Config.php';
-
 $path = get_include_path() . PATH_SEPARATOR . realpath(__DIR__ . '/..');
 set_include_path($path);
+
+require_once 'Config.php';
 
 function project_root_directory()
 {
