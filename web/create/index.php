@@ -6,7 +6,7 @@ require_once 'lib/Twig.php';
 $weekly = false;
 
 if (isset($_GET['weekly'])) {
-	$weekly = true;
+    $weekly = true;
 }
 
 $template = $twig->load('create.html.twig');

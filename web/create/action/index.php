@@ -18,28 +18,26 @@ require_once 'lib/Config.php';
 
 function valid_address($address)
 {
-	if (preg_match('/^(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/', strtolower($address))) {
-		return true;
-	}
-	return false;
+    if (preg_match('/^(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/', strtolower($address))) {
+        return true;
+    }
+    return false;
 }
 
 function valid_agent($agent)
 {
-	if (preg_match('/^[A-Za-z0-9\._\/]+\/\d+\.\d+$/', $agent)) {
-		return true;
-	}
-
-	return false;
+    if (preg_match('/^[A-Za-z0-9\._\/]+\/\d+\.\d+$/', $agent)) {
+        return true;
+    }
+    return false;
 }
 
 function valid_time($time)
 {
-	if (preg_match('/^\d{2}:\d{2}$/', $time)) {
-		return true;
-	}
-
-	return false;
+    if (preg_match('/^\d{2}:\d{2}$/', $time)) {
+        return true;
+    }
+    return false;
 }
 
 $allowed = [ 'address', 'agent', 'time', 'frequency'];
@@ -49,16 +47,16 @@ $daily = 0;
 $weekly = 0;
 
 foreach ($allowed as $param) {
-	if (!isset($_POST[$param]) || empty($_POST[$param])) {
-		# Empty but valid field redirect to self.
-		header("Location: /create");
-		return;
-	}
+    if (!isset($_POST[$param]) || empty($_POST[$param])) {
+        # Empty but valid field redirect to self.
+        header("Location: /create");
+        return;
+    }
 
-	if (!in_array($param, $allowed)) {
-		http_response_code(500);
-		return;
-	}
+    if (!in_array($param, $allowed)) {
+        http_response_code(500);
+        return;
+    }
 }
 
 $address     = $_POST['address'];
@@ -68,107 +66,107 @@ $frequency   = $_POST['frequency'];
 $weekday     = null;
 
 if (!in_array($frequency, $frequency_allowed)) {
-	http_response_code(500);
-	return;
+    http_response_code(500);
+    return;
 }
 
 try {
-	$template = $twig->load('errors.html.twig');
+    $template = $twig->load('errors.html.twig');
 } catch (Exception $e) {
-	error_log(__FILE__ . ':' .  __LINE__ . ':' . $e->getMessage());
-	http_response_code(500);
-	return;
+    error_log(__FILE__ . ':' .  __LINE__ . ':' . $e->getMessage());
+    http_response_code(500);
+    return;
 }
 
 $input_error = false;
 
 if (!valid_time($start_time)) {
-	$input_error = "Invalid time specified";
+    $input_error = "Invalid time specified";
 }
 
 if (!valid_agent($agent)) {
-	$input_error = "Invalid user-agent specified.";
+    $input_error = "Invalid user-agent specified.";
 }
 
 if (!valid_address($address)) {
-	$input_error = "Invalid address specified.";
+    $input_error = "Invalid address specified.";
 }
 
 if ($input_error !== false) {
-	echo $template->render(['message' => $input_error, 'source_url' => '/create/']);
-	return;
+    echo $template->render(['message' => $input_error, 'source_url' => '/create/']);
+    return;
 }
 
 if ($frequency === "daily") {
-	$daily = 1;
+    $daily = 1;
 } elseif ($frequency === "weekly") {
-	if (!isset($_POST['weekly']) || empty($_POST['weekly'])) {
-		http_response_code(500);
-		return;
-	} else {
-		if (!in_array($_POST['weekly'], $weekdays)) {
-			http_response_code(500);
-			return;
-		}
-		$weekly = 1;
-		$weekday = $_POST['weekly'];
-	}
+    if (!isset($_POST['weekly']) || empty($_POST['weekly'])) {
+        http_response_code(500);
+        return;
+    } else {
+        if (!in_array($_POST['weekly'], $weekdays)) {
+            http_response_code(500);
+            return;
+        }
+        $weekly = 1;
+        $weekday = $_POST['weekly'];
+    }
 }
 
 $domain = parse_url($address, PHP_URL_HOST);
 $scheme = parse_url($address, PHP_URL_SCHEME);
 
 try {
-	$config = new Config();
-	$max_robots = $config->settings['main']['max_crawlers'];
+    $config = new Config();
+    $max_robots = $config->settings['main']['max_crawlers'];
 
-	$db = new DB();
+    $db = new DB();
 
-	$SQL = "SELECT COUNT(*) AS count FROM tbl_crawl_launch";
-	$stmt = $db->pdo->prepare($SQL);
-	$stmt->execute();
-	$res = $stmt->fetch(PDO::FETCH_ASSOC);
-	if ($res['count'] >= $max_robots) {
-		echo $template->render(['message' => 'Reached maximum robots allowed.']);
-		return;
-	}
+    $SQL = "SELECT COUNT(*) AS count FROM tbl_crawl_launch";
+    $stmt = $db->pdo->prepare($SQL);
+    $stmt->execute();
+    $res = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($res['count'] >= $max_robots) {
+        echo $template->render(['message' => 'Reached maximum robots allowed.']);
+        return;
+    }
 
-	$SQL = "SELECT COUNT(*) AS count FROM tbl_crawl_launch WHERE address = ?";
-	$stmt = $db->pdo->prepare($SQL);
-	$stmt->execute([$address]);
-	$res = $stmt->fetch(PDO::FETCH_ASSOC);
-	if ($res['count'] != 0) {
-		echo $template->render(['message' => 'Address already exists.']);
-		return;
-	}
+    $SQL = "SELECT COUNT(*) AS count FROM tbl_crawl_launch WHERE address = ?";
+    $stmt = $db->pdo->prepare($SQL);
+    $stmt->execute([$address]);
+    $res = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($res['count'] != 0) {
+        echo $template->render(['message' => 'Address already exists.']);
+        return;
+    }
 
-	# MD5 sum of our data.
-	$extid = md5($address . $domain . $start_time . $agent . $weekly . $daily . $weekday);
-	$SQL = "
-	INSERT IGNORE INTO tbl_crawl_launch
-	(extid, scheme, address, domain, start_time, agent, weekly, daily, weekday)
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ";
-	$stmt = $db->pdo->prepare($SQL);
-	$stmt->execute([$extid, $scheme, $address, $domain, $start_time, $agent, $weekly, $daily, $weekday]);
+    # MD5 sum of our data.
+    $extid = md5($address . $domain . $start_time . $agent . $weekly . $daily . $weekday);
+    $SQL = "
+    INSERT IGNORE INTO tbl_crawl_launch
+    (extid, scheme, address, domain, start_time, agent, weekly, daily, weekday)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ";
+    $stmt = $db->pdo->prepare($SQL);
+    $stmt->execute([$extid, $scheme, $address, $domain, $start_time, $agent, $weekly, $daily, $weekday]);
 } catch (Exception $e) {
-	error_log(__FILE__ . ':' .  __LINE__ . ':' . $e->getMessage());
-	http_response_code(500);
-	return;
+    error_log(__FILE__ . ':' .  __LINE__ . ':' . $e->getMessage());
+    http_response_code(500);
+    return;
 }
 
 $config = new Config();
 $docker_image = $config->settings['main']['docker_image'];
 
 $args = [
-	'domain'  => $domain,
-	'address' => $address,
-	'scheme'  => $scheme,
-	'agent'   => $agent,
-	'daily'   => $daily,
-	'weekday' => $weekday,
-	'time'    => $start_time,
-	'docker_image' => $docker_image,
+    'domain'  => $domain,
+    'address' => $address,
+    'scheme'  => $scheme,
+    'agent'   => $agent,
+    'daily'   => $daily,
+    'weekday' => $weekday,
+    'time'    => $start_time,
+    'docker_image' => $docker_image,
 ];
 
 $timer = new Timer($args);

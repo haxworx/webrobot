@@ -19,26 +19,27 @@ header("Content-Type: text/plain");
 header('Cache-Control: no-cache');
 
 for ($i = 0; $i < 1024; $i++) {
-	echo ' ';
+    echo ' ';
 }
 
 ob_flush();
 flush();
 try {
-	$mqtt = new MqttClient($server, $port, $client_id);
-	$mqtt->connect();
-	$mqtt->subscribe($topic, function ($topic, $message) {
-		$message = rtrim($message, $characters = " \n\r\t\v\x00");
-		echo "$topic: $message\n";
-		ob_flush();
-	}, 0);
-	$mqtt->registerLoopEventHandler(function (MqttClient $mqtt, float $elapsedTime) {
-	});
+    $mqtt = new MqttClient($server, $port, $client_id);
+    $mqtt->connect();
+    $mqtt->subscribe($topic, function ($topic, $message) {
+        $message = rtrim($message, $characters = " \n\r\t\v\x00");
+        echo "$topic: $message\n";
+        ob_flush();
+    }, 0);
+    $mqtt->registerLoopEventHandler(function (MqttClient $mqtt, float $elapsedTime) {
+        # // XXX
+    });
 
-	$mqtt->loop(true);
+    $mqtt->loop(true);
 
-	ob_end_flush();
-	$mqtt->disconnect();
+    ob_end_flush();
+    $mqtt->disconnect();
 } catch (MqttClientException $e) {
    echo "Nothing to be seen here.\n";
    ob_flush();
