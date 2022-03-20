@@ -3,6 +3,8 @@
 require_once '../lib/common.php';
 require_once 'lib/Config.php';
 require 'vendor/autoload.php';
+use PhpMqtt\Client\Exceptions\MqttClientException;
+use PhpMqtt\Client\MqttClient;
 
 # Create a Stream of our MQTT logging in real-time.
 
@@ -22,18 +24,25 @@ for ($i = 0; $i < 1024; $i++) {
 
 ob_flush();
 flush();
+try {
+	$mqtt = new MqttClient($server, $port, $client_id);
+	$mqtt->connect();
+	$mqtt->subscribe($topic, function ($topic, $message) {
+		$message = rtrim($message, $characters = " \n\r\t\v\x00");
+		echo "$topic: $message\n";
+		ob_flush();
+	}, 0);
+	$mqtt->registerLoopEventHandler(function (MqttClient $mqtt, float $elapsedTime) {
+	});
 
-$mqtt = new \PhpMqtt\Client\MqttClient($server, $port, $client_id);
-$mqtt->connect();
-$mqtt->subscribe($topic, function ($topic, $message) {
-	$message = rtrim($message, $characters = " \n\r\t\v\x00");
-	echo "$topic: $message\n";
-	ob_flush();
-}, 0);
+	$mqtt->loop(true);
 
-$mqtt->loop(true);
-
-ob_end_flush();
-$mqtt->disconnect();
+	ob_end_flush();
+	$mqtt->disconnect();
+} catch (MqttClientException $e) {
+   echo "Nothing to be seen here.\n";
+   ob_flush();
+   error_log(__FILE__ . '.' . __LINE__ . ':' . $e->getMessage());
+}
 
 ?>
