@@ -66,7 +66,9 @@ def get_secret():
             
     # Your code goes here. 
     settings = json.loads(secret);
-    print(settings);
+    
+    return (settings['host'], settings['dbname'], settings['username'], settings['password'])
 
 if __name__ == '__main__':
-    get_secret()
+    (db_host, db_name, db_user, db_pass) = get_secret()
+    print(db_host, db_name, db_user, db_pass);

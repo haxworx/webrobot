@@ -74,6 +74,10 @@ if (isset($result['SecretString'])) {
     $secret = base64_decode($result['SecretBinary']);
 }
 
-print $secret;
+$json = json_decode($secret, true);
+$db_host = $json['host'];
+$db_name = $json['dbname'];
+$db_user = $json['username'];
+$db_pass = $json['password'];
 
-// Your code goes here;
+printf("%s %s %s %s\n", $db_host, $db_name, $db_user, $db_pass);
