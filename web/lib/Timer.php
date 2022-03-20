@@ -54,7 +54,7 @@ class Timer
 		"ExecStart=docker run $this->docker_image $this->address $this->agent\n" .
 		"\n" .
 		"[Install]\n" .
-		"WantedBy=multi-user.target\n";
+		"WantedBy=default.target\n";
 
 		$path = "$dir/$this->identifier.service";
 		$f = fopen($path, 'w');
@@ -79,14 +79,16 @@ class Timer
 		"Unit=$this->identifier.service\n" .
 		$onCalendar .
 		"[Install]\n" .
-		"WantedBy=timers.target\n";
+		"WantedBy=default.target\n";
 
 		$path = "$dir/$this->identifier.timer";
 		$f = fopen($path, 'w');
 		if ($f !== false) {
 			fprintf($f, $data);
 			fclose($f);
+			system("systemctl --user enable $this->identifier.service");
 			system("systemctl --user enable $this->identifier.timer");
+			system("systemctl --user start $this->identifier.timer");
 		}
 	}
 
@@ -95,8 +97,10 @@ class Timer
 		$files = [ "$domain.$scheme.service", "$domain.$scheme.timer" ];
 		$home = getenv('HOME');
 
-		system("systemctl --user stop $domain.timer");
-		system("systemctl --user disable $domain.timer");
+		system("systemctl --user stop $domain.$scheme.service");
+		system("systemctl --user disable $domain.$scheme.service");
+		system("systemctl --user stop $domain.$scheme.timer");
+		system("systemctl --user disable $domain.$scheme.timer");
 
 		foreach ($files as $file) {
 			$dir = $home . '/.config/systemd/user';
