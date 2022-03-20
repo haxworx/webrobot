@@ -4,10 +4,7 @@ A single-threaded web robot.
 
 ## Requirements
 
-Python3 and the following modules:
-
- * mysql-connector-python
- * paho-mqtt
+Python3 and the following:
 
 ```
 python3 -m pip install mysql-connector-python
