@@ -3,6 +3,7 @@
 import sys
 import configparser
 
+from aws.password_vault import Vault
 
 class Config:
     CONFIG_FILE = 'config.ini';
@@ -10,6 +11,7 @@ class Config:
     def __init__(self):
         self.include_sitemaps = False
         self.ignore_query = False
+        self.aws_password_value = False
 
         self._read()
 
@@ -24,10 +26,25 @@ class Config:
                 if not all(key in parser['database'] for key in keys):
                     raise Exception("Missing database config field.")
 
-                self.db_host = parser['database']['host']
-                self.db_name = parser['database']['name']
-                self.db_user = parser['database']['user']
-                self.db_pass = parser['database']['pass']
+
+                keys = ('password_vault', 'profile', 'secret', 'region')
+                if not all(key in parser['aws'] for key in keys):
+                    raise Exception("Missing AWS config field.");
+
+                if parser['aws']['password_vault'].upper() == 'TRUE':
+                    vault = Vault(parser['aws']['profile'],
+                                  parser['aws']['region'],
+                                  parser['aws']['secret'])
+                    self.db_host = vault.contents['host']
+                    self.db_name = vault.contents['dbname']
+                    self.db_user = vault.contents['username']
+                    self.db_pass = vault.contents['password']
+                    vault.contents = None
+                else:
+                    self.db_host = parser['database']['host']
+                    self.db_name = parser['database']['name']
+                    self.db_user = parser['database']['user']
+                    self.db_pass = parser['database']['pass']
 
                 keys = ('host', 'port', 'topic')
                 if not all(key in parser['mqtt'] for key in keys):
