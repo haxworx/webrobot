@@ -1,6 +1,6 @@
 <?php
 
-require_once 'common.php';
+require_once 'project.php';
 require 'vendor/autoload.php';
 
 use Aws\SecretsManager\SecretsManagerClient;
@@ -68,7 +68,7 @@ class Config
     public $settings = [];
     public function __construct()
     {
-        $path = project_config_path();
+        $path = Project::config_path();
         $ini = parse_ini_file($path, true);
         if (!$ini) {
             throw new Exception("parse_ini_file");

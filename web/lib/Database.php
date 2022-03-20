@@ -1,6 +1,6 @@
 <?php
 
-require_once 'common.php';
+require_once 'project.php';
 require_once 'Config.php';
 
 class DB

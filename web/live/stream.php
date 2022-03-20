@@ -1,6 +1,6 @@
 <?php
 
-require_once '../lib/common.php';
+require_once '../lib/project.php';
 require_once 'lib/Config.php';
 require 'vendor/autoload.php';
 use PhpMqtt\Client\Exceptions\MqttClientException;

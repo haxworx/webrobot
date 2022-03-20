@@ -1,6 +1,6 @@
 <?php
 
-require_once 'common.php';
+require_once 'project.php';
 
 class Timer
 {
@@ -42,7 +42,7 @@ class Timer
             }
         }
 
-        $executable = project_root_directory() . '/robot_start.py';
+        $executable = Project::root_directory() . '/robot_start.py';
 
         $data =
         "[Unit]\n".

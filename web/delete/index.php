@@ -1,6 +1,6 @@
 <?php
 
-require '../lib/common.php';
+require '../lib/project.php';
 require_once 'lib/Database.php';
 require_once 'lib/Timer.php';
 

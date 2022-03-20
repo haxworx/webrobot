@@ -1,6 +1,6 @@
 <?php
 
-require_once '../lib/common.php';
+require_once '../lib/project.php';
 require_once 'lib/Twig.php';
 
 $weekly = false;
