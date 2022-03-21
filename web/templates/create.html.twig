@@ -6,13 +6,15 @@
 
 {% block content %}
 
+<p id="create_error"></p>
+
 <form onsubmit="return create_validate(this);" action="/create/action/" name="create_form" method="post">
   <label for="address" class="create_label">Address</label>
   <input type="text" id="address" name="address" class="create_input">
   <label for="agent" class="create_label">User Agent (name/version) e.g. (bot/1.0)</label>
   <input type="text" id="agent" name="agent" class="create_input">
   <label for="time" class="create_label">Time</label>
-  <input type="time" id="time" name="time" class="create_input">
+  <input type="time" id="time" name="time" step="1" class="create_input">
 
   <label for="daily" class="create_label">Daily</label>
   <input type="radio" id="daily" name="frequency" class="create_radio" value="daily" checked>
@@ -36,7 +38,20 @@
     <input type="radio" id="sunday" name="weekly" value="sunday">
     <label for="sunday" class="create_radio">Sunday</label>
   </div>
-  <p id="create_error"></p>
+  <label for="delay" class="create_label">Delay (secs)</label>
+  <input type="number" class="create_number" name="delay" id="delay" min="0.5" max="5" step="0.5" value="0.5">
+  <label for="ignore_query" class="create_label">Ignore Query Strings?</label>
+  <input type="checkbox" name="ignore_query" id="ignore_query" checked>
+  <label for="import_sitemaps" class="create_label">Import Sitemaps?</label>
+  <input type="checkbox" name="import_sitemaps" id="import_sitemaps" checked>
+  <label for="retry_max" class="create_label">Retry Max (retry attempts after connection error)</label>
+  <input type="number" class="create_number" name="retry_max" id="retry_max" min="0" max="10" step="1.0" value="5">
+  <label for="content_types" class="create_label">Content Types</label>
+  {% for content in content_types %}
+  <input type="checkbox" name="content_types[]" value="{{ content.contentid }}">
+  <label for="content_types[]">{{ content.content_type }}</label>
+  {% endfor %}
+  <br>
   <input type="submit" class="create_submit" value="Create">
 </form>
 

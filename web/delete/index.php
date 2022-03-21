@@ -6,36 +6,30 @@ require_once 'lib/Timer.php';
 
 # DELETE a job from the tbl_crawl_launch table.
 
-if (!isset($_GET['extid']) || empty($_GET['extid'])) {
+if (!isset($_POST['botid']) || empty($_POST['botid'])) {
     header("Location: / ");
     return;
 }
 
-if (!isset($_GET['scheme']) || empty($_GET['scheme'])) {
+if (!isset($_POST['scheme']) || empty($_POST['scheme'])) {
     header("Location: /");
     return;
 }
 
-if (!isset($_GET['domain']) || empty($_GET['domain'])) {
+if (!isset($_POST['domain']) || empty($_POST['domain'])) {
     header("Location: /");
     return;
 }
 
-$extid = $_GET['extid'];
-if (!preg_match('/^[A-Za-z0-9]{32}$/', $extid)) {
-    header("Location: / ");
-    return;
-}
-
-# XXX Check this.
-$domain = $_GET['domain'];
-$scheme = $_GET['scheme'];
+$botid  = $_POST['botid'];
+$domain = $_POST['domain'];
+$scheme = $_POST['scheme'];
 
 try {
     $db = new DB();
-    $SQL = "DELETE FROM tbl_crawl_launch WHERE extid = ?";
+    $SQL = "DELETE FROM tbl_crawl_settings WHERE botid = ?";
     $stmt = $db->pdo->prepare($SQL);
-    $stmt->execute([$extid]);
+    $stmt->execute([$botid]);
 } catch (Exception $e) {
     error_log(__FILE__ . ':' . __LINE__ . ':' . $e->getMessage());
 }

@@ -3,15 +3,14 @@
 require_once 'lib/Database.php';
 require_once 'lib/Twig.php';
 
-$robots = [];
-
 try {
     $db = new DB;
-    $SQL = "SELECT extid, scheme, address, domain, start_time, agent, weekday FROM tbl_crawl_launch";
+    $SQL = "SELECT botid, scheme, address, domain, start_time, agent, weekday FROM tbl_crawl_settings";
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $robots[] = [ 'extid' => $row['extid'],
+	    $robots[] = [
+		  'botid' => $row['botid'],
                   'scheme' => $row['scheme'],
                   'address' => $row['address'],
                   'domain' => $row['domain'],

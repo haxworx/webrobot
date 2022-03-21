@@ -1,0 +1,58 @@
+{% extends "base.html.twig" %}
+
+{% block head %}
+  <script type="text/javascript" src="/assets/edit.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<p id="create_error"></p>
+
+<form onsubmit="return create_validate(this);" action="/edit/action/" name="create_form" method="post">
+  <input type="hidden" name="botid" value="{{ bot.botid }}">
+  <label for="address" class="create_label">Address</label>
+  <input type="text" id="address" name="address" class="create_input" value="{{ bot.address }}">
+  <label for="agent" class="create_label">User Agent (name/version) e.g. (bot/1.0)</label>
+  <input type="text" id="agent" name="agent" class="create_input" value="{{ bot.agent }}">
+  <label for="time" class="create_label">Time</label>
+  <input type="time" id="time" name="time" step="1" class="create_input" value="{{ bot.start_time }}">
+  <label for="daily" class="create_label">Daily</label>
+  <input type="radio" id="daily" name="frequency" class="create_radio" value="daily" {% if bot.daily %}checked{% endif %}>
+
+  <label for="weekly" class="create_label">Weekly</label>
+  <input type="radio" id="weekly" name="frequency" class="create_radio" value="weekly" {% if bot.weekly %}checked{% endif %}>
+
+  <div id="weekly_block" class="weekly_edit_block" class="block">
+    <input type="radio" id="monday" name="weekly" value="monday" {% if bot.weekday == "monday" %}checked{% endif %}>
+    <label for="monday" class="create_radio">Monday</label>
+    <input type="radio" id="tuesday" name="weekly" value="tuesday" {% if bot.weekday == "tuesday" %}checked{% endif %}>
+    <label for="tuesday" class="create_radio">Tuesday</label>
+    <input type="radio" id="wednesday" name="weekly" value="wednesday" {% if bot.weekday == "wednesday" %}checked{% endif %}>
+    <label for="wednesday" class="create_radio">Wednesday</label>
+    <input type="radio" id="thursday" name="weekly" value="thursday" {% if bot.weekday == "thursday" %}checked{% endif %}>
+    <label for="thursday" class="create_radio">Thursday</label>
+    <input type="radio" id="friday" name="weekly" value="friday" {% if bot.weekday == "friday" %}checked{% endif %}>
+    <label for="friday" class="create_radio">Friday</label>
+    <input type="radio" id="saturday" name="weekly" value="saturday" {% if bot.weekday == "saturday" %}checked{% endif %}>
+    <label for="saturday" class="create_radio">Saturday</label>
+    <input type="radio" id="sunday" name="weekly" value="sunday" {% if bot.weekday == "sunday" %}checked{% endif %}>
+    <label for="sunday" class="create_radio">Sunday</label>
+  </div>
+  <label for="delay" class="create_label">Delay (secs)</label>
+  <input type="number" class="create_number" name="delay" id="delay" min="0.5" max="5" step="0.5" value="{{ bot.delay }}">
+  <label for="ignore_query" class="create_label">Ignore Query Strings?</label>
+  <input type="checkbox" name="ignore_query" id="ignore_query" {% if bot.ignore_query %}checked{% endif %}>
+  <label for="import_sitemaps" class="create_label">Import Sitemaps?</label>
+  <input type="checkbox" name="import_sitemaps" id="import_sitemaps" {% if bot.import_sitemaps %}checked{% endif %}>
+  <label for="retry_max" class="create_label">Retry Max (retry attempts after connection error)</label>
+  <input type="number" class="create_number" name="retry_max" id="retry_max" min="0" max="10" step="1.0" value="{{ bot.retry_max }}">
+  <label for="content_types" class="create_label">Content Types</label>
+{% for content in content_types %}
+  <input type="checkbox" name="content_types[]" value="{{ content.contentid }}" {% if content.selected %} checked {% endif %}>
+  <label for="content_types[]">{{ content.content_type }}</label>
+{% endfor %}
+  <br>
+  <input type="submit" class="create_submit" value="Update">
+</form>
+
+{% endblock %}

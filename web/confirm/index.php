@@ -6,16 +6,16 @@ require_once 'lib/Twig.php';
 
 $params = [];
 
-foreach ($_GET as $key => $value) {
+foreach ($_POST as $key => $value) {
     $params[] = ['key' => $key, 'value' => $value];
 }
 
-if (!isset($_GET['action']) || empty($_GET['action'])) {
+if (!isset($_POST['action']) || empty($_POST['action'])) {
     header("Location: /");
     return;
 }
 
-$action = $_GET['action'];
+$action = $_POST['action'];
 if (!preg_match('/^[a-zA-Z0-9]+$/', $action)) {
     header("Location: /");
     return;

@@ -21,7 +21,19 @@
     <td>{{ robot.weekday }}</td>
 {% endif %}
     <td>{{ robot.agent }}</td>
-    <td><a href="/confirm/?action=delete&extid={{robot.extid}}&domain={{robot.domain}}&scheme={{robot.scheme}}">delete?</a></td>
+    <td>
+      <form action="/edit" method="get">
+        <input type="hidden" name="botid" value="{{robot.botid}}">
+        <input type="submit" class="table_submit" value="Edit">
+      </form>
+      <form action="/confirm" method="post">
+        <input type="hidden" name="botid" value="{{robot.botid}}">
+        <input type="hidden" name="domain" value="{{robot.domain}}">
+        <input type="hidden" name="scheme" value="{{robot.scheme}}">
+        <input type="hidden" name="action" value="delete">
+        <input type="submit" class="table_submit" value="Delete">
+      </form>
+    </td>
   </tr>
 {% endfor %}
 </table>
