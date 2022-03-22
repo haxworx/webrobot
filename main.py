@@ -81,7 +81,6 @@ class Robot:
         self.save_count = 0
         self.attempted = 0
         self.retry_count = 0
-        self.config.retry_max
 
     @property
     def url(self):

@@ -77,31 +77,13 @@ class Config:
                 self.retry_max = row[7]
 
                 SQL = """
-                SELECT contentid FROM tbl_crawl_allowed_content
-                WHERE botid = %s
+                SELECT content_type FROM tbl_crawl_allowed_content INNER JOIN
+                tbl_content_types ON tbl_crawl_allowed_content.contentid =
+                tbl_content_types.contentid WHERE botid = %s
                 """
 
-                content_ids = []
                 cursor = dbh.cnx.cursor()
                 cursor.execute(SQL, [self.botid,])
-                rows = cursor.fetchall()
-
-                if len(rows) == 0:
-                    print("Unable to find any content types for bot id: {}." .
-                          format(self.botid), file=sys.stderr)
-                    sys.exit(1)
-                for row in rows:
-                    content_ids.append(row[0])
-                cursor.close()
-
-
-                s = ','.join(str(s) for s in content_ids)
-                SQL = """
-                SELECT content_type FROM tbl_content_types
-                WHERE contentid IN ({}) """ . format(s)
-
-                cursor = dbh.cnx.cursor()
-                cursor.execute(SQL)
                 rows = cursor.fetchall()
                 cursor.close()
 
