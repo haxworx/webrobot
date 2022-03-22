@@ -108,7 +108,7 @@ class Config:
                 if len(rows) == 0:
                     print("Unable to find matching content types for bot id: {}. " .
                           format(self.botid), file=sys.stderr)
-                    sys.exit(1);
+                    sys.exit(1)
 
                 self.wanted_content = '|'.join(str(s[0]) for s in rows)
 
@@ -123,6 +123,7 @@ class Config:
 
                 if len(rows) == 0:
                     print("Unable to read global settings.", file=sys.stderr)
+                    sys.exit(1)
 
                 row = row[0]
                 self.mqtt_host = row[0]
