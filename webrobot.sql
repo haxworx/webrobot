@@ -22,7 +22,7 @@ CREATE TABLE `tbl_crawl_data` (
   `length` int DEFAULT NULL,
   `data` mediumblob,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `tbl_crawl_errors`;
 CREATE TABLE `tbl_crawl_errors` (
@@ -38,7 +38,7 @@ CREATE TABLE `tbl_crawl_errors` (
   `link_source` varchar(4096) DEFAULT NULL,
   `description` text DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `tbl_crawl_log`;
 CREATE TABLE `tbl_crawl_log` (
@@ -55,7 +55,7 @@ CREATE TABLE `tbl_crawl_log` (
   `level_name` varchar(32) DEFAULT NULL,
   `message` text,
   PRIMARY KEY(`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `tbl_crawl_settings`;
 CREATE TABLE `tbl_crawl_settings` (
@@ -73,7 +73,7 @@ CREATE TABLE `tbl_crawl_settings` (
   `weekly` boolean DEFAULT NULL,
   `weekday` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`botid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `tbl_content_types`;
 CREATE TABLE `tbl_content_types` (
@@ -81,7 +81,7 @@ CREATE TABLE `tbl_content_types` (
   `content_type` varchar(128) DEFAULT NULL,
   `description` text DEFAULT NULL,
   PRIMARY KEY(`contentid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `tbl_crawl_allowed_content`;
 CREATE TABLE `tbl_crawl_allowed_content` (
@@ -89,7 +89,7 @@ CREATE TABLE `tbl_crawl_allowed_content` (
   `botid` int DEFAULT NULL,
   `contentid` int DEFAULT NULL,
   PRIMARY KEY(`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `tbl_content_types` (`content_type`, `description`)
 VALUES
@@ -111,7 +111,7 @@ CREATE TABLE `tbl_global_settings` (
   `mqtt_port` int DEFAULT NULL,
   `mqtt_topic` varchar(8192) DEFAULT NULL,
   PRIMARY KEY(`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `tbl_global_settings`
     (`time_stamp`, `in_use`, `max_crawlers`, `debug`, `docker_image`, `mqtt_host`, `mqtt_port`, `mqtt_topic`)
