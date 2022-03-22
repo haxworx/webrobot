@@ -2,16 +2,19 @@
 
 import sys
 import configparser
+import string
 
+import database
 from aws.password_vault import Vault
 
 class Config:
     CONFIG_FILE = 'config.ini';
 
-    def __init__(self):
+    def __init__(self, botid):
         self.include_sitemaps = False
         self.ignore_query = False
         self.aws_password_value = False
+        self.botid = botid
 
         self._read()
 
@@ -25,7 +28,6 @@ class Config:
                 keys = ('host', 'name', 'user', 'pass')
                 if not all(key in parser['database'] for key in keys):
                     raise Exception("Missing database config field.")
-
 
                 keys = ('password_vault', 'profile', 'secret', 'region')
                 if not all(key in parser['aws'] for key in keys):
@@ -46,26 +48,67 @@ class Config:
                     self.db_user = parser['database']['user']
                     self.db_pass = parser['database']['pass']
 
-                keys = ('host', 'port', 'topic')
-                if not all(key in parser['mqtt'] for key in keys):
-                    raise Exception("Missing MQTT config field.")
+                dbh = database.Connect(self.db_user, self.db_pass,
+                                       self.db_host, self.db_name)
 
-                self.mqtt_host = parser['mqtt']['host']
-                self.mqtt_topic = parser['mqtt']['topic']
-                self.mqtt_port = int(parser['mqtt']['port'])
+                SQL = """
+                SELECT scheme, address, domain, agent, delay,
+                ignore_query, import_sitemaps, retry_max
+                FROM tbl_crawl_settings WHERE botid = %s
+                """
 
-                keys = ('interval', 'wanted-content', 'ignore-query',
-                        'retry-max', 'import-sitemaps')
-                if not all(key in parser['crawling'] for key in keys):
-                    raise Exception("Missing crawling config field.")
+                cursor = dbh.cnx.cursor()
+                cursor.execute(SQL, [self.botid,])
+                row = cursor.fetchall()
+                row = row[0]
+                cursor.close()
 
-                self.crawl_interval = float(parser['crawling']['interval'])
-                self.wanted_content = parser['crawling']['wanted-content']
-                if parser['crawling']['ignore-query'].upper() == 'TRUE':
-                    self.ignore_query = True
-                self.retry_max = int(parser['crawling']['retry-max'])
-                if parser['crawling']['import-sitemaps'].upper() == 'TRUE':
-                    self.import_sitemaps = True
+                self.scheme = row[0]
+                self.address = row[1]
+                self.domain = row[2]
+                self.user_agent = row[3]
+                self.crawl_interval = row[4]
+                self.ignore_query = row[5]
+                self.import_sitemaps = row[6]
+                self.retry_max = row[7]
+
+                SQL = """
+                SELECT contentid FROM tbl_crawl_allowed_content
+                WHERE botid = %s
+                """
+
+                content_ids = []
+                cursor = dbh.cnx.cursor()
+                cursor.execute(SQL, [self.botid,])
+                rows = cursor.fetchall()
+                for row in rows:
+                    content_ids.append(row[0])
+                cursor.close()
+
+                s = ','.join(str(s) for s in content_ids)
+                SQL = """
+                SELECT content_type FROM tbl_content_types
+                WHERE contentid IN ({}) """ . format(s)
+
+                cursor = dbh.cnx.cursor()
+                cursor.execute(SQL)
+                rows = cursor.fetchall()
+                cursor.close()
+                self.wanted_content = '|' . join(str(s[0]) for s in rows)
+
+                SQL = """
+                SELECT mqtt_host, mqtt_port, mqtt_topic
+                FROM tbl_global_settings ORDER BY id DESC LIMIT 1
+                """
+                cursor = dbh.cnx.cursor()
+                cursor.execute(SQL, [])
+                row = cursor.fetchall()
+                row = row[0]
+                cursor.close()
+                self.mqtt_host = row[0]
+                self.mqtt_port = row[1]
+                self.mqtt_topic = row[2]
+
         except OSError as e:
             print("Unable to open '{}' -> {}" . format(self.CONFIG_FILE, e),
                   file=sys.stderr)

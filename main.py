@@ -28,6 +28,7 @@ from download import Download
 class Robot:
     LOCK_FILE = 'data/crawl.lock'
     PIDFILE = 'data/crawl.pid'
+    _botid = None
     _cnx = None
     _name = None
     _domain = None
@@ -36,26 +37,26 @@ class Robot:
     _starting_url = None
     dbh = None
 
-    def __init__(self, url, user_agent):
+    def __init__(self, botid):
+        self.botid = botid;
         self.acquire_lock()
         self.pidfile_create();
         atexit.register(self.cleanup)
-        self.starting_url = url
-        self.url = url
-        self.user_agent = user_agent;
-        self.scheme = self.scheme_parse(url)
-        self.name = self.domain_parse(url)
-        self.domain = self.domain_parse(url)
+
+        self.config = Config(self.botid)
+        self.dbh = database.Connect(self.config.db_user, self.config.db_pass,
+                                    self.config.db_host, self.config.db_name)
+        self.starting_url = self.url = self.config.address
+        self.user_agent = self.config.user_agent;
+        self.scheme = self.config.scheme
+        self.name = self.config.domain
+        self.domain = self.config.domain
         self.hostname = socket.gethostname()
         self.ip_address = socket.gethostbyname(self.hostname)
 
         if self.name is None or self.scheme is None:
             print("Invalid URL: {}" . format(url), file=sys.stderr)
             sys.exit(1)
-
-        self.config = Config()
-        self.dbh = database.Connect(self.config.db_user, self.config.db_pass,
-                                    self.config.db_host, self.config.db_name)
 
         self.page_list = PageList()
         self.robots_text = RobotsText(self)
@@ -72,7 +73,7 @@ class Robot:
         self.log.addHandler(handler)
 
         # Restrict crawling based on starting url path (if exists).
-        self.path_limit = urlparse(url).path
+        self.path_limit = urlparse(self.url).path
         if len(self.path_limit) and \
                 self.path_limit[len(self.path_limit)-1] == '/':
             self.path_limit = self.path_limit[:len(self.path_limit)-1]
@@ -89,6 +90,14 @@ class Robot:
     @url.setter
     def url(self, value):
         self._url = value
+
+    @property
+    def botid(self):
+        return self._botid
+
+    @botid.setter
+    def botid(self, value):
+        self._botid = value
 
     @property
     def name(self):
@@ -213,14 +222,14 @@ class Robot:
         now = datetime.now()
 
         SQL = """
-        INSERT INTO tbl_crawl_data (scan_date, scan_time_stamp,
+        INSERT INTO tbl_crawl_data (botid, scan_date, scan_time_stamp,
         scan_time_zone, domain, scheme, link_source, modified,
         status_code, url, path, query, content_type, metadata,
-        checksum, encoding, length, data) VALUES (%s, %s,
+        checksum, encoding, length, data) VALUES (%s, %s, %s,
         'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
         %s, %s, %s, COMPRESS(%s))
         """
-        val = (now, now, res['domain'], res['scheme'],
+        val = (res['botid'], now, now, res['domain'], res['scheme'],
                res['link_source'], res['modified'], res['status_code'],
                res['url'], res['path'], res['query'], res['content_type'],
                res['metadata'], res['checksum'], res['encoding'],
@@ -244,12 +253,12 @@ class Robot:
         now = datetime.now()
 
         SQL = """
-        INSERT INTO tbl_crawl_errors (scan_date,
+        INSERT INTO tbl_crawl_errors (botid, scan_date,
         scan_time_stamp, scan_time_zone, status_code,
-        url, link_source, description) VALUES (%s, %s,
+        url, link_source, description) VALUES (%s, %s, %s,
         'Europe/London', %s, %s, %s, %s)
         """
-        val = (now, now, res['status_code'], res['url'],
+        val = (res['botid'], now, now, res['status_code'], res['url'],
                res['link_source'], res['description'])
         cursor = self.dbh.cnx.cursor()
         try:
@@ -316,7 +325,8 @@ class Robot:
                 (response, code) = downloader.get()
             except error.HTTPError as e:
                 self.log.info("Recording %s -> %i", self.url, e.code)
-                res = {'status_code': e.code,
+                res = {'botid': self.botid,
+                       'status_code': e.code,
                        'url': self.url,
                        'link_source': page.link_source,
                        'description': e.reason}
@@ -366,7 +376,8 @@ class Robot:
                     data = response.read()
                     checksum = hashlib.md5(data)
 
-                    res = {'domain': self.domain_parse(self.url),
+                    res = {'botid': self.botid,
+                           'domain': self.domain_parse(self.url),
                            'scheme': scheme,
                            'link_source': page.link_source,
                            'modified': modified,
@@ -428,8 +439,8 @@ if __name__ == '__main__':
         print("This tool should not be launched directly.", file=sys.stderr)
         sys.exit(1)
 
-    if len(sys.argv) != 3:
-        print("Usage: {} <url> <user-agent>" . format(sys.argv[0]))
+    if len(sys.argv) != 2:
+        print("Usage: {} <botid>" . format(sys.argv[0]))
         sys.exit(1)
 
     fmt = '/%(asctime)s%(message)s'
@@ -444,5 +455,5 @@ if __name__ == '__main__':
         print("signal: {}" . format(e), file=sys.stderr)
         sys.exit(1)
 
-    crawler = Robot(sys.argv[1], sys.argv[2])
+    crawler = Robot(int(sys.argv[1]))
     crawler.crawl()
