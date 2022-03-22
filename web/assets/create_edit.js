@@ -1,10 +1,11 @@
+var weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ];
+
 window.onload = function() {
     var radio_weekly = document.getElementById('weekly');
     var radio_daily = document.getElementById('daily');
     var address = document.getElementById('address');
     var agent = document.getElementById('agent');
     var time = document.getElementById('time');
-    var weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ];
    
     for (var i = 0; i < weekdays.length; i++) {
        var weekday = document.getElementById(weekdays[i]);
@@ -91,7 +92,6 @@ function create_validate(form) {
 }
 
 function radio_weekly_clicked() {
-    var weekly_block = document.getElementById('weekly_block');
     reset_error();
     var radio_monday = document.getElementById('monday');
     radio_monday.checked = true;
@@ -99,8 +99,6 @@ function radio_weekly_clicked() {
 
 function radio_daily_clicked() {
     reset_error();
-    var weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ];
-   
     for (var i = 0; i < weekdays.length; i++) {
         var weekday = document.getElementById(weekdays[i]);
         weekday.checked = false;

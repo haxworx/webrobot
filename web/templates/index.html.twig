@@ -15,13 +15,13 @@
 {% for robot in robots %}
   <tr>
     <td>{{robot.address}}</td>
+    <td>{{ robot.agent }}</td>
     <td>{{robot.start_time}}</td>
 {% if robot.weekday == null %}
     <td>daily</td>
 {% else %}
     <td>{{ robot.weekday }}</td>
 {% endif %}
-    <td>{{ robot.agent }}</td>
     <td class="crawlers_action">
       <form action="/edit" method="get">
         <input type="hidden" name="botid" value="{{robot.botid}}">
