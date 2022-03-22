@@ -30,6 +30,10 @@ try {
     $SQL = "DELETE FROM tbl_crawl_settings WHERE botid = ?";
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute([$botid]);
+
+    $SQL = "DELETE FROM tbl_crawl_allowed_content WHERE botid = ?";
+    $stmt = $db->pdo->prepare($SQL);
+    $stmt->execute([$botid]);
 } catch (Exception $e) {
     error_log(__FILE__ . ':' . __LINE__ . ':' . $e->getMessage());
 }

@@ -3,6 +3,8 @@
 require_once 'lib/Database.php';
 require_once 'lib/Twig.php';
 
+$robots = [];
+
 try {
     $db = new DB;
     $SQL = "SELECT botid, scheme, address, domain, start_time, agent, weekday FROM tbl_crawl_settings";
