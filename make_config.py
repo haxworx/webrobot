@@ -14,5 +14,5 @@ db_pass = sys.argv[4]
 with open('config.template', 'r') as f:
     text = f.read()
     text = text . format(db_host, db_name, db_user, db_pass)
-    with open('config.ini', 'w') as of:
+    with open('docker/config.ini', 'w') as of:
         of.write(text)

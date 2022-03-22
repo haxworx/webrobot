@@ -1,5 +1,6 @@
 from debian
 COPY setup.sh .
 COPY run.sh .
+COPY config.ini .
 RUN ./setup.sh
 ENTRYPOINT ["bash", "run.sh"]

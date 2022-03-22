@@ -11,6 +11,4 @@ python3 -m pip install mysql.connector paho.mqtt boto3
 mkdir -p /opt/crawler
 cd /opt/crawler
 git clone https://github.com/haxworx/webrobot --depth 1
-cd /opt/crawler/webrobot
-python3 make_config.py datacentre crawl test password
-
+cp /config.ini /opt/crawler/webrobot
