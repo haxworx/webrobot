@@ -4,8 +4,13 @@ window.onload = function() {
     var address = document.getElementById('address');
     var agent = document.getElementById('agent');
     var time = document.getElementById('time');
+    var weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ];
+   
+    for (var i = 0; i < weekdays.length; i++) {
+       var weekday = document.getElementById(weekdays[i]);
+        weekday.onclick = radio_weekday_clicked;
+    }
 
-    radio_daily.checked = true;
     radio_weekly.onclick = radio_weekly_clicked;
     radio_daily.onclick = radio_daily_clicked;
     address.onclick = reset_error;
@@ -88,11 +93,24 @@ function create_validate(form) {
 function radio_weekly_clicked() {
     var weekly_block = document.getElementById('weekly_block');
     reset_error();
-    weekly_block.style.display = "block";
+    var radio_monday = document.getElementById('monday');
+    radio_monday.checked = true;
 }
 
 function radio_daily_clicked() {
-    var weekly_block = document.getElementById('weekly_block');
     reset_error();
-    weekly_block.style.display = "none";
+    var weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ];
+   
+    for (var i = 0; i < weekdays.length; i++) {
+        var weekday = document.getElementById(weekdays[i]);
+        weekday.checked = false;
+    }
+}
+
+function radio_weekday_clicked() {
+   reset_error();
+   var weekly = document.getElementById('weekly');
+   var daily = document.getElementById('daily');
+   daily.checked = false;
+   weekly.checked = true;
 }

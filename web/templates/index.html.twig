@@ -5,10 +5,11 @@
 <table class="crawlers">
   <thead class="crawlers">
     <tr>
-      <th>address</th>
-      <th>launch</th>
-      <th>frequency</th>
-      <th>user-agent<th>actions</th>
+      <th class="crawlers">address</th>
+      <th class="crawlers">user-agent</th>
+      <th class="crawlers">launch</th>
+      <th class="crawlers">frequency</th>
+      <th class="crawlers_action">actions</th>
     </tr>
   </thead>
 {% for robot in robots %}
@@ -21,7 +22,7 @@
     <td>{{ robot.weekday }}</td>
 {% endif %}
     <td>{{ robot.agent }}</td>
-    <td>
+    <td class="crawlers_action">
       <form action="/edit" method="get">
         <input type="hidden" name="botid" value="{{robot.botid}}">
         <input type="submit" class="table_submit" value="Edit">

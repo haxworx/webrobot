@@ -41,8 +41,13 @@ li.menu, a.menu {
 }
 
 table.crawlers {
+  width: 100%;
   text-align: left;
   padding-right: 10px;
+}
+
+th.crawlers_action, td.crawlers_action {
+   text-align:center;
 }
 
 a {
@@ -50,11 +55,11 @@ a {
 }
 
 th, td {
-  padding-right: 40px;
   border-bottom: 1px solid #7ea02b;
   padding-top: 5px;
   padding-bottom: 5px;
 }
+
 
 .table_submit {
   font-family: "Fjalla One", Sans, sans-serif;
@@ -144,7 +149,6 @@ th, td {
 
 .weekly_block {
   padding-top: 10px;
-  display: none;
 }
 
 .weekly_edit_block {

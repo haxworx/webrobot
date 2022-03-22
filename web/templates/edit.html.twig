@@ -1,7 +1,7 @@
 {% extends "base.html.twig" %}
 
 {% block head %}
-  <script type="text/javascript" src="/assets/edit.js"></script>
+  <script type="text/javascript" src="/assets/create_edit.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -22,7 +22,7 @@
   <label for="weekly" class="create_label">Weekly</label>
   <input type="radio" id="weekly" name="frequency" class="create_radio" value="weekly" {% if bot.weekly %}checked{% endif %}>
 
-  <div id="weekly_block" class="weekly_edit_block" class="block">
+  <div id="weekly_block" class="weekly_edit_block">
     <input type="radio" id="monday" name="weekly" value="monday" {% if bot.weekday == "monday" %}checked{% endif %}>
     <label for="monday" class="create_radio">Monday</label>
     <input type="radio" id="tuesday" name="weekly" value="tuesday" {% if bot.weekday == "tuesday" %}checked{% endif %}>
