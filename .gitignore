@@ -1,5 +1,6 @@
 *.swp
 *.lock
 __pycache__/*
+__pycache__
 something_really_bad_happened.txt
 config.txt
