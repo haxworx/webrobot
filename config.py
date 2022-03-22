@@ -60,9 +60,13 @@ class Config:
                 cursor = dbh.cnx.cursor()
                 cursor.execute(SQL, [self.botid,])
                 row = cursor.fetchall()
-                row = row[0]
                 cursor.close()
 
+                if len(row) == 0:
+                    print("Unable to retrieve settings for bot id: {}. " .format(self.botid), file=sys.stderr)
+                    sys.exit(1)
+
+                row = row[0]
                 self.scheme = row[0]
                 self.address = row[1]
                 self.domain = row[2]
@@ -81,9 +85,15 @@ class Config:
                 cursor = dbh.cnx.cursor()
                 cursor.execute(SQL, [self.botid,])
                 rows = cursor.fetchall()
+
+                if len(rows) == 0:
+                    print("Unable to find any content types for bot id: {}." .
+                          format(self.botid), file=sys.stderr)
+                    sys.exit(1)
                 for row in rows:
                     content_ids.append(row[0])
                 cursor.close()
+
 
                 s = ','.join(str(s) for s in content_ids)
                 SQL = """
@@ -94,7 +104,13 @@ class Config:
                 cursor.execute(SQL)
                 rows = cursor.fetchall()
                 cursor.close()
-                self.wanted_content = '|' . join(str(s[0]) for s in rows)
+
+                if len(rows) == 0:
+                    print("Unable to find matching content types for bot id: {}. " .
+                          format(self.botid), file=sys.stderr)
+                    sys.exit(1);
+
+                self.wanted_content = '|'.join(str(s[0]) for s in rows)
 
                 SQL = """
                 SELECT mqtt_host, mqtt_port, mqtt_topic
@@ -103,8 +119,12 @@ class Config:
                 cursor = dbh.cnx.cursor()
                 cursor.execute(SQL, [])
                 row = cursor.fetchall()
-                row = row[0]
                 cursor.close()
+
+                if len(rows) == 0:
+                    print("Unable to read global settings.", file=sys.stderr)
+
+                row = row[0]
                 self.mqtt_host = row[0]
                 self.mqtt_port = row[1]
                 self.mqtt_topic = row[2]
