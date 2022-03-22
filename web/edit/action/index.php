@@ -2,6 +2,7 @@
 
 require_once '../../lib/project.php';
 require_once 'lib/Database.php';
+require_once 'lib/Timer.php';
 
 
 if ((!isset($_POST['botid'])) || (empty($_POST['botid']))) {
@@ -22,8 +23,6 @@ try {
 include 'form/create_edit.php';
 if (!$validated) return;
 
-# Just delete and recreate.
-
 $db->pdo->beginTransaction();
 
 try {
@@ -32,7 +31,7 @@ try {
     $stmt->execute([$botid]);
 
     $SQL = "
-    UPDATE tbl_crawl_settings SET scheme = ?, address = ?, domain = ?,
+    UPDATE tbl_crawl_settings SET
     start_time = ?, agent = ?, weekly = ?, daily = ?, weekday = ?,
     delay = ?, ignore_query = ?, import_sitemaps = ?, retry_max = ?
     WHERE botid = ?
@@ -40,9 +39,9 @@ try {
 
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute([
-        $scheme, $address, $domain, $start_time, $agent, $weekly,
-	$daily, $weekday, $delay, $ignore_query, $import_sitemaps, $retry_max,
-	$botid,
+        $start_time, $agent, $weekly, $daily, $weekday,
+	$delay, $ignore_query, $import_sitemaps, $retry_max,
+        $botid,
     ]);
     foreach ($_POST['content_types'] as $contentid) {
         $SQL = "INSERT INTO tbl_crawl_allowed_content (botid, contentid) VALUES (?, ?)";
@@ -59,6 +58,23 @@ try {
 }
 
 $db->pdo->commit();
+
+$config = new Config();
+$docker_image = $config->options['docker_image'];
+
+$args = [
+    'domain'       => $domain,
+    'address'      => $address,
+    'scheme'       => $scheme,
+    'agent'        => $agent,
+    'daily'        => $daily,
+    'weekday'      => $weekday,
+    'time'         => $start_time,
+    'docker_image' => $docker_image,
+];
+
+$timer = new Timer($args);
+$timer->Update();
 
 header("Location: /edit/?botid=$botid");
 

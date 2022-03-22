@@ -110,6 +110,10 @@ th, td {
   border: none;
 }
 
+.create_unchangeable {
+   background-color: white;
+}
+
 .confirm_submit {
   display: inline-block;
 }

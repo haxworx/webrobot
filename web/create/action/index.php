@@ -30,7 +30,7 @@ try {
 
 try {
     $config = new Config();
-    $max_robots = $config->settings['main']['max_crawlers'];
+    $max_robots = $config->options['max_crawlers'];
 
     $SQL = "SELECT COUNT(*) AS count FROM tbl_crawl_settings";
     $stmt = $db->pdo->prepare($SQL);
@@ -84,7 +84,7 @@ try {
 $db->pdo->commit();
 
 $config = new Config();
-$docker_image = $config->settings['main']['docker_image'];
+$docker_image = $config->options['docker_image'];
 
 $args = [
     'domain'       => $domain,

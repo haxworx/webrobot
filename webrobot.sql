@@ -98,3 +98,22 @@ VALUES
     ('text/css', 'CSS'),
     ('application/xml', 'Application XML'),
     ('text/xml', 'Text XML');
+
+DROP TABLE IF EXISTS `tbl_global_settings`;
+CREATE TABLE `tbl_global_settings` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `time_stamp` timestamp DEFAULT NULL,
+  `in_use` boolean DEFAULT NULL,
+  `max_crawlers` int DEFAULT NULL,
+  `debug` boolean DEFAULT NULL,
+  `docker_image` varchar(128) DEFAULT NULL,
+  `mqtt_host` varchar(128) DEFAULT NULL,
+  `mqtt_port` int DEFAULT NULL,
+  `mqtt_topic` varchar(8192) DEFAULT NULL,
+  PRIMARY KEY(`id`)
+) ENGINE=InnoDB;
+
+INSERT INTO `tbl_global_settings`
+    (`time_stamp`, `in_use`, `max_crawlers`, `debug`, `docker_image`, `mqtt_host`, `mqtt_port`, `mqtt_topic`)
+    VALUES
+    (NOW(), true, 5, true, 'spiderz', 'datacentre', 1883, 'testing');

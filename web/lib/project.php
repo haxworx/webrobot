@@ -41,8 +41,7 @@ class Project
     public static function debugging_mode()
     {
         $config = new Config();
-
-        return (bool) $config->settings['main']['debug'];
+        return (bool) $config->options['debug'];
     }
 }
 

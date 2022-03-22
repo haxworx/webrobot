@@ -7,6 +7,7 @@ class Timer
     public $identifier;
     public $address;
     public $scheme;
+    public $domain;
     public $agent;
     public $daily;
     public $weekday;
@@ -16,13 +17,14 @@ class Timer
     public function __construct($args)
     {
         $this->scheme = $args['scheme'];
-        $this->identifier = $args['domain'] . '.' . $this->scheme;
+	$this->domain = $args['domain'];
         $this->address = $args['address'];
         $this->agent = $args['agent'];
         $this->daily = $args['daily'];
         $this->weekday = $args['weekday'];
         $this->time = $args['time'];
         $this->docker_image = $args['docker_image'];
+        $this->identifier = $this->domain . '.' . $this->scheme;
     }
 
     private function DayString()
@@ -30,6 +32,12 @@ class Timer
         $day = mb_substr($this->weekday, 0, 3);
         $day = ucfirst($day);
         return $day;
+    }
+
+    public function Update()
+    {
+	# Overwrite the unit timer and service files.
+	$this->Create();
     }
 
     public function Create()
@@ -64,10 +72,10 @@ class Timer
         }
 
         if ($this->daily) {
-            $onCalendar = "OnCalendar=*-*-* $this->time:00\n";
+            $onCalendar = "OnCalendar=*-*-* $this->time\n";
         } else {
             $day = $this->DayString();
-            $onCalendar = "OnCalendar=$day *-* $this->time:00\n";
+            $onCalendar = "OnCalendar=$day *-* $this->time\n";
         }
 
         $data =

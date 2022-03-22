@@ -10,9 +10,9 @@ use PhpMqtt\Client\MqttClient;
 
 $config = new Config();
 
-$server    = $config->settings['mqtt']['host'];
-$port      = intval($config->settings['mqtt']['port']);
-$topic     = $config->settings['mqtt']['topic'];
+$server    = $config->options['mqtt_host'];
+$port      = $config->options['mqtt_port'];
+$topic     = $config->options['mqtt_topic'];
 $client_id = "insert_something_session_like_here";
 
 header("Content-Type: text/plain");
