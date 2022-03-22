@@ -1,0 +1,8 @@
+Install database:
+  webrobot.sql
+  CREATE USER ...
+  GRANT ...
+
+Edit config.ini
+python3 make_config <dbhost> <dbname> <dbuser> <dbpass>
+sh install.sh

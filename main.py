@@ -81,7 +81,7 @@ class Robot:
         self.save_count = 0
         self.attempted = 0
         self.retry_count = 0
-        self.retry_max = self.config.retry_max
+        self.config.retry_max
 
     @property
     def url(self):
@@ -339,7 +339,7 @@ class Robot:
                                self.hostname, self.domain, e.reason, self.url)
                 self.retry_count += 1
 
-                if self.retry_count > self.retry_max:
+                if self.retry_count > self.config.retry_max:
                     self.log.critical("/%s/%s/critical/connect/retry_max/%i",
                                       self.hostname, self.domain, self.config.retry_max)
                     break
