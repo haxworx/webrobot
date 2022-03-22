@@ -16,8 +16,9 @@ class Timer
 
     public function __construct($args)
     {
+        $this->botid = $args['botid'];
         $this->scheme = $args['scheme'];
-	$this->domain = $args['domain'];
+        $this->domain = $args['domain'];
         $this->address = $args['address'];
         $this->agent = $args['agent'];
         $this->daily = $args['daily'];
@@ -36,8 +37,8 @@ class Timer
 
     public function Update()
     {
-	# Overwrite the unit timer and service files.
-	$this->Create();
+        # Overwrite the unit timer and service files.
+        $this->Create();
     }
 
     public function Create()
@@ -59,7 +60,7 @@ class Timer
         "\n" .
         "[Service]\n" .
         "Type=oneshot\n" .
-        "ExecStart=docker run $this->docker_image $this->address $this->agent\n" .
+        "ExecStart=docker run $this->docker_image $this->botid\n" .
         "\n" .
         "[Install]\n" .
         "WantedBy=default.target\n";

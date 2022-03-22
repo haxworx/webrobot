@@ -87,6 +87,7 @@ $config = new Config();
 $docker_image = $config->options['docker_image'];
 
 $args = [
+    'botid'        => $botid,
     'domain'       => $domain,
     'address'      => $address,
     'scheme'       => $scheme,
