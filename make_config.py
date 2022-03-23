@@ -19,14 +19,9 @@ except Exception as e:
     print("Caught exception: {} " . format(e), file=sys.stderr)
     sys.exit(1)
 
-db_host = config.db_host
-db_name = config.db_pass
-db_user = config.db_user
-db_pass = config.db_pass
-
 with open('config.template', 'r') as f:
     text = f.read()
-    text = text . format(db_host, db_name, db_user, db_pass)
+    text = text . format(config.db_host, config.db_name, config.db_user, config.db_pass)
     with open('docker/config.ini', 'w') as of:
         of.write(text)
 sys.exit(0)
