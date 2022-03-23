@@ -11,7 +11,6 @@
 import sys
 
 from config import Config
-from aws.password_vault import Vault
 
 try:
     config = Config(0)
