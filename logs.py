@@ -19,12 +19,12 @@ class DatabaseHandler(StreamHandler):
         now = datetime.now()
 
         SQL = """
-        INSERT INTO tbl_crawl_log (scan_date, scan_time_stamp,
+        INSERT INTO tbl_crawl_log (botid, scan_date, scan_time_stamp,
         crawler_name, hostname, ip_address, level_number,
-        level_name, message) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        level_name, message) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor = self.cnx.cursor()
-        data = (now, now, self.crawler.name, self.crawler.hostname,
+        data = (self.crawler.botid, now, now, self.crawler.name, self.crawler.hostname,
                 self.crawler.ip_address, record.levelno,
                 record.levelname, msg)
         try:
