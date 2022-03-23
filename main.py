@@ -139,7 +139,8 @@ class Robot:
             print("Instance already running.", file=sys.stderr)
             sys.exit(0)
         except OSError as e:
-            print("Unable to open '{}': {}". format(self.LOCK_FILE, e), file=sys.stderr)
+            print("Unable to open '{}': {}". format(self.LOCK_FILE, e),
+                  file=sys.stderr)
             sys.exit(3)
 
     def release_lock(self):
@@ -235,6 +236,11 @@ class Robot:
         return everything_is_fine
 
     def save_errors(self, res):
+        """
+        Record to database any web page that does not reply with HTTP status
+        code 200.
+        """
+
         everything_is_fine = True
 
         now = datetime.now()
@@ -259,12 +265,22 @@ class Robot:
         return everything_is_fine
 
     def metadata_extract(self, headers):
+        """
+        Extract a copy of our HTTP headers and create a string duplicating
+        them.
+        """
         metadata = ""
         for name, value in headers.items():
             metadata = metadata + name + ': ' + value + '\n'
         return metadata
 
     def import_sitemaps(self):
+        """
+        Walk and add sitemap indexes (XML) as well as the URLs to our page
+        list. Ensuring a copy of the XML is stored in the database and the
+        URLs are attempted.
+        """
+
         for url in self.robots_text.sitemap_indexes:
             if core.shutdown_gracefully():
                 break
@@ -281,9 +297,6 @@ class Robot:
     def crawl(self):
         """
         Crawling logic.
-
-        It's important to keep track of so many events.
-
         """
         self.log.info("/%s/%s/info/start", self.hostname, self.domain)
         self.robots_text.parse(self.url)
