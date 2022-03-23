@@ -7,8 +7,7 @@ require_once 'lib/Database.php';
 $content_types = [];
 
 if ((!isset($_GET['botid'])) | ((empty($_GET['botid'])))) {
-	echo "nooooo\n";
-//    header("Location: /");
+    header("Location: /");
     return;
 }
 
