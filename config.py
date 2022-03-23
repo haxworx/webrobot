@@ -15,14 +15,11 @@ class Config:
 
     def __init__(self, botid):
         self.botid = botid
-        self._read()
 
-    def _read(self):
+    def read_ini(self):
         """
         Read our database credentials from the config.ini file. If AWS
         password is enabled retrieve the credentials from the AWS secrets API.
-        Otherwise read them from the INI.  All other values are database
-        driven and retrieved via SQL queries.
         """
         try:
             with open(self.CONFIG_FILE, "r") as f:
@@ -32,6 +29,7 @@ class Config:
 
                 keys = ('host', 'name', 'user', 'pass')
                 if not all(key in parser['database'] for key in keys):
+
                     raise Exception("Missing database config field.")
 
                 keys = ('password_vault', 'profile', 'secret', 'region')
@@ -52,73 +50,82 @@ class Config:
                     self.db_name = parser['database']['name']
                     self.db_user = parser['database']['user']
                     self.db_pass = parser['database']['pass']
-
-                dbh = database.Connect(self.db_user, self.db_pass,
-                                       self.db_host, self.db_name)
-
-                SQL = """
-                SELECT scheme, address, domain, agent, delay, ignore_query,
-                import_sitemaps, retry_max FROM tbl_crawl_settings WHERE
-                botid = %s
-                """
-
-                cursor = dbh.cnx.cursor()
-                cursor.execute(SQL, [self.botid,])
-                rows = cursor.fetchall()
-                cursor.close()
-
-                if len(rows) != 1 or len(rows[0]) != 8:
-                    raise Exception("Unable to retrieve settings for bot id: {}. " .format(self.botid))
-
-                row = rows[0]
-                self.scheme = row[0]
-                self.address = row[1]
-                self.domain = row[2]
-                self.user_agent = row[3]
-                self.crawl_interval = row[4]
-                self.ignore_query = row[5]
-                self.import_sitemaps = row[6]
-                self.retry_max = row[7]
-
-                SQL = """
-                SELECT content_type FROM tbl_crawl_allowed_content INNER JOIN
-                tbl_content_types ON tbl_crawl_allowed_content.contentid =
-                tbl_content_types.contentid WHERE botid = %s
-                """
-
-                cursor = dbh.cnx.cursor()
-                cursor.execute(SQL, [self.botid,])
-                rows = cursor.fetchall()
-                cursor.close()
-
-                if len(rows) == 0:
-                    raise Exception("Unable to find matching content types for bot id: {}. " .
-                                     format(self.botid))
-
-                self.wanted_content = '|'.join(str(s[0]) for s in rows)
-
-                SQL = """
-                SELECT mqtt_host, mqtt_port, mqtt_topic FROM
-                tbl_global_settings ORDER BY id DESC LIMIT 1
-                """
-                cursor = dbh.cnx.cursor()
-                cursor.execute(SQL, [])
-                rows = cursor.fetchall()
-                cursor.close()
-
-                if len(rows) != 1 or len(rows[0]) != 3:
-                    raise Exception("Unable to read global settings.")
-
-                row = rows[0]
-                self.mqtt_host = row[0]
-                self.mqtt_port = row[1]
-                self.mqtt_topic = row[2]
-
         except OSError as e:
             print("Unable to open '{}' -> {}" . format(self.CONFIG_FILE, e),
                   file=sys.stderr)
             sys.exit(1)
         except Exception as e:
             print("Error reading config -> {}" . format(e),
+                  file=sys.stderr)
+            sys.exit(1)
+
+    def read_settings(self):
+        """
+        Read configuration from database tables.
+        """
+        try:
+            dbh = database.Connect(self.db_user, self.db_pass,
+                                   self.db_host, self.db_name)
+
+            SQL = """
+            SELECT scheme, address, domain, agent, delay, ignore_query,
+            import_sitemaps, retry_max FROM tbl_crawl_settings WHERE
+            botid = %s
+            """
+
+            cursor = dbh.cnx.cursor()
+            cursor.execute(SQL, [self.botid,])
+            rows = cursor.fetchall()
+            cursor.close()
+
+            if len(rows) != 1 or len(rows[0]) != 8:
+                raise Exception("Unable to retrieve settings for bot id: {}. " .format(self.botid))
+
+            row = rows[0]
+            self.scheme = row[0]
+            self.address = row[1]
+            self.domain = row[2]
+            self.user_agent = row[3]
+            self.crawl_interval = row[4]
+            self.ignore_query = row[5]
+            self.import_sitemaps = row[6]
+            self.retry_max = row[7]
+
+            SQL = """
+            SELECT content_type FROM tbl_crawl_allowed_content INNER JOIN
+            tbl_content_types ON tbl_crawl_allowed_content.contentid =
+            tbl_content_types.contentid WHERE botid = %s
+            """
+
+            cursor = dbh.cnx.cursor()
+            cursor.execute(SQL, [self.botid,])
+            rows = cursor.fetchall()
+            cursor.close()
+
+            if len(rows) == 0:
+                raise Exception("Unable to find matching content types for bot id: {}. " .
+                                 format(self.botid))
+
+            self.wanted_content = '|'.join(str(s[0]) for s in rows)
+
+            SQL = """
+            SELECT mqtt_host, mqtt_port, mqtt_topic FROM
+            tbl_global_settings ORDER BY id DESC LIMIT 1
+            """
+            cursor = dbh.cnx.cursor()
+            cursor.execute(SQL, [])
+            rows = cursor.fetchall()
+            cursor.close()
+
+            if len(rows) != 1 or len(rows[0]) != 3:
+                raise Exception("Unable to read global settings.")
+
+            row = rows[0]
+            self.mqtt_host = row[0]
+            self.mqtt_port = row[1]
+            self.mqtt_topic = row[2]
+
+        except Exception as e:
+            print("Error reading config from database -> {}" . format(e),
                   file=sys.stderr)
             sys.exit(1)

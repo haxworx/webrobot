@@ -44,6 +44,9 @@ class Robot:
         atexit.register(self.cleanup)
 
         self.config = Config(self.botid)
+        self.config.read_ini()
+        self.config.read_settings()
+
         self.dbh = database.Connect(self.config.db_user, self.config.db_pass,
                                     self.config.db_host, self.config.db_name)
         self.starting_url = self.url = self.config.address
