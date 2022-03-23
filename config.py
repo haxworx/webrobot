@@ -48,9 +48,9 @@ class Config:
                                        self.db_host, self.db_name)
 
                 SQL = """
-                SELECT scheme, address, domain, agent, delay,
-                ignore_query, import_sitemaps, retry_max
-                FROM tbl_crawl_settings WHERE botid = %s
+                SELECT scheme, address, domain, agent, delay, ignore_query,
+                import_sitemaps, retry_max FROM tbl_crawl_settings WHERE
+                botid = %s
                 """
 
                 cursor = dbh.cnx.cursor()
@@ -89,8 +89,8 @@ class Config:
                 self.wanted_content = '|'.join(str(s[0]) for s in rows)
 
                 SQL = """
-                SELECT mqtt_host, mqtt_port, mqtt_topic
-                FROM tbl_global_settings ORDER BY id DESC LIMIT 1
+                SELECT mqtt_host, mqtt_port, mqtt_topic FROM
+                tbl_global_settings ORDER BY id DESC LIMIT 1
                 """
                 cursor = dbh.cnx.cursor()
                 cursor.execute(SQL, [])
