@@ -67,16 +67,8 @@ class Robot:
 
         # Create and set up database and MQTT log handler.
         self.log = logging.getLogger(self.name)
-        handler = logs.DatabaseHandler(self)
-        self.log.addHandler(handler)
-        handler = logs.MQTTHandler(self)
-        self.log.addHandler(handler)
-
-        # Restrict crawling based on starting url path (if exists).
-        self.path_limit = urlparse(self.url).path
-        if len(self.path_limit) and \
-                self.path_limit[len(self.path_limit)-1] == '/':
-            self.path_limit = self.path_limit[:len(self.path_limit)-1]
+        self.log.addHandler(logs.DatabaseHandler(self))
+        self.log.addHandler(logs.MQTTHandler(self))
 
         self.save_count = 0
         self.attempted = 0
@@ -193,10 +185,6 @@ class Robot:
             return False
 
         if link[0] != '/':
-            return False
-
-        if len(self.path_limit) and not link.startswith(self.path_limit):
-            # Ignore path outside path limit (if set from initial URL).
             return False
 
         for rule in self.robots_text.allowed:
@@ -400,8 +388,8 @@ class Robot:
 
                     count = 0
                     # Don't scrape links from sitemap listed URLs.
-                    if not self.config.include_sitemaps or \
-                            (self.config.include_sitemaps and not page.is_sitemap_source()):
+                    if not self.config.import_sitemaps or \
+                            (self.config.import_sitemaps and not page.is_sitemap_source):
                         try:
                             content = data.decode(encoding)
                         except UnicodeDecodeError as e:
