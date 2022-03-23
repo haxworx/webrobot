@@ -34,8 +34,7 @@ class Download:
         """
         Make a HTTP request.
 
-        A wrapper to avoid code duplication.
-        Exceptions must be caught.
+        A wrapper to avoid code duplication. Exceptions must be caught.
         """
 
         request = urllib.request.Request(self.url)
@@ -46,8 +45,8 @@ class Download:
 
     def contents(self):
         """
-        Download content without a load of exception
-        handling. Akin to file_get_contents in PHP.
+        Download content without a load of exception handling. Akin to
+        file_get_contents in PHP.
         """
 
         contents = None
