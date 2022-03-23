@@ -59,14 +59,13 @@ class Config:
 
                 cursor = dbh.cnx.cursor()
                 cursor.execute(SQL, [self.botid,])
-                row = cursor.fetchall()
+                rows = cursor.fetchall()
                 cursor.close()
 
-                if len(row) == 0:
-                    print("Unable to retrieve settings for bot id: {}. " .format(self.botid), file=sys.stderr)
-                    sys.exit(1)
+                if len(rows) != 1:
+                    raise Exception("Unable to retrieve settings for bot id: {}. " .format(self.botid))
 
-                row = row[0]
+                row = rows[0]
                 self.scheme = row[0]
                 self.address = row[1]
                 self.domain = row[2]
@@ -88,9 +87,8 @@ class Config:
                 cursor.close()
 
                 if len(rows) == 0:
-                    print("Unable to find matching content types for bot id: {}. " .
-                          format(self.botid), file=sys.stderr)
-                    sys.exit(1)
+                    raise Exception("Unable to find matching content types for bot id: {}. " .
+                                     format(self.botid))
 
                 self.wanted_content = '|'.join(str(s[0]) for s in rows)
 
@@ -100,14 +98,13 @@ class Config:
                 """
                 cursor = dbh.cnx.cursor()
                 cursor.execute(SQL, [])
-                row = cursor.fetchall()
+                rows = cursor.fetchall()
                 cursor.close()
 
-                if len(rows) == 0:
-                    print("Unable to read global settings.", file=sys.stderr)
-                    sys.exit(1)
+                if len(rows) != 1:
+                    raise Exception("Unable to read global settings.")
 
-                row = row[0]
+                row = rows[0]
                 self.mqtt_host = row[0]
                 self.mqtt_port = row[1]
                 self.mqtt_topic = row[2]
@@ -117,6 +114,6 @@ class Config:
                   file=sys.stderr)
             sys.exit(1)
         except Exception as e:
-            print("Error parsing '{}' -> {}" . format(self.CONFIG_FILE, e),
+            print("Error reading config -> {}" . format(e),
                   file=sys.stderr)
             sys.exit(1)
