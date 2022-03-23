@@ -85,7 +85,7 @@ class Timer
         "Unit=$this->identifier.service\n" .
         $onCalendar .
         "[Install]\n" .
-        "WantedBy=default.target\n";
+        "WantedBy=timers.target\n";
 
         $path = "$dir/$this->identifier.timer";
         $f = fopen($path, 'w');
