@@ -1,7 +1,6 @@
 <?php
 
-$path = get_include_path() . PATH_SEPARATOR . realpath(__DIR__ . '/..');
-set_include_path($path);
+set_include_path(get_include_path() . PATH_SEPARATOR . realpath(__DIR__ . '/..'));
 
 require_once 'Config.php';
 
@@ -22,7 +21,7 @@ class Project
         static $path = null;
 
         if ($path === null) {
-               $path = realpath(dirname(__FILE__) . '/..');
+               $path = realpath(__DIR__ . '/..');
         }
         return $path;
     }
@@ -31,7 +30,6 @@ class Project
     {
         static $path = null;
 
-        # Base directory outside of document root.
         if ($path === null) {
             $path = realpath(__DIR__ . '/../../config.ini');
         }

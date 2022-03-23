@@ -22,7 +22,7 @@ class DB
                 $db_name = $vault->contents['dbname'];
                 $db_user = $vault->contents['username'];
                 $db_pass = $vault->contents['password'];
-		$vault = null;
+                $vault = null;
             } catch (Exception $e) {
                 error_log(__FILE__ . ':' . __LINE__ . ':' . $e->getMessage());
             }
@@ -31,7 +31,9 @@ class DB
             $db_name = $ini['database']['name'];
             $db_user = $ini['database']['user'];
             $db_pass = $ini['database']['pass'];
-	}
+        }
+
+        $ini = null;
 
         $default_options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
