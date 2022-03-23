@@ -58,7 +58,7 @@ class Config:
                 rows = cursor.fetchall()
                 cursor.close()
 
-                if len(rows) != 1:
+                if len(rows) != 1 or len(rows[0]) != 8:
                     raise Exception("Unable to retrieve settings for bot id: {}. " .format(self.botid))
 
                 row = rows[0]
@@ -97,7 +97,7 @@ class Config:
                 rows = cursor.fetchall()
                 cursor.close()
 
-                if len(rows) != 1:
+                if len(rows) != 1 or len(rows[0]) != 3:
                     raise Exception("Unable to read global settings.")
 
                 row = rows[0]
