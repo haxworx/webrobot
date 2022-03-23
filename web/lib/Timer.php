@@ -61,9 +61,7 @@ class Timer
         "[Service]\n" .
         "Type=oneshot\n" .
         "ExecStart=docker run $this->docker_image $this->botid\n" .
-        "\n" .
-        "[Install]\n" .
-        "WantedBy=default.target\n";
+        "\n";
 
         $path = "$dir/$this->identifier.service";
         $f = fopen($path, 'w');
@@ -82,7 +80,6 @@ class Timer
         $data =
         "[Unit]\n" .
         "Description=Web Robot deployment timer.\n" .
-        "Requires=$this->identifier.service\n" .
         "\n" .
         "[Timer]\n".
         "Unit=$this->identifier.service\n" .
