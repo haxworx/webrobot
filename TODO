@@ -1,2 +1,12 @@
-* Docker image installation.
+* Start collecting some data.
+* Fix missing javascript checks (1 to 1 with backend code).
+* Think about basic auth? Is it worth it?
+* Fix the streaming MQTT.
+* Add a global settings editor.
+* Add a basic search tool for parsing results from the data.
+* Write scripts for setting SQL user rights.
+* Look into HTTP headers for locking things down.
+* Think of a third way to retrieve database credentials:
+    Querying a remote server for this is mental.
 * Set systemd timers to call docker.
+* Add more comments.
