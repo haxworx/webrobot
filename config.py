@@ -8,6 +8,9 @@ import database
 from aws.password_vault import Vault
 
 class Config:
+    """
+    Basic configuration for our program logic.
+    """
     CONFIG_FILE = 'config.ini';
 
     def __init__(self, botid):
@@ -15,6 +18,12 @@ class Config:
         self._read()
 
     def _read(self):
+        """
+        Read our database credentials from the config.ini file. If AWS
+        password is enabled retrieve the credentials from the AWS secrets API.
+        Otherwise read them from the INI.  All other values are database
+        driven and retrieved via SQL queries.
+        """
         try:
             with open(self.CONFIG_FILE, "r") as f:
                 content = f.read()
