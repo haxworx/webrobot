@@ -11,11 +11,7 @@ class Config:
     CONFIG_FILE = 'config.ini';
 
     def __init__(self, botid):
-        self.include_sitemaps = False
-        self.ignore_query = False
-        self.aws_password_value = False
         self.botid = botid
-
         self._read()
 
     def _read(self):
