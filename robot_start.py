@@ -12,6 +12,7 @@ from config import Config
 def main(botid):
     ret = 1
     config = Config(botid)
+    config.read_ini()
 
     dbh = database.Connect(config.db_user, config.db_pass,
                            config.db_host, config.db_name)
