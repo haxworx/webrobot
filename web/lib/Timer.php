@@ -55,11 +55,14 @@ class Timer
 
         $data =
         "[Unit]\n".
-        "Description=Web Robot deployment service\n" .
+        "Description=Web Robot deployment service ($this->address).\n" .
         "Wants=$this->identifier.timer\n" .
         "\n" .
         "[Service]\n" .
         "Type=oneshot\n" .
+        "# We log to SQL and MQTT.\n" .
+        "StandardOutput=null\n" .
+        "StandardError=null\n" .
         "ExecStart=docker run $this->docker_image $this->botid\n" .
         "\n";
 
@@ -79,7 +82,7 @@ class Timer
 
         $data =
         "[Unit]\n" .
-        "Description=Web Robot deployment timer.\n" .
+        "Description=Web Robot deployment timer ($this->address).\n" .
         "\n" .
         "[Timer]\n".
         "Unit=$this->identifier.service\n" .
