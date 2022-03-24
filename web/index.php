@@ -12,13 +12,13 @@ try {
     $stmt->execute();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	    $robots[] = [
-		  'botid' => $row['botid'],
-                  'scheme' => $row['scheme'],
-                  'address' => $row['address'],
-                  'domain' => $row['domain'],
+		  'botid'      => $row['botid'],
+                  'scheme'     => $row['scheme'],
+                  'address'    => $row['address'],
+                  'domain'     => $row['domain'],
                   'start_time' => $row['start_time'],
-                  'agent' => $row['agent'],
-                  'weekday' => $row['weekday']
+                  'agent'      => $row['agent'],
+                  'weekday'    => $row['weekday']
         ];
     }
 
