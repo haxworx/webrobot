@@ -34,7 +34,6 @@ class Robot:
     _domain = None
     _ip_address = None
     _url = None
-    _starting_url = None
     dbh = None
 
     def __init__(self, botid):
@@ -49,7 +48,7 @@ class Robot:
 
         self.dbh = database.Connect(self.config.db_user, self.config.db_pass,
                                     self.config.db_host, self.config.db_name)
-        self.starting_url = self.url = self.config.address
+        self.url = self.config.address
         self.user_agent = self.config.user_agent;
         self.scheme = self.config.scheme
         self.name = self.config.domain
@@ -116,14 +115,6 @@ class Robot:
     @ip_address.setter
     def ip_address(self, ip_address):
         self._ip_address = ip_address
-
-    @property
-    def starting_url(self):
-        return self._starting_url
-
-    @starting_url.setter
-    def starting_url(self, url):
-        self._starting_url = url
 
     def pidfile_create(self):
         pid = str(os.getpid())
