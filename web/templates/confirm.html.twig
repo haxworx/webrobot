@@ -8,6 +8,7 @@
 {% for param in params %}
 <input type="hidden" name="{{ param.key }}" value="{{ param.value }}">
 {% endfor %}
+<input type="hidden" name="token" value="{{ token }}">
 <button type="submit" class="create_submit confirm_submit">Yes</button>
 <button type="submit" class="confirm_cancel" onclick="history.back()">No</button>
 </form>

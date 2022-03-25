@@ -9,6 +9,7 @@
 <p id="create_error"></p>
 
 <form onsubmit="return create_validate(this);" action="/edit/action/" name="create_form" method="post">
+  <input type="hidden" name="token" value="{{ token }}">
   <input type="hidden" name="botid" value="{{ bot.botid }}">
   <label class="create_label">Address</label>
   <label class="create_input create_unchangeable">{{ bot.address }}</label>

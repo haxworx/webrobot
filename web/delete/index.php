@@ -3,8 +3,16 @@
 require '../lib/project.php';
 require_once 'lib/Database.php';
 require_once 'lib/Timer.php';
+require_once 'lib/Session.php';
 
 # DELETE a job from the tbl_crawl_launch table.
+
+$session = Session::getInstance();
+
+if ((!isset($_POST['token'])) || $_POST['token'] !== $session->getToken()) {
+    http_response_code(405);
+    return;
+}
 
 if (!isset($_POST['botid']) || empty($_POST['botid'])) {
     header("Location: / ");

@@ -3,6 +3,10 @@
 require_once '../lib/project.php';
 require_once 'lib/Twig.php';
 require_once 'lib/Database.php';
+require_once 'lib/Session.php';
+
+$session = Session::getInstance();
+$session->SetToken();
 
 $content_types = [];
 
@@ -26,6 +30,9 @@ try {
 
 $template = $twig->load('create.html.twig');
 
-echo $template->render(['content_types' => $content_types ]);
+echo $template->render([
+    'content_types' => $content_types,
+    'token'         => $session->getToken(),
+]);
 
 ?>

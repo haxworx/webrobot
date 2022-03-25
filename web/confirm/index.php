@@ -3,6 +3,15 @@
 require_once '../lib/project.php';
 require_once 'lib/Database.php';
 require_once 'lib/Twig.php';
+require_once 'lib/Session.php';
+
+$session = Session::getInstance();
+
+if ((!isset($_POST['token'])) || $_POST['token'] !== $session->getToken()) {
+    http_response_code(405);
+    return;
+}
+
 
 $params = [];
 
@@ -32,6 +41,10 @@ if ((!file_exists($action_path)) or (!is_dir($action_path))) {
 
 $template = $twig->load('confirm.html.twig');
 
-echo $template->render(['action' => $action, 'params' => $params]);
+echo $template->render([
+    'action' => $action,
+    'params' => $params,
+    'token'  => $session->getToken(),
+]);
 
 ?>

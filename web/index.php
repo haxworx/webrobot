@@ -2,6 +2,10 @@
 
 require_once 'lib/Database.php';
 require_once 'lib/Twig.php';
+require_once 'lib/Session.php';
+
+$session = Session::getInstance();
+$session->setToken();
 
 $robots = [];
 
@@ -30,6 +34,9 @@ try {
 
 $template = $twig->load('index.html.twig');
 
-echo $template->render(['robots' => $robots ]);
+echo $template->render([
+    'robots' => $robots,
+    'token'  => $session->getToken(),
+]);
 
 ?>
