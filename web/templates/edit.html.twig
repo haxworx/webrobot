@@ -50,8 +50,7 @@
   <input type="number" class="create_number" name="retry_max" id="retry_max" min="0" max="10" step="1.0" value="{{ bot.retry_max }}">
   <label for="content_types" class="create_label">Content Types</label>
 {% for content in content_types %}
-  <input type="checkbox" name="content_types[]" value="{{ content.contentid }}" {% if content.selected %} checked {% endif %}>
-  <label for="content_types[]">{{ content.content_type }}</label>
+  <label><input type="checkbox" name="content_types[]" value="{{ content.contentid }}" {% if content.selected %}checked{% endif %}>{{ content.content_type }}</label>
 {% endfor %}
   <br>
   <input type="submit" class="create_submit" value="Update">
