@@ -36,7 +36,7 @@ class Session
 
     public function setToken()
     {
-	$this->token = bin2hex(random_bytes(32));
+        $this->token = bin2hex(random_bytes(32));
     }
 
     public function getToken()
