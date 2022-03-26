@@ -1,14 +1,14 @@
-var weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ];
+let weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ];
 
 window.onload = function() {
-    var radio_weekly = document.getElementById('weekly');
-    var radio_daily = document.getElementById('daily');
-    var address = document.getElementById('address');
-    var agent = document.getElementById('agent');
-    var time = document.getElementById('time');
+    let radio_weekly = document.getElementById('weekly');
+    let radio_daily = document.getElementById('daily');
+    let address = document.getElementById('address');
+    let agent = document.getElementById('agent');
+    let time = document.getElementById('time');
    
-    for (var i = 0; i < weekdays.length; i++) {
-       var weekday = document.getElementById(weekdays[i]);
+    for (let i = 0; i < weekdays.length; i++) {
+        let weekday = document.getElementById(weekdays[i]);
         weekday.onclick = radio_weekday_clicked;
     }
 
@@ -20,46 +20,53 @@ window.onload = function() {
 }
 
 function reset_error() {
-   var p = document.getElementById('create_error');
+   let p = document.getElementById('create_error');
    p.style.display = "none";
 }
 
 function display_error(message) {
-    var p = document.getElementById('create_error');
+    let p = document.getElementById('create_error');
     p.style.display = "block";
     p.innerHTML = message;
 }
 
 function validate_address(address) {
-    if (address.value === "") {
-	display_error("Please enter a valid address.");
-        return false;
+    let ok = true;
+    let url = address.value.toLowerCase();
+    let val = url.search(/^(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/);
+    if (val == -1) {
+        ok = false;
+        display_error("Please enter a valid address.");
     }
-    return true;
+    return ok;
 }
 
 function validate_agent(agent) {
-    if (agent.value === "") {
-	display_error("Please enter a valid user agent.");
-        return false;
+    let ok = true;
+    let user_agent = agent.value;
+    let val = user_agent.search(/^[A-Za-z0-9\._\/]+\/\d+\.\d+$/);
+    if (val == -1) {
+        ok = false;
+        display_error("Please enter a valid user agent.");
     }
-    return true;
+    return ok;
 }
 
 function validate_time(time) {
     if (time.value === "") {
-	display_error("Please enter a valid time.");
+        display_error("Please enter a valid time.");
         return false;
     }
     return true;
 }
 
 function create_validate(form) {
-    var address = form.address;
-    var agent = form.agent;
-    var time = form.time;
-    var weekly = form.weekly;
-    var daily = form.daily;
+    let address = form.address;
+    let agent = form.agent;
+    let time = form.time;
+    let weekly = form.weekly;
+    let daily = form.daily;
+    let content = document.getElementsByName('content_types[]');
 
     if (!validate_address(address)) {
         return false;
@@ -73,13 +80,25 @@ function create_validate(form) {
         return false;
     }
 
+    let haveContent = false;
+    for (let i = 0; i < content.length; i++) {
+        if (content[i].checked) {
+            haveContent = true;
+            break;
+        }
+    }
+    if (!haveContent) {
+        display_error("Please select at least one content type.");
+        return false;
+    }
+
     if (daily.checked == true) {
         return true;
     }
 
-    var weekdays = document.getElementsByName('weekly');
-    var haveWeekday = false;
-    for (var i = 0; i < weekdays.length; i++) {
+    let weekdays = document.getElementsByName('weekly');
+    let haveWeekday = false;
+    for (let i = 0; i < weekdays.length; i++) {
         if (weekdays[i].checked) {
             haveWeekday = true;
             break;
@@ -93,22 +112,22 @@ function create_validate(form) {
 
 function radio_weekly_clicked() {
     reset_error();
-    var radio_monday = document.getElementById('monday');
+    let radio_monday = document.getElementById('monday');
     radio_monday.checked = true;
 }
 
 function radio_daily_clicked() {
     reset_error();
-    for (var i = 0; i < weekdays.length; i++) {
-        var weekday = document.getElementById(weekdays[i]);
+    for (let i = 0; i < weekdays.length; i++) {
+        let weekday = document.getElementById(weekdays[i]);
         weekday.checked = false;
     }
 }
 
 function radio_weekday_clicked() {
    reset_error();
-   var weekly = document.getElementById('weekly');
-   var daily = document.getElementById('daily');
+   let weekly = document.getElementById('weekly');
+   let daily = document.getElementById('daily');
    daily.checked = false;
    weekly.checked = true;
 }
