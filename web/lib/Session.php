@@ -11,7 +11,6 @@ class Session
 
     private function __construct()
     {
-        $this->setToken();
     }
 
     public static function getInstance()
@@ -37,6 +36,10 @@ class Session
             ]);
 
             $this->session_state = session_start();
+        }
+
+        if (!isset($this->token)) {
+            $this->setToken();
         }
 
         return $this->session_state;
