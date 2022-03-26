@@ -1,5 +1,5 @@
 
-let timeout = 1000 * 60 * 15;
+let timeout = 1000 * 60 * 10;
 
 setTimeout(sessionRefresh, timeout);
 
