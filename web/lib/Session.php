@@ -23,8 +23,6 @@ class Session
         if (!isset($this->token)) {
             $this->setToken();
         }
-
-        return $this->session_state;
     }
 
     public function startExtend()
