@@ -9,7 +9,7 @@ class DB
 
     public function __construct($options = [])
     {
-        $path = Project::config_path();
+        $path = Project::configPath();
         $ini = parse_ini_file($path, true);
         if (!$ini) {
             throw new Exception("parse_ini_file");

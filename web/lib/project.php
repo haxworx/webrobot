@@ -6,7 +6,7 @@ require_once 'Config.php';
 
 class Project
 {
-    public static function root_directory()
+    public static function rootDirectory()
     {
         static $path = NULL;
 
@@ -16,7 +16,7 @@ class Project
         return $path;
     }
 
-    public static function web_root_directory()
+    public static function webRootDirectory()
     {
         static $path = null;
 
@@ -26,7 +26,7 @@ class Project
         return $path;
     }
 
-    public static function config_path()
+    public static function configPath()
     {
         static $path = null;
 
@@ -36,7 +36,7 @@ class Project
         return $path;
     }
 
-    public static function debugging_mode()
+    public static function debuggingMode()
     {
         $config = new Config();
         return (bool) $config->options['debug'];

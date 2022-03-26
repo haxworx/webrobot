@@ -31,7 +31,7 @@ class Session
             session_set_cookie_params([
                 'lifetime' => 3600,
                 'domain'   => 'localhost',
-                'secure'   => Project::debugging_mode() === false ? false : true,
+                'secure'   => Project::debuggingMode() === false ? false : true,
                 'path'     => '/',
             ]);
 

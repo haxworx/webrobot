@@ -31,7 +31,7 @@ if (!preg_match('/^[a-zA-Z0-9]+$/', $action)) {
 }
 
 # Basic lock down of action against path.
-$action_path = project::web_root_directory() . "/$action";
+$action_path = project::webRootDirectory() . "/$action";
 if ((!file_exists($action_path)) or (!is_dir($action_path))) {
     $template = $twig->load('errors.html.twig');
     echo $template->render(['message' => 'Invalid action']);

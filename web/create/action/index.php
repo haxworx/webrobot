@@ -107,7 +107,7 @@ $args = [
 ];
 
 $timer = new Timer($args);
-$timer->Create();
+$timer->create();
 
 # Redirect to landing page. All is "ok"
 header('Location: /');

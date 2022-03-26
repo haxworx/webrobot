@@ -28,20 +28,20 @@ class Timer
         $this->identifier = $this->domain . '.' . $this->scheme;
     }
 
-    private function DayString()
+    private function dayString()
     {
         $day = mb_substr($this->weekday, 0, 3);
         $day = ucfirst($day);
         return $day;
     }
 
-    public function Update()
+    public function update()
     {
         # Overwrite the unit timer and service files.
-        $this->Create();
+        $this->create();
     }
 
-    public function Create()
+    public function create()
     {
         $home = getenv('HOME');
         $dir = $home . '/.config/systemd/user';
@@ -51,7 +51,7 @@ class Timer
             }
         }
 
-        $executable = Project::root_directory() . '/robot_start.py';
+        $executable = Project::rootDirectory() . '/robot_start.py';
 
         $data =
         "[Unit]\n".
@@ -76,7 +76,7 @@ class Timer
         if ($this->daily) {
             $onCalendar = "OnCalendar=*-*-* $this->time\n";
         } else {
-            $day = $this->DayString();
+            $day = $this->dayString();
             $onCalendar = "OnCalendar=$day *-* $this->time\n";
         }
 
@@ -100,7 +100,7 @@ class Timer
         }
     }
 
-    public static function Remove($scheme, $domain)
+    public static function remove($scheme, $domain)
     {
         $files = [ "$domain.$scheme.service", "$domain.$scheme.timer" ];
         $home = getenv('HOME');

@@ -82,7 +82,7 @@ $args = [
 ];
 
 $timer = new Timer($args);
-$timer->Update();
+$timer->update();
 
 header("Location: /edit/?botid=$botid");
 

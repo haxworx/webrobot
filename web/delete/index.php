@@ -46,7 +46,7 @@ try {
     error_log(__FILE__ . ':' . __LINE__ . ':' . $e->getMessage());
 }
 
-Timer::Remove($scheme, $domain);
+Timer::remove($scheme, $domain);
 
 header("Location: /");
 ?>
