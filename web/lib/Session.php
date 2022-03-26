@@ -24,7 +24,6 @@ class Session
         return self::$instance;
     }
 
-
     public function startSession()
     {
         if ($this->session_state === self::SESSION_NOT_STARTED) {

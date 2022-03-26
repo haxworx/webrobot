@@ -9,7 +9,7 @@ require_once 'lib/Session.php';
 
 $session = Session::getInstance();
 
-if ((!isset($_POST['token'])) || $_POST['token'] !== $session->getToken()) {
+if ((!isset($_POST['token'])) || ($_POST['token'] !== $session->getToken())) {
     http_response_code(405);
     return;
 }
