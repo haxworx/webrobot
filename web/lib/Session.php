@@ -11,6 +11,7 @@ class Session
 
     private function __construct()
     {
+        $this->setToken();
     }
 
     public static function getInstance()
@@ -28,6 +29,13 @@ class Session
     public function startSession()
     {
         if ($this->session_state === self::SESSION_NOT_STARTED) {
+            session_set_cookie_params([
+                'lifetime' => 3600,
+                'domain'   => 'localhost',
+                'secure'   => Project::debugging_mode() === false ? false : true,
+                'path'     => '/',
+            ]);
+
             $this->session_state = session_start();
         }
 
@@ -66,7 +74,7 @@ class Session
 
     public function __unset($name)
     {
-        unset($_SESSION[$name]); 
+        unset($_SESSION[$name]);
     }
 
     public function destroy()

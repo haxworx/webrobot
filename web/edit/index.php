@@ -6,7 +6,6 @@ require_once 'lib/Database.php';
 require_once 'lib/Session.php';
 
 $session = Session::getInstance();
-$session->setToken();
 
 $content_types = [];
 

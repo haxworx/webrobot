@@ -5,7 +5,6 @@ require_once 'lib/Twig.php';
 require_once 'lib/Session.php';
 
 $session = Session::getInstance();
-$session->setToken();
 
 $robots = [];
 
