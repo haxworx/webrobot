@@ -12,9 +12,10 @@ class Session
             session_set_cookie_params([
                 'lifetime' => 3600,
                 'domain'   => 'localhost',
-                'secure'   => Project::debuggingMode() === false ? false : true,
+                'secure'   => true,
                 'path'     => '/',
                 'httponly' => true,
+                'samesite' => 'Strict',
             ]);
             session_start();
             $this->modified = time();
@@ -33,7 +34,14 @@ class Session
 
     public function extend()
     {
-        setcookie(session_name(), session_id(), time() + 3600, '/');
+        setcookie(session_name(), session_id(), [
+            'expires' => time() + 3600,
+            'path' => '/',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict',
+        ]);
+
         $this->modified = time();
     }
 
