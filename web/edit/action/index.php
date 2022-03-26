@@ -5,7 +5,8 @@ require_once 'lib/Database.php';
 require_once 'lib/Timer.php';
 require_once 'lib/Session.php';
 
-$session = Session::getInstance();
+$session = new Session;
+$session->start();
 
 if ((!isset($_POST['token'])) || ($_POST['token'] !== $session->getToken())) {
     http_response_code(405);

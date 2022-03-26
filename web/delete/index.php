@@ -7,7 +7,8 @@ require_once 'lib/Session.php';
 
 # DELETE a job from the tbl_crawl_launch table.
 
-$session = Session::getInstance();
+$session = new Session;
+$session->startExtend();
 
 if ((!isset($_POST['token'])) || ($_POST['token'] !== $session->getToken())) {
     http_response_code(405);

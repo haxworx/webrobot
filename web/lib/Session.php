@@ -2,39 +2,22 @@
 
 class Session
 {
-    const SESSION_STARTED = true;
-    const SESSION_NOT_STARTED = false;
-
-    private $session_state = self::SESSION_NOT_STARTED;
-
-    private static $instance;
-
-    private function __construct()
+    public function __construct()
     {
     }
 
-    public static function getInstance()
+    public function start()
     {
-        if (!isset(self::$instance)) {
-            self::$instance = new self;
-        }
-
-        self::$instance->startSession();
-
-        return self::$instance;
-    }
-
-    public function startSession()
-    {
-        if ($this->session_state === self::SESSION_NOT_STARTED) {
+        if (session_status() === PHP_SESSION_NONE) {
             session_set_cookie_params([
                 'lifetime' => 3600,
                 'domain'   => 'localhost',
                 'secure'   => Project::debuggingMode() === false ? false : true,
                 'path'     => '/',
+                'httponly' => true,
             ]);
-
-            $this->session_state = session_start();
+            session_start();
+            $this->modified = time();
         }
 
         if (!isset($this->token)) {
@@ -42,6 +25,18 @@ class Session
         }
 
         return $this->session_state;
+    }
+
+    public function startExtend()
+    {
+        $this->start();
+        $this->extend();
+    }
+
+    public function extend()
+    {
+        setcookie(session_name(), session_id(), time() + 3600, '/');
+        $this->modified = time();
     }
 
     public function setToken()
@@ -81,10 +76,10 @@ class Session
 
     public function destroy()
     {
-        if ($this->session_state == self::SESSION_STARTED) {
-            $this->session_state = !session_destroy();
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
             unset($_SESSION);
-            return !$this->session_state;
+            return true;
         }
         return false;
     }
