@@ -73,12 +73,22 @@ function validate_time(time) {
     return true;
 }
 
+function validate_delay(delay) {
+    let value = parseFloat(delay.value);
+    if ((delay.value === "") || ((value < 0.5) || (value > 5.0))) {
+        display_error("Please enter a valid delay.");
+        return false;
+    }
+    return true;
+}
+
 function create_validate(form) {
     let address = form.address;
     let agent = form.agent;
     let time = form.time;
     let weekly = form.weekly;
     let daily = form.daily;
+    let delay = form.delay;
     let content = document.getElementsByName('content_types[]');
 
     if (!validate_address(address)) {
@@ -90,6 +100,10 @@ function create_validate(form) {
     }
 
     if (!validate_time(time)) {
+        return false;
+    }
+
+    if (!validate_delay(delay)) {
         return false;
     }
 
