@@ -6,10 +6,19 @@ window.onload = function() {
     let address = document.getElementById('address');
     let agent = document.getElementById('agent');
     let time = document.getElementById('time');
-   
+    let delay = document.getElementById('delay');
+    let retry_max = document.getElementById('retry_max');
+    let ignore_query = document.getElementById('ignore_query');
+    let import_sitemaps = document.getElementById('import_sitemaps');
+    let content = document.getElementsByName('content_types[]');
+
     for (let i = 0; i < weekdays.length; i++) {
         let weekday = document.getElementById(weekdays[i]);
         weekday.onclick = radio_weekday_clicked;
+    }
+
+    for (let i = 0; i < content.length; i++) {
+        content[i].onclick = reset_error;
     }
 
     radio_weekly.onclick = radio_weekly_clicked;
@@ -17,6 +26,10 @@ window.onload = function() {
     address.onclick = reset_error;
     agent.onclick = reset_error;
     time.onclick = reset_error;
+    delay.onclick = reset_error;
+    retry_max.onclick = reset_error;
+    ignore_query.onclick = reset_error;
+    import_sitemaps.onclick = reset_error;
 }
 
 function reset_error() {
