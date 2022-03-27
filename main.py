@@ -76,7 +76,7 @@ class Robot:
         self.attempted = 0
         self.retry_count = 0
 
-        client = mqtt.Client(userdata=self);
+        client = mqtt.Client(userdata=self, client_id="bot{}".format(self.botid));
         client.on_connect = on_connect;
         client.on_message = on_message;
         client.connect_async(self.config.mqtt_host, self.config.mqtt_port, keepalive=3600, bind_address="");
@@ -429,6 +429,7 @@ class Robot:
 def on_connect(client, userdata, flags, rc):
     crawler = userdata;
     client.subscribe(crawler.config.mqtt_topic);
+    client.publish(crawler.config.mqtt_topic, "STARTED: {}" . format(crawler.botid));
 
 def on_message(client, userdata, msg):
     crawler = userdata;
