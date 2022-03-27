@@ -21,7 +21,7 @@ class Config
         } catch (Exception $e) {
             error_log(__FILE__ . ':' . __LINE__ . ':' . $e->getMessage());
             http_response_code(500);
-            return;
+            exit(1);
         }
         $this->options = $row;
     }

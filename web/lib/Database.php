@@ -25,6 +25,7 @@ class DB
                 $vault = null;
             } catch (Exception $e) {
                 error_log(__FILE__ . ':' . __LINE__ . ':' . $e->getMessage());
+                exit(1);
             }
         } else {
             $db_host = $ini['database']['host'];
