@@ -98,8 +98,7 @@ VALUES
     ('text/css', 'CSS'),
     ('application/xml', 'Application XML'),
     ('text/xml', 'Text XML'),
-    ('application/json', 'Application JSON'),
-    ('text/json', 'Text JSON');
+    ('application/json', 'Application JSON');
 
 DROP TABLE IF EXISTS `tbl_global_settings`;
 CREATE TABLE `tbl_global_settings` (
