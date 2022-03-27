@@ -428,6 +428,7 @@ class Robot:
             self.log.critical("/%s/%s/critical/interrupted", self.hostname, self.domain)
 
         self.log.info("/%s/%s/info/finished/saved/%i", self.hostname, self.domain, crawler.save_count)
+        self.mqtt_client.publish(crawler.config.mqtt_topic, "FINISHED: {}" . format(crawler.botid));
         self.mqtt_client.loop_stop();
 
 def on_connect(client, userdata, flags, rc):
