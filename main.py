@@ -11,6 +11,7 @@ import re
 import hashlib
 import fcntl
 import mysql.connector
+import paho.mqtt.client as mqtt
 from datetime import datetime
 from urllib import error
 from urllib.parse import urljoin, urlparse
@@ -70,12 +71,16 @@ class Robot:
         # Create and set up database and MQTT log handler.
         self.log = logging.getLogger(self.name)
         self.log.addHandler(logs.DatabaseHandler(self))
-        self.log.addHandler(logs.MQTTHandler(self))
 
         self.save_count = 0
         self.attempted = 0
         self.retry_count = 0
 
+        client = mqtt.Client(userdata=self);
+        client.on_connect = on_connect;
+        client.on_message = on_message;
+        client.connect_async(self.config.mqtt_host, self.config.mqtt_port, keepalive=3600, bind_address="");
+        client.loop_start();
     @property
     def url(self):
         return self._url
@@ -318,7 +323,7 @@ class Robot:
                 downloader = Download(self.url, self.user_agent)
                 (response, code) = downloader.get()
             except error.HTTPError as e:
-                self.log.info("Recording %s -> %i", self.url, e.code)
+                self.log.info("/%s/%s/warning/%i/%s", self.hostname, self.domain, e.code, self.url)
                 res = {'botid': self.botid,
                        'status_code': e.code,
                        'url': self.url,
@@ -421,11 +426,23 @@ class Robot:
 
         self.log.info("/%s/%s/info/finished/saved/%i", self.hostname, self.domain, crawler.save_count)
 
+def on_connect(client, userdata, flags, rc):
+    crawler = userdata;
+    client.subscribe(crawler.config.mqtt_topic);
+
+def on_message(client, userdata, msg):
+    crawler = userdata;
+    if msg.topic == crawler.config.mqtt_topic:
+       received = str(msg.payload)
+       matches = re.search('TERMINATE: (\d+)', received)
+       if matches:
+           if int(matches[1]) == crawler.botid:
+               crawler.log.critical("/%s/%s/critical/mqtt/interrupted", crawler.hostname, crawler.domain)
+               core.shutdown()
 
 def signal_handler(signum, frame):
     if signum == signal.SIGINT:
         core.shutdown()
-
 
 if __name__ == '__main__':
     ROBOT_START = os.getenv('ROBOT_START')
@@ -450,4 +467,5 @@ if __name__ == '__main__':
         sys.exit(1)
 
     crawler = Robot(int(sys.argv[1]))
+
     crawler.crawl()

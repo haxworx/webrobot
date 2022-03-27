@@ -1,6 +1,10 @@
 <?php
 
 require_once 'project.php';
+require_once 'Config.php';
+require 'vendor/autoload.php';
+use PhpMqtt\Client\Exceptions\MqttClientException;
+use PhpMqtt\Client\MqttClient;
 
 class Timer
 {
@@ -37,7 +41,7 @@ class Timer
 
     public function update()
     {
-        # Overwrite the unit timer and service files.
+        $this->remove($this->botid, $this->scheme, $this->domain);
         $this->create();
     }
 
@@ -100,7 +104,7 @@ class Timer
         }
     }
 
-    public static function remove($scheme, $domain)
+    public static function remove($botid, $scheme, $domain)
     {
         $files = [ "$domain.$scheme.service", "$domain.$scheme.timer" ];
         $home = getenv('HOME');
@@ -115,5 +119,18 @@ class Timer
             $path = $dir . "/$file";
             unlink($path);
         }
+
+        $config = new Config();
+
+        # Send terminate command to robot over MQTT.
+        # If robot is running it will gracefully shutdown.
+        try {
+            $mqtt = new MqttClient($config->options['mqtt_host'], $config->options['mqtt_port'], 'robot_controller');
+            $mqtt->connect();
+            $mqtt->publish($config->options['mqtt_topic'], "TERMINATE: $botid", 0);
+            $mqtt->disconnect();
+        } catch (MqttClientException $e) {
+            error_log(__FILE__ . ':'. __LINE__ . ':' . $e->getMessage());
+        }
     }
-};
+}

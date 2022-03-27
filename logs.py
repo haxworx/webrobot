@@ -52,11 +52,10 @@ class MQTTHandler(StreamHandler):
         self.topic = crawler.config.mqtt_topic
 
     def emit(self, record):
-        msg = self.format(record)
-
-        now = datetime.now()
-
-        try:
-            paho.mqtt.publish.single(self.topic, msg, hostname=self.host, port=self.port)
-        except:
-            pass
+        pass
+#       msg = self.format(record)
+#       now = datetime.now()
+#       try:
+#           paho.mqtt.publish.single(self.topic, msg, hostname=self.host, port=self.port)
+#       except:
+#           pass
