@@ -5,3 +5,4 @@ __pycache__
 something_really_bad_happened.txt
 config.txt
 docker/config.ini
+config.ini
