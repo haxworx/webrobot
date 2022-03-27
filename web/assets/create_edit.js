@@ -82,6 +82,15 @@ function validate_delay(delay) {
     return true;
 }
 
+function validate_retry_max(retry_max) {
+    let value = parseInt(retry_max.value);
+    if ((retry_max.value === "") || ((value < 0) || (value > 10))) {
+        display_error("Please enter valid entry for retry max (between 0 and 10).");
+        return false;
+    }
+    return true;
+}
+
 function create_validate(form) {
     let address = form.address;
     let agent = form.agent;
@@ -89,6 +98,7 @@ function create_validate(form) {
     let weekly = form.weekly;
     let daily = form.daily;
     let delay = form.delay;
+    let retry_max = form.retry_max;
     let content = document.getElementsByName('content_types[]');
 
     if (!validate_address(address)) {
@@ -107,6 +117,25 @@ function create_validate(form) {
         return false;
     }
 
+    if (!validate_retry_max(retry_max)) {
+        return false;
+    }
+
+    if (daily.checked != true) {
+        let weekdays = document.getElementsByName('weekly');
+        let haveWeekday = false;
+        for (let i = 0; i < weekdays.length; i++) {
+            if (weekdays[i].checked) {
+                haveWeekday = true;
+                break;
+            }
+        }
+        if (!haveWeekday) {
+            display_error("Please select a week day.");
+            return false;
+        }
+    }
+
     let haveContent = false;
     for (let i = 0; i < content.length; i++) {
         if (content[i].checked) {
@@ -119,22 +148,7 @@ function create_validate(form) {
         return false;
     }
 
-    if (daily.checked == true) {
-        return true;
-    }
-
-    let weekdays = document.getElementsByName('weekly');
-    let haveWeekday = false;
-    for (let i = 0; i < weekdays.length; i++) {
-        if (weekdays[i].checked) {
-            haveWeekday = true;
-            break;
-        }
-    }
-    if (!haveWeekday) {
-        display_error("Please select a week day.");
-    }
-    return haveWeekday;
+    return true;
 }
 
 function radio_weekly_clicked() {
