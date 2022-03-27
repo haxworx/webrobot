@@ -64,9 +64,8 @@ class Timer
         "\n" .
         "[Service]\n" .
         "Type=oneshot\n" .
-        "# We log to SQL and MQTT.\n" .
+        "# We log to SQL.\n" .
         "StandardOutput=null\n" .
-        "StandardError=null\n" .
         "ExecStart=docker run $this->docker_image $this->botid\n" .
         "\n";
 

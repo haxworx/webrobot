@@ -68,19 +68,21 @@ class Robot:
         self.wanted_content = "^({})" . format(self.config.wanted_content)
         self.compile_regexes()
 
-        # Create and set up database and MQTT log handler.
+        # Create and set up database log handler.
         self.log = logging.getLogger(self.name)
         self.log.addHandler(logs.DatabaseHandler(self))
+
+        # Create our connection to the MQTT broker for simple IPC.
+        self.mqtt_client = mqtt.Client(userdata=self, client_id="bot{}".format(self.botid));
+        self.mqtt_client.on_connect = on_connect;
+        self.mqtt_client.on_message = on_message;
+        self.mqtt_client.connect_async(self.config.mqtt_host, self.config.mqtt_port, keepalive=3600, bind_address="");
+        self.mqtt_client.loop_start();
 
         self.save_count = 0
         self.attempted = 0
         self.retry_count = 0
 
-        client = mqtt.Client(userdata=self, client_id="bot{}".format(self.botid));
-        client.on_connect = on_connect;
-        client.on_message = on_message;
-        client.connect_async(self.config.mqtt_host, self.config.mqtt_port, keepalive=3600, bind_address="");
-        client.loop_start();
     @property
     def url(self):
         return self._url
@@ -421,17 +423,25 @@ class Robot:
                 time.sleep(self.config.crawl_interval)
                 response.close()
 
+        # End of the crawling main loop.
         if core.shutdown_gracefully():
             self.log.critical("/%s/%s/critical/interrupted", self.hostname, self.domain)
 
         self.log.info("/%s/%s/info/finished/saved/%i", self.hostname, self.domain, crawler.save_count)
+        self.mqtt_client.loop_stop();
 
 def on_connect(client, userdata, flags, rc):
+    """
+    Subscribe to MQTT topic once connection to the broker has been made.
+    """
     crawler = userdata;
     client.subscribe(crawler.config.mqtt_topic);
     client.publish(crawler.config.mqtt_topic, "STARTED: {}" . format(crawler.botid));
 
 def on_message(client, userdata, msg):
+    """
+    Handle MQTT responses.
+    """
     crawler = userdata;
     if msg.topic == crawler.config.mqtt_topic:
        received = str(msg.payload)
@@ -458,7 +468,7 @@ if __name__ == '__main__':
     fmt = '/%(asctime)s%(message)s'
     datefmt = "%Y-%m-%d"
 
-    logging.basicConfig(level=logging.INFO, format=fmt, datefmt=datefmt)
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout, format=fmt, datefmt=datefmt)
     core.init()
 
     try:
@@ -468,5 +478,4 @@ if __name__ == '__main__':
         sys.exit(1)
 
     crawler = Robot(int(sys.argv[1]))
-
     crawler.crawl()
