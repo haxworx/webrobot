@@ -18,10 +18,10 @@ class DB
         if ($ini['aws']['password_vault'] == true) {
             try {
                 $vault = new Vault($ini['aws']['profile'], $ini['aws']['region'], $ini['aws']['secret']);
-                $db_host = $vault->contents['host'];
-                $db_name = $vault->contents['dbname'];
-                $db_user = $vault->contents['username'];
-                $db_pass = $vault->contents['password'];
+                $db_host = $vault->host;
+                $db_name = $vault->dbname;
+                $db_user = $vault->username;
+                $db_pass = $vault->password;
                 $vault = null;
             } catch (Exception $e) {
                 error_log(__FILE__ . ':' . __LINE__ . ':' . $e->getMessage());

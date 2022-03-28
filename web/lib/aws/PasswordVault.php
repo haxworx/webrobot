@@ -60,5 +60,16 @@ class Vault
         }
         $this->contents = json_decode($secret, true);
     }
+
+    public function __get($name)
+    {
+       if (!isset($this->contents)) {
+           return false;
+       }
+       if (array_key_exists($name, $this->contents)) {
+           return $this->contents[$name];
+       }
+       return false;
+    }
 }
 
