@@ -76,7 +76,7 @@ class Robot:
         self.mqtt_client = mqtt.Client(userdata=self, client_id="bot{}".format(self.botid));
         self.mqtt_client.on_connect = on_connect;
         self.mqtt_client.on_message = on_message;
-        self.mqtt_client.connect_async(self.config.mqtt_host, self.config.mqtt_port, keepalive=3600, bind_address="");
+        self.mqtt_client.connect_async(self.config.mqtt_host, self.config.mqtt_port, keepalive=0, bind_address="");
         self.mqtt_client.loop_start();
 
         self.save_count = 0
