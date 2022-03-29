@@ -36,10 +36,14 @@ class Session
 
     public function authenticated($user_id)
     {
+        # Change our authentication status.
+        # Destroy our previous session and create new.
         $this->destroy();
         $this->startExtend();
         $this->authorized = AUTHORIZED_SECRET;
         $this->user_id = $user_id;
+        # Reset our CSRF token.
+        $this->setToken();
     }
 
     public function authorized()

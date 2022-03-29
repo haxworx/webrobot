@@ -21,7 +21,7 @@ function main($argv)
         return 1;
     }
 
-    if (!preg_match('/^[[:print:]]{8,255}/', $pass)) {
+    if (!preg_match('/^[[:print:]]{8,255}$/', $pass)) {
        echo "Password must consist of printable characters and be between 8 ".
             "and 255 characters in length.\n";
        return 1;
