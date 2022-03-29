@@ -18,12 +18,12 @@ if ((!isset($_POST['token'])) || ($_POST['token'] !== $session->getToken())) {
     return;
 }
 
-if ((!isset($_POST['botid'])) || (empty($_POST['botid']))) {
+if ((!isset($_POST['bot_id'])) || (empty($_POST['bot_id']))) {
     header("Location: /");
     return;
 }
 
-$botid = $_POST['botid'];
+$bot_id = $_POST['bot_id'];
 
 try {
     $db = new DB();
@@ -39,27 +39,27 @@ if (!$validated) return;
 $db->pdo->beginTransaction();
 
 try {
-    $SQL = "DELETE FROM tbl_crawl_allowed_content WHERE botid = ?";
+    $SQL = "DELETE FROM tbl_crawl_allowed_content WHERE bot_id = ?";
     $stmt = $db->pdo->prepare($SQL);
-    $stmt->execute([$botid]);
+    $stmt->execute([$bot_id]);
 
     $SQL = "
     UPDATE tbl_crawl_settings SET
     start_time = ?, agent = ?, weekly = ?, daily = ?, weekday = ?,
     delay = ?, ignore_query = ?, import_sitemaps = ?, retry_max = ?
-    WHERE botid = ?
+    WHERE bot_id = ?
     ";
 
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute([
         $start_time, $agent, $weekly, $daily, $weekday,
 	$delay, $ignore_query, $import_sitemaps, $retry_max,
-        $botid,
+        $bot_id,
     ]);
-    foreach ($_POST['content_types'] as $contentid) {
-        $SQL = "INSERT INTO tbl_crawl_allowed_content (botid, contentid) VALUES (?, ?)";
+    foreach ($_POST['content_types'] as $content_id) {
+        $SQL = "INSERT INTO tbl_crawl_allowed_content (bot_id, content_id) VALUES (?, ?)";
         $stmt = $db->pdo->prepare($SQL);
-        $stmt->execute([$botid, $contentid]);
+        $stmt->execute([$bot_id, $content_id]);
     }
 
 
@@ -76,7 +76,7 @@ $config = new Config();
 $docker_image = $config->options['docker_image'];
 
 $args = [
-    'botid'        => $botid,
+    'bot_id'        => $bot_id,
     'domain'       => $domain,
     'address'      => $address,
     'scheme'       => $scheme,
@@ -90,6 +90,6 @@ $args = [
 $timer = new Timer($args);
 $timer->update();
 
-header("Location: /edit/?botid=$botid");
+header("Location: /edit/?bot_id=$bot_id");
 
 ?>

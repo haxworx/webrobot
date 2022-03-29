@@ -13,8 +13,8 @@ class Config:
     """
     CONFIG_FILE = 'config.ini';
 
-    def __init__(self, botid):
-        self.botid = botid
+    def __init__(self, bot_id):
+        self.bot_id = bot_id
 
     def read_ini(self):
         """
@@ -70,16 +70,16 @@ class Config:
             SQL = """
             SELECT scheme, address, domain, agent, delay, ignore_query,
             import_sitemaps, retry_max FROM tbl_crawl_settings WHERE
-            botid = %s
+            bot_id = %s
             """
 
             cursor = dbh.cnx.cursor()
-            cursor.execute(SQL, [self.botid,])
+            cursor.execute(SQL, [self.bot_id,])
             rows = cursor.fetchall()
             cursor.close()
 
             if len(rows) != 1 or len(rows[0]) != 8:
-                raise Exception("Unable to retrieve settings for bot id: {}. " .format(self.botid))
+                raise Exception("Unable to retrieve settings for bot id: {}. " .format(self.bot_id))
 
             row = rows[0]
             self.scheme = row[0]
@@ -93,18 +93,18 @@ class Config:
 
             SQL = """
             SELECT content_type FROM tbl_crawl_allowed_content INNER JOIN
-            tbl_content_types ON tbl_crawl_allowed_content.contentid =
-            tbl_content_types.contentid WHERE botid = %s
+            tbl_content_types ON tbl_crawl_allowed_content.content_id =
+            tbl_content_types.content_id WHERE bot_id = %s
             """
 
             cursor = dbh.cnx.cursor()
-            cursor.execute(SQL, [self.botid,])
+            cursor.execute(SQL, [self.bot_id,])
             rows = cursor.fetchall()
             cursor.close()
 
             if len(rows) == 0:
                 raise Exception("Unable to find matching content types for bot id: {}. " .
-                                 format(self.botid))
+                                 format(self.bot_id))
 
             self.wanted_content = '|'.join(str(s[0]) for s in rows)
 

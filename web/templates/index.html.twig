@@ -24,12 +24,12 @@
 {% endif %}
     <td class="crawlers_action">
       <form action="/edit" method="get">
-        <input type="hidden" name="botid" value="{{robot.botid}}">
+        <input type="hidden" name="bot_id" value="{{robot.bot_id}}">
         <input type="submit" class="table_submit" value="Edit">
       </form>
       <form action="/confirm" method="post">
         <input type="hidden" name="token" value="{{ token }}">
-        <input type="hidden" name="botid" value="{{robot.botid}}">
+        <input type="hidden" name="bot_id" value="{{robot.bot_id}}">
         <input type="hidden" name="domain" value="{{robot.domain}}">
         <input type="hidden" name="scheme" value="{{robot.scheme}}">
         <input type="hidden" name="action" value="delete">

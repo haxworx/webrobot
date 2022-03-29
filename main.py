@@ -29,7 +29,7 @@ from download import Download
 class Robot:
     LOCK_FILE = 'data/crawl.lock'
     PIDFILE = 'data/crawl.pid'
-    _botid = None
+    _bot_id = None
     _cnx = None
     _name = None
     _domain = None
@@ -37,13 +37,13 @@ class Robot:
     _url = None
     dbh = None
 
-    def __init__(self, botid):
-        self.botid = botid;
+    def __init__(self, bot_id):
+        self.bot_id = bot_id;
         self.acquire_lock()
         self.pidfile_create();
         atexit.register(self.cleanup)
 
-        self.config = Config(self.botid)
+        self.config = Config(self.bot_id)
         self.config.read_ini()
         self.config.read_settings()
 
@@ -73,7 +73,7 @@ class Robot:
         self.log.addHandler(logs.DatabaseHandler(self))
 
         # Create our connection to the MQTT broker for simple IPC.
-        self.mqtt_client = mqtt.Client(userdata=self, client_id="bot{}".format(self.botid));
+        self.mqtt_client = mqtt.Client(userdata=self, client_id="bot{}".format(self.bot_id));
         self.mqtt_client.on_connect = on_connect;
         self.mqtt_client.on_message = on_message;
         self.mqtt_client.connect_async(self.config.mqtt_host, self.config.mqtt_port, keepalive=0, bind_address="");
@@ -92,12 +92,12 @@ class Robot:
         self._url = value
 
     @property
-    def botid(self):
-        return self._botid
+    def bot_id(self):
+        return self._bot_id
 
-    @botid.setter
-    def botid(self, value):
-        self._botid = value
+    @bot_id.setter
+    def bot_id(self, value):
+        self._bot_id = value
 
     @property
     def name(self):
@@ -211,14 +211,14 @@ class Robot:
         now = datetime.now()
 
         SQL = """
-        INSERT INTO tbl_crawl_data (botid, scan_date, scan_time_stamp,
+        INSERT INTO tbl_crawl_data (bot_id, scan_date, scan_time_stamp,
         scan_time_zone, domain, scheme, link_source, modified,
         status_code, url, path, query, content_type, metadata,
         checksum, encoding, length, data) VALUES (%s, %s, %s,
         'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
         %s, %s, %s, COMPRESS(%s))
         """
-        val = (res['botid'], now, now, res['domain'], res['scheme'],
+        val = (res['bot_id'], now, now, res['domain'], res['scheme'],
                res['link_source'], res['modified'], res['status_code'],
                res['url'], res['path'], res['query'], res['content_type'],
                res['metadata'], res['checksum'], res['encoding'],
@@ -247,12 +247,12 @@ class Robot:
         now = datetime.now()
 
         SQL = """
-        INSERT INTO tbl_crawl_errors (botid, scan_date,
+        INSERT INTO tbl_crawl_errors (bot_id, scan_date,
         scan_time_stamp, scan_time_zone, status_code,
         url, link_source, description) VALUES (%s, %s, %s,
         'Europe/London', %s, %s, %s, %s)
         """
-        val = (res['botid'], now, now, res['status_code'], res['url'],
+        val = (res['bot_id'], now, now, res['status_code'], res['url'],
                res['link_source'], res['description'])
         cursor = self.dbh.cnx.cursor()
         try:
@@ -326,7 +326,7 @@ class Robot:
                 (response, code) = downloader.get()
             except error.HTTPError as e:
                 self.log.info("/%s/%s/warning/%i/%s", self.hostname, self.domain, e.code, self.url)
-                res = {'botid': self.botid,
+                res = {'bot_id': self.bot_id,
                        'status_code': e.code,
                        'url': self.url,
                        'link_source': page.link_source,
@@ -377,7 +377,7 @@ class Robot:
                     data = response.read()
                     checksum = hashlib.md5(data)
 
-                    res = {'botid': self.botid,
+                    res = {'bot_id': self.bot_id,
                            'domain': self.domain_parse(self.url),
                            'scheme': scheme,
                            'link_source': page.link_source,
@@ -428,7 +428,7 @@ class Robot:
             self.log.critical("/%s/%s/critical/interrupted", self.hostname, self.domain)
 
         self.log.info("/%s/%s/info/finished/saved/%i", self.hostname, self.domain, self.save_count)
-        self.mqtt_client.publish(crawler.config.mqtt_topic, "FINISHED: {}" . format(self.botid));
+        self.mqtt_client.publish(crawler.config.mqtt_topic, "FINISHED: {}" . format(self.bot_id));
         self.mqtt_client.loop_stop();
 
 def on_connect(client, userdata, flags, rc):
@@ -437,7 +437,7 @@ def on_connect(client, userdata, flags, rc):
     """
     crawler = userdata;
     client.subscribe(crawler.config.mqtt_topic);
-    client.publish(crawler.config.mqtt_topic, "STARTED: {}" . format(crawler.botid));
+    client.publish(crawler.config.mqtt_topic, "STARTED: {}" . format(crawler.bot_id));
 
 def on_message(client, userdata, msg):
     """
@@ -448,7 +448,7 @@ def on_message(client, userdata, msg):
        received = str(msg.payload)
        matches = re.search('TERMINATE: (\d+)', received)
        if matches:
-           if int(matches[1]) == crawler.botid:
+           if int(matches[1]) == crawler.bot_id:
                crawler.log.critical("/%s/%s/critical/mqtt/interrupted", crawler.hostname, crawler.domain)
                core.shutdown()
 
@@ -463,7 +463,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     if len(sys.argv) != 2:
-        print("Usage: {} <botid>" . format(sys.argv[0]))
+        print("Usage: {} <bot_id>" . format(sys.argv[0]))
         sys.exit(1)
 
     fmt = '/%(asctime)s%(message)s'

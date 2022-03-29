@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `tbl_crawl_data`;
 CREATE TABLE `tbl_crawl_data` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `botid` int DEFAULT NULL,
+  `bot_id` int DEFAULT NULL,
   `srv_date` date DEFAULT(CURRENT_DATE),
   `srv_time_stamp` datetime DEFAULT CURRENT_TIMESTAMP,
   `scan_date` date DEFAULT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE `tbl_crawl_data` (
 DROP TABLE IF EXISTS `tbl_crawl_errors`;
 CREATE TABLE `tbl_crawl_errors` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `botid` int DEFAULT NULL,
+  `bot_id` int DEFAULT NULL,
   `srv_date` date DEFAULT(CURRENT_DATE),
   `srv_time_stamp` datetime DEFAULT CURRENT_TIMESTAMP,
   `scan_date` date DEFAULT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE `tbl_crawl_errors` (
 DROP TABLE IF EXISTS `tbl_crawl_log`;
 CREATE TABLE `tbl_crawl_log` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `botid` int DEFAULT NULL,
+  `bot_id` int DEFAULT NULL,
   `srv_date` date DEFAULT(CURRENT_DATE),
   `srv_time_stamp` datetime DEFAULT CURRENT_TIMESTAMP,
   `scan_date` date DEFAULT NULL,
@@ -59,7 +59,8 @@ CREATE TABLE `tbl_crawl_log` (
 
 DROP TABLE IF EXISTS `tbl_crawl_settings`;
 CREATE TABLE `tbl_crawl_settings` (
-  `botid` int NOT NULL AUTO_INCREMENT,
+  `bot_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
   `scheme` varchar(32) DEFAULT NULL,
   `address` varchar(260) DEFAULT NULL,
   `domain` varchar(253) DEFAULT NULL,
@@ -72,22 +73,22 @@ CREATE TABLE `tbl_crawl_settings` (
   `daily` boolean DEFAULT NULL,
   `weekly` boolean DEFAULT NULL,
   `weekday` varchar(32) DEFAULT NULL,
-  PRIMARY KEY (`botid`)
+  PRIMARY KEY (`bot_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `tbl_content_types`;
 CREATE TABLE `tbl_content_types` (
-  `contentid` int NOT NULL AUTO_INCREMENT,
+  `content_id` int NOT NULL AUTO_INCREMENT,
   `content_type` varchar(128) DEFAULT NULL,
   `description` text DEFAULT NULL,
-  PRIMARY KEY(`contentid`)
+  PRIMARY KEY(`content_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `tbl_crawl_allowed_content`;
 CREATE TABLE `tbl_crawl_allowed_content` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `botid` int DEFAULT NULL,
-  `contentid` int DEFAULT NULL,
+  `bot_id` int DEFAULT NULL,
+  `content_id` int DEFAULT NULL,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

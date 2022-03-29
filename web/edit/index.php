@@ -15,41 +15,41 @@ $session->startExtend();
 
 $content_types = [];
 
-if ((!isset($_GET['botid'])) | ((empty($_GET['botid'])))) {
+if ((!isset($_GET['bot_id'])) | ((empty($_GET['bot_id'])))) {
     header("Location: /");
     return;
 }
 
-$botid = $_GET['botid'];
+$bot_id = $_GET['bot_id'];
 
 try {
     $db = new DB;
-    $SQL = "SELECT botid, scheme, address, domain, agent,
+    $SQL = "SELECT bot_id, scheme, address, domain, agent,
 	    delay, ignore_query, import_sitemaps, retry_max,
 	    start_time, daily, weekly, weekday FROM tbl_crawl_settings
-	    WHERE botid = ?";
+	    WHERE bot_id = ?";
     $stmt = $db->pdo->prepare($SQL);
-    $stmt->execute([$botid]);
+    $stmt->execute([$bot_id]);
     $botrow = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $contentids = [];
-    $SQL = "SELECT contentid FROM tbl_crawl_allowed_content
-	    WHERE botid = ?";
+    $content_ids = [];
+    $SQL = "SELECT content_id FROM tbl_crawl_allowed_content
+	    WHERE bot_id = ?";
     $stmt = $db->pdo->prepare($SQL);
-    $stmt->execute([$botrow['botid']]);
+    $stmt->execute([$botrow['bot_id']]);
     while (($row = $stmt->fetch(PDO::FETCH_ASSOC))) {
-        $contentids[] = intval($row['contentid']);
+        $content_ids[] = intval($row['content_id']);
     }
 
     $content_types = [];
-    $SQL = "SELECT contentid, content_type FROM tbl_content_types";
+    $SQL = "SELECT content_id, content_type FROM tbl_content_types";
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute();
     while (($row = $stmt->fetch(PDO::FETCH_ASSOC))) {
         $content_types[] = [
-            'contentid' => $row['contentid'],
+            'content_id' => $row['content_id'],
 	    'content_type' => $row['content_type'],
-	    'selected' => (in_array($row['contentid'], $contentids) ? true : false),
+	    'selected' => (in_array($row['content_id'], $content_ids) ? true : false),
         ];
     }
 

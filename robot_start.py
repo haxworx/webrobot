@@ -9,21 +9,21 @@ from urllib.parse import urlparse
 import database
 from config import Config
 
-def main(botid):
+def main(bot_id):
     ret = 1
-    config = Config(botid)
+    config = Config(bot_id)
     config.read_ini()
 
     dbh = database.Connect(config.db_user, config.db_pass,
                            config.db_host, config.db_name)
 
     SQL = """
-    SELECT COUNT(*) FROM tbl_crawl_data WHERE botid = %s
+    SELECT COUNT(*) FROM tbl_crawl_data WHERE bot_id = %s
     AND scan_date = DATE(NOW())
     """
     cursor = dbh.cnx.cursor()
     try:
-        cursor.execute(SQL, (botid,))
+        cursor.execute(SQL, (bot_id,))
         rows = cursor.fetchone()
     except mysql.connector.Error as e:
         print("Error: ({}) STATE: ({}) Message: ({})" . format(e.errno, e.sqlstate, e.msg), file=sys.stderr)
@@ -32,7 +32,7 @@ def main(botid):
     scan_count = rows[0]
     if scan_count == 0:
         os.environ['ROBOT_START'] = "1"
-        ret = os.system("python3 main.py {}" . format(botid))
+        ret = os.system("python3 main.py {}" . format(bot_id))
 
     cursor.close()
     dbh.close()

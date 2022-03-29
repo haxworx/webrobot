@@ -15,12 +15,12 @@ $robots = [];
 
 try {
     $db = new DB;
-    $SQL = "SELECT botid, scheme, address, domain, start_time, agent, weekday FROM tbl_crawl_settings";
+    $SQL = "SELECT bot_id, scheme, address, domain, start_time, agent, weekday FROM tbl_crawl_settings";
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $robots[] = [
-            'botid'      => $row['botid'],
+            'bot_id'     => $row['bot_id'],
             'scheme'     => $row['scheme'],
             'address'    => $row['address'],
             'domain'     => $row['domain'],

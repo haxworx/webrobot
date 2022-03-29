@@ -22,6 +22,7 @@ if (!$session->authorized()) {
     http_response_code(403);
     exit(1);
 }
+
 $session->start();
 
 if ((!isset($_POST['token'])) || ($_POST['token'] !== $session->getToken())) {
@@ -73,19 +74,19 @@ $db->pdo->beginTransaction();
 try {
     $SQL = "
     INSERT INTO tbl_crawl_settings
-    (scheme, address, domain, start_time, agent, weekly,
+    (user_id, scheme, address, domain, start_time, agent, weekly,
      daily, weekday, delay, ignore_query, import_sitemaps, retry_max)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ";
     $stmt = $db->pdo->prepare($SQL);
-    $stmt->execute([$scheme, $address, $domain, $start_time, $agent, $weekly,
+    $stmt->execute([$session->user_id, $scheme, $address, $domain, $start_time, $agent, $weekly,
 	            $daily, $weekday, $delay, $ignore_query, $import_sitemaps, $retry_max
     ]);
-    $botid = $db->pdo->lastInsertId();
-    foreach ($_POST['content_types'] as $contentid) {
-        $SQL = "INSERT INTO tbl_crawl_allowed_content (botid, contentid) VALUES (?, ?)";
+    $bot_id = $db->pdo->lastInsertId();
+    foreach ($_POST['content_types'] as $content_id) {
+        $SQL = "INSERT INTO tbl_crawl_allowed_content (bot_id, content_id) VALUES (?, ?)";
 	$stmt = $db->pdo->prepare($SQL);
-	$stmt->execute([$botid, $contentid]);
+	$stmt->execute([$bot_id, $content_id]);
     }
 } catch (Exception $e) {
     $db->pdo->rollback();
@@ -100,7 +101,7 @@ $config = new Config();
 $docker_image = $config->options['docker_image'];
 
 $args = [
-    'botid'        => $botid,
+    'bot_id'       => $bot_id,
     'domain'       => $domain,
     'address'      => $address,
     'scheme'       => $scheme,

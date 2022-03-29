@@ -16,12 +16,12 @@ $content_types = [];
 
 try {
     $db = new DB;
-    $SQL = "SELECT contentid, content_type FROM tbl_content_types";
+    $SQL = "SELECT content_id, content_type FROM tbl_content_types";
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $content_types[] = [ 
-	    'contentid' => $row['contentid'],
+	    'content_id' => $row['content_id'],
             'content_type' => $row['content_type'],
         ];
     }

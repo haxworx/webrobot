@@ -20,7 +20,7 @@ class Timer
 
     public function __construct($args)
     {
-        $this->botid = $args['botid'];
+        $this->bot_id = $args['bot_id'];
         $this->scheme = $args['scheme'];
         $this->domain = $args['domain'];
         $this->address = $args['address'];
@@ -41,7 +41,7 @@ class Timer
 
     public function update()
     {
-        $this->remove($this->botid, $this->scheme, $this->domain);
+        $this->remove($this->bot_id, $this->scheme, $this->domain);
         $this->create();
     }
 
@@ -66,7 +66,7 @@ class Timer
         "Type=oneshot\n" .
         "# We log to SQL.\n" .
         "StandardOutput=null\n" .
-        "ExecStart=docker run $this->docker_image $this->botid\n" .
+        "ExecStart=docker run $this->docker_image $this->bot_id\n" .
         "\n";
 
         $path = "$dir/$this->identifier.service";
@@ -103,7 +103,7 @@ class Timer
         }
     }
 
-    public static function remove($botid, $scheme, $domain)
+    public static function remove($bot_id, $scheme, $domain)
     {
         $files = [ "$domain.$scheme.service", "$domain.$scheme.timer" ];
         $home = getenv('HOME');
@@ -126,7 +126,7 @@ class Timer
         try {
             $mqtt = new MqttClient($config->options['mqtt_host'], $config->options['mqtt_port'], 'robot_controller');
             $mqtt->connect();
-            $mqtt->publish($config->options['mqtt_topic'], "TERMINATE: $botid", 0);
+            $mqtt->publish($config->options['mqtt_topic'], "TERMINATE: $bot_id", 0);
             $mqtt->disconnect();
         } catch (MqttClientException $e) {
             error_log(__FILE__ . ':'. __LINE__ . ':' . $e->getMessage());
