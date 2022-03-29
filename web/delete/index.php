@@ -9,7 +9,7 @@ require_once 'lib/Session.php';
 
 $session = new Session;
 if (!$session->authorized()) {
-    header("Location: /login/");
+    http_response_code(403);
     exit(0);
 }
 

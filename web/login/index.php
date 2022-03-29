@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $stmt->execute([$username]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 	if (($row === false) || (!isset($row['user_id'])) || (!isset($row['password']))) {
-            header("Location: /login.php?failed=1");
+            header("Location: /login/?failed=1");
             exit(1);
         }
 

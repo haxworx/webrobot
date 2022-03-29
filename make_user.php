@@ -12,7 +12,7 @@ function main($argv)
         exit(1);
     }
 
-    $user = $argv[1];
+    $user = strtolower($argv[1]);
     $pass = $argv[2];
 
     if (!preg_match('/^[a-z0-9]{6,32}$/', $user)) {
