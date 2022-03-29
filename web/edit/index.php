@@ -6,6 +6,11 @@ require_once 'lib/Database.php';
 require_once 'lib/Session.php';
 
 $session = new Session;
+if (!$session->authorized()) {
+    header("Location: /login/");
+    exit(0);
+}
+
 $session->startExtend();
 
 $content_types = [];

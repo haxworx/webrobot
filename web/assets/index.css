@@ -34,6 +34,9 @@ li.menu, a.menu {
    float: right;
 }
 
+.menu_logout {
+}
+
 #content {
   margin-left: 40px;
   margin-right: 40px;

@@ -114,6 +114,14 @@ CREATE TABLE `tbl_global_settings` (
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+DROP TABLE IF EXISTS `tbl_users`;
+CREATE TABLE `tbl_users` (
+   `user_id` int NOT NULL AUTO_INCREMENT,
+   `username` varchar(128) DEFAULT NULL,
+   `password` varchar(255) DEFAULT NULL,
+   PRIMARY KEY(`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 INSERT INTO `tbl_global_settings`
     (`time_stamp`, `in_use`, `max_crawlers`, `debug`, `docker_image`, `mqtt_host`, `mqtt_port`, `mqtt_topic`)
     VALUES

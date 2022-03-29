@@ -8,6 +8,11 @@ require_once 'lib/Session.php';
 # DELETE a job from the tbl_crawl_launch table.
 
 $session = new Session;
+if (!$session->authorized()) {
+    header("Location: /login/");
+    exit(0);
+}
+
 $session->startExtend();
 
 if ((!isset($_POST['token'])) || ($_POST['token'] !== $session->getToken())) {
