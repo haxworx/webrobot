@@ -118,7 +118,7 @@ CREATE TABLE `tbl_global_settings` (
 DROP TABLE IF EXISTS `tbl_users`;
 CREATE TABLE `tbl_users` (
    `user_id` int NOT NULL AUTO_INCREMENT,
-   `username` varchar(128) DEFAULT NULL,
+   `username` varchar(128) NOT NULL UNIQUE,
    `password` varchar(255) DEFAULT NULL,
    PRIMARY KEY(`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
