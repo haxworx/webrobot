@@ -30,11 +30,12 @@ li.menu, a.menu {
   text-decoration: none;
 }
 
-.menu_icon {
+li.menu_icon {
    float: right;
 }
 
-.menu_logout {
+li.menu_logout {
+   float: right;
 }
 
 #content {
