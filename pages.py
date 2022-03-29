@@ -32,6 +32,12 @@ class PageList:
         self._seen = dict()
         raise StopIteration
 
+    def __str__(self):
+        text = ''
+        for page in self._page_list:
+            text += page.url + "\n"
+        return text
+
     def again(self):
         if self._page_index > 0:
             self._page_index -= 1

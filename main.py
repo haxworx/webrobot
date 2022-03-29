@@ -364,6 +364,9 @@ class Robot:
                     if self.domain.upper() != \
                             self.domain_parse(response.url).upper():
                         continue
+                    # Ignore redirects to different scheme.
+                    if self.scheme.upper() != self.scheme_parse(response.url).upper():
+                        continue;
 
                     self.url = response.url
                     metadata = self.metadata_extract(response.headers)
@@ -413,7 +416,7 @@ class Robot:
                             if self.valid_link(link):
                                 url = urljoin(self.url, link)
                                 domain = self.domain_parse(url)
-                                if domain.upper() == self.domain.upper():
+                                if (domain.upper() == self.domain.upper()) and (scheme.upper() == self.scheme.upper()):
                                     if self.page_list.append(url,
                                                              link_source=page.url):
                                         count += 1
