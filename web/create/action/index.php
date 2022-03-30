@@ -19,7 +19,7 @@ require_once 'lib/Session.php';
 
 $session = new Session;
 if (!$session->authorized()) {
-    http_response_code(403);
+    http_response_code(401);
     exit(1);
 }
 

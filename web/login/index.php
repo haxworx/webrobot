@@ -24,19 +24,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $username = $_POST['username'];
     # Ensure our username is sensible.
     if (!preg_match('/^[a-z0-9]{6,32}$/', $username)) {
-        http_response_code(500);
+        http_response_code(401);
         exit(1);
     }
     # Ensure our password attempt is sensible.
     $password = $_POST['password'];
     if (!preg_match('/^[[:print:]]{8,255}$/', $password)) {
-        http_response_code(500);
+        http_response_code(401);
         exit(1);
     }
     # Check our CSRF token.
     $token = $_POST['token'];
     if (($token !== $session->getToken())) {
-        http_response_code(500);
+        http_response_code(401);
         exit(1);
     }
 

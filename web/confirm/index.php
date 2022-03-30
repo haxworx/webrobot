@@ -6,10 +6,14 @@ require_once 'lib/Twig.php';
 require_once 'lib/Session.php';
 
 $session = new Session;
+if (!$session->authorized()) {
+    http_response_code(401);
+}
+
 $session->startExtend();
 
 if ((!isset($_POST['token'])) || $_POST['token'] !== $session->getToken()) {
-    http_response_code(405);
+    http_response_code(403);
     return;
 }
 

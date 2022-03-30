@@ -7,4 +7,5 @@ $session = new Session;
 $session->destroy();
 
 header("Location: /login/");
+
 ?>
