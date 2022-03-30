@@ -80,6 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         http_response_code(500);
         exit(1);
     }
+} else {
+    http_response_code(401);
 }
 
 ?>
