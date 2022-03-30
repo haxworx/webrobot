@@ -97,7 +97,7 @@ th, td {
   text-align: left;
 }
 
-#create_error {
+#login_error, #create_error {
   color: #FF4500;
   display: none;
 }

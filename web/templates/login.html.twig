@@ -1,11 +1,12 @@
 {% extends "base_login.html.twig" %}
 
 {% block head %}
+<script type="text/javascript" src="/assets/login.js"></script>
 {% endblock %}
 
 {% block content %}
 
-<p id="create_error"></p>
+<p id="login_error"></p>
 
 <form onsubmit="return login_validate(this);" action="/login/" name="create_form" method="post">
   <input type="hidden" name="token" value="{{ token }}">

@@ -20,17 +20,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     $session = new Session;
     $session->start();
+    if (!isset($session->attempts)) {
+       $session->attempts = 1;
+    } else {
+       $session->attempts++;
+    }
+
+    if ($session->attempts > 10) {
+        $template = $twig->load('login_errors.html.twig');
+        echo $template->render(['message' => 'Too many authentication attempts, try again later.']);
+        exit(1);
+    }
 
     $username = $_POST['username'];
     # Ensure our username is sensible.
     if (!preg_match('/^[a-z0-9]{6,32}$/', $username)) {
-        http_response_code(401);
+        header("Location: /login/");
         exit(1);
     }
     # Ensure our password attempt is sensible.
     $password = $_POST['password'];
     if (!preg_match('/^[[:print:]]{8,255}$/', $password)) {
-        http_response_code(401);
+        header("Location: /login/");
         exit(1);
     }
     # Check our CSRF token.
