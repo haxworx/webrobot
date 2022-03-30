@@ -5,7 +5,7 @@ setTimeout(sessionRefresh, timeout);
 
 function sessionRefresh() {
     const xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("GET", "/session.php");
+    xmlhttp.open("GET", "/session/");
     xmlhttp.send();
     setTimeout(sessionRefresh, timeout);
 }
