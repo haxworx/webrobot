@@ -12,7 +12,8 @@ class Session
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_set_cookie_params([
-                'lifetime' => 3600,
+                # Ten minutes login session.
+                'lifetime' => 600,
                 'domain'   => 'localhost',
                 'secure'   => true,
                 'path'     => '/',
