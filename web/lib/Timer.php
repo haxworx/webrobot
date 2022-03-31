@@ -76,6 +76,7 @@ class Timer
         if ($f !== false) {
             fprintf($f, $data);
             fclose($f);
+            chmod($tmpname, 0644);
             system("sudo -u spider cp $tmpname $path");
         }
 
@@ -103,6 +104,7 @@ class Timer
         if ($f !== false) {
             fprintf($f, $data);
             fclose($f);
+            chmod($tmpname, 0644);
             system("sudo -u spider cp $tmpname $path");
             system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user enable $this->identifier.timer");
             system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user start $this->identifier.timer");
