@@ -98,20 +98,20 @@ class Timer
         if ($f !== false) {
             fprintf($f, $data);
             fclose($f);
-            system("systemctl --user enable $this->identifier.timer");
-            system("systemctl --user start $this->identifier.timer");
+            system("sudo -u spider systemctl --user enable $this->identifier.timer");
+            system("sudo -u spider systemctl --user start $this->identifier.timer");
         }
     }
 
     public static function remove($bot_id, $scheme, $domain)
     {
         $files = [ "$domain.$scheme.service", "$domain.$scheme.timer" ];
-        $home = getenv('HOME');
+        $home = "/home/spider";
 
-        system("systemctl --user stop $domain.$scheme.service");
-        system("systemctl --user disable $domain.$scheme.service");
-        system("systemctl --user stop $domain.$scheme.timer");
-        system("systemctl --user disable $domain.$scheme.timer");
+        system("sudo -u spider systemctl --user stop $domain.$scheme.service");
+        system("sudo -u spider systemctl --user disable $domain.$scheme.service");
+        system("sudo -u spider systemctl --user stop $domain.$scheme.timer");
+        system("sudo -u spider systemctl --user disable $domain.$scheme.timer");
 
         foreach ($files as $file) {
             $dir = $home . '/.config/systemd/user';
