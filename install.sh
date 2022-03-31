@@ -8,7 +8,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-useradd -u 2222 -m 2222 -g 2222 -m -d /home/spider spider
+useradd -u 2222 -g 2222 -m -d /home/spider spider
 if [ $? -ne 0 ]; then
 	echo "$0: Failed to create 'spider' user";
 	exit 1
