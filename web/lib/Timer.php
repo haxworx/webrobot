@@ -47,7 +47,7 @@ class Timer
 
     public function create()
     {
-        $home = getenv('HOME');
+        $home = "/home/spider";
         $dir = $home . '/.config/systemd/user';
         if (!file_exists($dir)) {
             if (!mkdir($dir, 0755, true)) {
