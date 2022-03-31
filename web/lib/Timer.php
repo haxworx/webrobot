@@ -47,6 +47,7 @@ class Timer
 
     public function create()
     {
+        putenv("XDG_RUNTIME_DIR=/run/user/1001");
         $home = "/home/spider";
         $dir = $home . '/.config/systemd/user';
         if (!file_exists($dir)) {
