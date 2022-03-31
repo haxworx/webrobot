@@ -70,10 +70,13 @@ class Timer
         "\n";
 
         $path = "$dir/$this->identifier.service";
-        $f = fopen($path, 'w');
+        $tmpname = tempnam("/tmp", "SPIDER");
+
+        $f = fopen($tmpname, 'w');
         if ($f !== false) {
             fprintf($f, $data);
             fclose($f);
+            system("sudo -u spider cp $tmpname $path");
         }
 
         if ($this->daily) {
@@ -94,12 +97,15 @@ class Timer
         "WantedBy=timers.target\n";
 
         $path = "$dir/$this->identifier.timer";
-        $f = fopen($path, 'w');
+        $tmpname = tempnam("/tmp", "SPIDER");
+
+        $f = fopen($tmpname, 'w');
         if ($f !== false) {
             fprintf($f, $data);
             fclose($f);
-            system("sudo -u spider XDG_RUNTIME_DIR=/run/user/1001 systemctl --user enable $this->identifier.timer");
-            system("sudo -u spider XDG_RUNTIME_DIR=/run/user/1001 systemctl --user start $this->identifier.timer");
+            system("sudo -u spider cp $tmpname $path");
+            system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user enable $this->identifier.timer");
+            system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user start $this->identifier.timer");
         }
     }
 
@@ -108,10 +114,10 @@ class Timer
         $files = [ "$domain.$scheme.service", "$domain.$scheme.timer" ];
         $home = "/home/spider";
 
-        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/1001 systemctl --user stop $domain.$scheme.service");
-        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/1001 systemctl --user disable $domain.$scheme.service");
-        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/1001 systemctl --user stop $domain.$scheme.timer");
-        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/1001 systemctl --user disable $domain.$scheme.timer");
+        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $domain.$scheme.service");
+        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user disable $domain.$scheme.service");
+        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $domain.$scheme.timer");
+        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user disable $domain.$scheme.timer");
 
         foreach ($files as $file) {
             $dir = $home . '/.config/systemd/user';
