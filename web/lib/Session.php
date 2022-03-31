@@ -13,8 +13,8 @@ class Session
         if (session_status() === PHP_SESSION_NONE) {
             session_set_cookie_params([
                 # Ten minutes login session.
+                'domain'   => $_SERVER['SERVER_NAME'],
                 'lifetime' => 600,
-                'domain'   => 'localhost',
                 'secure'   => true,
                 'path'     => '/',
                 'httponly' => true,
@@ -61,9 +61,10 @@ class Session
     public function extend()
     {
         setcookie(session_name(), session_id(), [
-            'expires' => time() + 3600,
-            'path' => '/',
-            'secure' => true,
+            'domain'   => $_SERVER['SERVER_NAME'],
+            'expires'  => time() + 3600,
+            'path'     => '/',
+            'secure'   => true,
             'httponly' => true,
             'samesite' => 'Strict',
         ]);
@@ -108,13 +109,18 @@ class Session
 
     public function destroy()
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         setcookie(session_name(), session_id(), [
-            'expires' => 1,
-            'path' => '/',
-            'secure' => true,
+            'domain'   => $_SERVER['SERVER_NAME'],
+            'expires'  => 1,
+            'path'     => '/',
+            'secure'   => true,
             'httponly' => true,
             'samesite' => 'Strict',
         ]);
+        session_regenerate_id();
         session_destroy();
         unset($_SESSION);
         return true;
