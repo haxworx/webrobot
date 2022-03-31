@@ -47,7 +47,6 @@ class Timer
 
     public function create()
     {
-        putenv("XDG_RUNTIME_DIR=/run/user/1001");
         $home = "/home/spider";
         $dir = $home . '/.config/systemd/user';
         if (!file_exists($dir)) {
@@ -99,8 +98,8 @@ class Timer
         if ($f !== false) {
             fprintf($f, $data);
             fclose($f);
-            system("sudo -u spider systemctl --user enable $this->identifier.timer");
-            system("sudo -u spider systemctl --user start $this->identifier.timer");
+            system("sudo -u spider XDG_RUNTIME_DIR=/run/user/1001 systemctl --user enable $this->identifier.timer");
+            system("sudo -u spider XDG_RUNTIME_DIR=/run/user/1001 systemctl --user start $this->identifier.timer");
         }
     }
 
@@ -109,10 +108,10 @@ class Timer
         $files = [ "$domain.$scheme.service", "$domain.$scheme.timer" ];
         $home = "/home/spider";
 
-        system("sudo -u spider systemctl --user stop $domain.$scheme.service");
-        system("sudo -u spider systemctl --user disable $domain.$scheme.service");
-        system("sudo -u spider systemctl --user stop $domain.$scheme.timer");
-        system("sudo -u spider systemctl --user disable $domain.$scheme.timer");
+        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/1001 systemctl --user stop $domain.$scheme.service");
+        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/1001 systemctl --user disable $domain.$scheme.service");
+        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/1001 systemctl --user stop $domain.$scheme.timer");
+        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/1001 systemctl --user disable $domain.$scheme.timer");
 
         foreach ($files as $file) {
             $dir = $home . '/.config/systemd/user';
