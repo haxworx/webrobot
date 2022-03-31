@@ -8,7 +8,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-useradd -g 2222 -m -d /home/spider spider
+useradd -u 2222 -m 2222 -g 2222 -m -d /home/spider spider
 if [ $? -ne 0 ]; then
 	echo "$0: Failed to create 'spider' user";
 	exit 1
@@ -56,5 +56,11 @@ fi
 rm docker/config.ini
 if [ $? -ne 0 ]; then
 	echo "$0:Failed to remove docker/config.ini";
+	exit 1;
+fi
+
+sudo loginctl enable-linger spider
+if [ $? -ne 0 ]; then
+	echo "$0: Failed to enabled-linger (loginctl) for spider user.";
 	exit 1;
 fi
