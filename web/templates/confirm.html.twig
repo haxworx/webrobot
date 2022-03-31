@@ -4,7 +4,7 @@
 
 <div id="confirm">
 <p>Are you sure?</p>
-<form action="/{{ action }}" method="post">
+<form action="/{{ action }}/" method="post">
 {% for param in params %}
 <input type="hidden" name="{{ param.key }}" value="{{ param.value }}">
 {% endfor %}
