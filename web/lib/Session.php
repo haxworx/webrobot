@@ -12,18 +12,17 @@ class Session
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_set_cookie_params([
-                # Ten minutes login session.
                 'domain'   => $_SERVER['SERVER_NAME'],
-                'lifetime' => 600,
                 'secure'   => true,
+                'lifetime' => 0,
                 'path'     => '/',
                 'httponly' => true,
                 'samesite' => 'Strict',
             ]);
             session_start();
+            session_regenerate_id();
             $this->modified = time();
         }
-
         if (!isset($this->token)) {
             $this->setToken();
         }
@@ -31,7 +30,6 @@ class Session
 
     public function startExtend()
     {
-        $this->start();
         $this->extend();
     }
 
@@ -40,7 +38,7 @@ class Session
         # Change our authentication status.
         # Destroy our previous session and create new.
         $this->destroy();
-        $this->startExtend();
+        $this->start();
         $this->authorized = AUTHORIZED_SECRET;
         $this->user_id = $user_id;
         # Reset our CSRF token.
@@ -60,15 +58,7 @@ class Session
 
     public function extend()
     {
-        setcookie(session_name(), session_id(), [
-            'domain'   => $_SERVER['SERVER_NAME'],
-            'expires'  => time() + 3600,
-            'path'     => '/',
-            'secure'   => true,
-            'httponly' => true,
-            'samesite' => 'Strict',
-        ]);
-
+        session_start();
         $this->modified = time();
     }
 
@@ -112,15 +102,8 @@ class Session
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        setcookie(session_name(), session_id(), [
-            'domain'   => $_SERVER['SERVER_NAME'],
-            'expires'  => 1,
-            'path'     => '/',
-            'secure'   => true,
-            'httponly' => true,
-            'samesite' => 'Strict',
-        ]);
-        session_regenerate_id();
+        setcookie(session_name(), FALSE, time() - 3600, '/', $_SERVER['SERVER_NAME'], true, true);
+        session_unset();
         session_destroy();
         unset($_SESSION);
         return true;
