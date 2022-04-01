@@ -20,7 +20,6 @@ class Session
                 'samesite' => 'Strict',
             ]);
             session_start();
-            session_regenerate_id();
             $this->modified = time();
         }
         if (!isset($this->token)) {
