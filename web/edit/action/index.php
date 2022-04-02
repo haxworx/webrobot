@@ -6,7 +6,7 @@ require_once 'lib/Timer.php';
 require_once 'lib/Session.php';
 
 $session = new Session;
-if (!$session->authorized()) {
+if (!$session->IsAuthorized()) {
     http_response_code(401);
     exit(1);
 }

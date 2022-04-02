@@ -8,7 +8,7 @@ require_once 'lib/Session.php';
 # DELETE a job from the tbl_crawl_launch table.
 
 $session = new Session;
-if (!$session->authorized()) {
+if (!$session->IsAuthorized()) {
     http_response_code(401);
     exit(0);
 }

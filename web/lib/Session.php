@@ -20,6 +20,8 @@ class Session
                 'samesite' => 'Strict',
             ]);
             session_start();
+            $this->IPAddress = $_SERVER['REMOTE_ADDR'];
+            $this->UserAgent = $_SERVER['HTTP_USER_AGENT'];
             $this->modified = time();
         }
         if (!isset($this->token)) {
@@ -44,15 +46,21 @@ class Session
         $this->setToken();
     }
 
-    public function authorized()
+    public function IsAuthorized()
     {
         session_start();
-        if ((isset($this->authorized)) && ($this->authorized === AUTHORIZED_SECRET)) {
-            return true;
+
+        if (($this->IPAddress !== $_SERVER['REMOTE_ADDR']) || ($this->UserAgent !== $_SERVER['HTTP_USER_AGENT'])) {
+            $this->destroy();
+            return false;
         }
 
-        $this->destroy();
-        return false;
+        if ((!isset($this->authorized)) || ($this->authorized !== AUTHORIZED_SECRET)) {
+            $this->destroy();
+            return false;
+        }
+
+        return true;
     }
 
     public function extend()

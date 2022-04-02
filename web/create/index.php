@@ -6,7 +6,7 @@ require_once 'lib/Database.php';
 require_once 'lib/Session.php';
 
 $session = new Session;
-if (!$session->authorized()) {
+if (!$session->IsAuthorized()) {
     header("Location: /login/");
     exit(0);
 }
