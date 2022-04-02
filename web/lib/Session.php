@@ -68,7 +68,9 @@ class Session
 
     public function extend()
     {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         $this->modified = time();
     }
 
@@ -112,14 +114,13 @@ class Session
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        session_unset();
-	setcookie(session_name(), "", [
-		'domain'  => $_SERVER['SERVER_NAME'],
-		'path'    => '/',
-		'expires' => time() - 86400,
-	]);
+        $_SESSION = [];
+        setcookie(session_name(), "", [
+            'domain'  => $_SERVER['SERVER_NAME'],
+            'path'    => '/',
+            'expires' => time() - 86400,
+        ]);
         session_destroy();
-        unset($_SESSION);
         return true;
     }
 }
