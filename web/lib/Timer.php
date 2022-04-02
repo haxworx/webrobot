@@ -124,7 +124,8 @@ class Timer
         foreach ($files as $file) {
             $dir = $home . '/.config/systemd/user';
             $path = $dir . "/$file";
-            unlink($path);
+            system("sudo -u spider rm $path");
+#            unlink($path);
         }
 
         $config = new Config();
