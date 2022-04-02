@@ -20,6 +20,7 @@ class Session
                 'samesite' => 'Strict',
             ]);
             session_start();
+            session_regenerate_id();
             $this->IPAddress = $_SERVER['REMOTE_ADDR'];
             $this->UserAgent = $_SERVER['HTTP_USER_AGENT'];
             $this->modified = time();
@@ -48,7 +49,9 @@ class Session
 
     public function IsAuthorized()
     {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
         if (($this->IPAddress !== $_SERVER['REMOTE_ADDR']) || ($this->UserAgent !== $_SERVER['HTTP_USER_AGENT'])) {
             $this->destroy();
@@ -110,6 +113,11 @@ class Session
             session_start();
         }
         session_unset();
+	setcookie(session_name(), "", [
+		'domain'  => $_SERVER['SERVER_NAME'],
+		'path'    => '/',
+		'expires' => time() - 86400,
+	]);
         session_destroy();
         unset($_SESSION);
         return true;
