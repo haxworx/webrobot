@@ -7,6 +7,7 @@ require_once 'lib/Session.php';
 
 $session = new Session;
 if (!$session->IsAuthorized()) {
+    $session->destroy();
     header("Location: /login/");
     exit(0);
 }

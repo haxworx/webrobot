@@ -1,11 +1,10 @@
 <?php
 
-const AUTHORIZED_SECRET = 'supersecret';
-
 class Session
 {
     public function __construct()
     {
+        $this->setSecret('supersecret');
     }
 
     public function start()
@@ -21,9 +20,9 @@ class Session
             ]);
             session_start();
             session_regenerate_id();
-            $this->IPAddress = $_SERVER['REMOTE_ADDR'];
-            $this->UserAgent = $_SERVER['HTTP_USER_AGENT'];
-            $this->modified = time();
+            $this->setIpAddress($_SERVER['REMOTE_ADDR']);
+            $this->setUserAgent($_SERVER['HTTP_USER_AGENT']);
+            $this->setModified();
         }
         if (!isset($this->token)) {
             $this->setToken();
@@ -41,8 +40,8 @@ class Session
         # Destroy our previous session and create new.
         $this->destroy();
         $this->start();
-        $this->authorized = AUTHORIZED_SECRET;
-        $this->user_id = $user_id;
+	$this->setAuthorizedSecret($this->getSecret());
+        $this->setUserID($user_id);
         # Reset our CSRF token.
         $this->setToken();
     }
@@ -53,16 +52,65 @@ class Session
             session_start();
         }
 
-        if (($this->IPAddress !== $_SERVER['REMOTE_ADDR']) || ($this->UserAgent !== $_SERVER['HTTP_USER_AGENT'])) {
-            $this->destroy();
+        if (!$this->IsValid()) {
             return false;
         }
 
-        if ((!isset($this->authorized)) || ($this->authorized !== AUTHORIZED_SECRET)) {
-            $this->destroy();
+        if (!$this->UserIDValid()) {
             return false;
         }
 
+        if ($this->getAuthorizedSecret() !== $this->getSecret()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function setAuthorizedSecret($secret)
+    {
+        $this->authorized_secret = $secret;
+    }
+
+    private function getAuthorizedSecret()
+    {
+        if (isset($this->authorized_secret)) {
+            return $this->authorized_secret;
+        }
+	return false;
+    }
+
+    private function setSecret($secret)
+    {
+        $this->secret = $secret;
+    }
+
+    private function getSecret()
+    {
+        if (isset($this->secret)) {
+            return $this->secret;
+        }
+	return false;
+    }
+
+    private function UserIDValid()
+    {
+        $user_id = $this->getUserID();
+        if (($user_id === false) || (!is_int($user_id))) {
+            return false;
+        }
+        return true;
+    }
+
+    public function IsValid()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (($this->getIpAddress() !== $_SERVER['REMOTE_ADDR']) || ($this->getUserAgent() !== $_SERVER['HTTP_USER_AGENT'])) {
+            return false;
+        }
         return true;
     }
 
@@ -71,10 +119,62 @@ class Session
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        $this->setModified();
+    }
+
+    private function setUserID($user_id)
+    {
+        $this->user_id = $user_id;
+    }
+
+    public function getUserID()
+    {
+        if (isset($this->user_id)) {
+            return $this->user_id;
+        }
+        return false;
+    }
+
+    public function setModified()
+    {
         $this->modified = time();
     }
 
-    public function setToken()
+    public function getModified()
+    {
+        if (isset($this->modified)) {
+            return $this->modified;
+        }
+        return false;
+    }
+
+    private function setIpAddress($address)
+    {
+        $this->ip_address = $address;
+    }
+
+    private function getIpAddress()
+    {
+         if (isset($this->ip_address)) {
+             return $this->ip_address;
+         }
+         return false;
+    }
+
+    private function setUserAgent($user_agent)
+    {
+        $this->user_agent = $user_agent;
+    }
+
+    private function getUserAgent()
+    {
+        if (isset($this->user_agent)) {
+            return $this->user_agent;
+        }
+        return false;
+    }
+
+    private function setToken()
     {
         $this->token = bin2hex(random_bytes(32));
     }
@@ -107,6 +207,15 @@ class Session
     public function __unset($name)
     {
         unset($_SESSION[$name]);
+    }
+
+    public function __toString()
+    {
+        $output = "";
+        foreach ($_SESSION as $key => $value) {
+            $output .= "$key => $value\n";
+        }
+        return $output;
     }
 
     public function destroy()
