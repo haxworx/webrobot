@@ -81,6 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $session->authenticated($user_id);
             $hash = $password = null;
             header('Location: /');
+            exit(0);
         } else {
             $hash = null;
             header("Location: /login/?failed=1");

@@ -109,7 +109,6 @@ class Session
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        setcookie(session_name(), FALSE, time() - 3600, '/', $_SERVER['SERVER_NAME'], true, true);
         session_unset();
         session_destroy();
         unset($_SESSION);
