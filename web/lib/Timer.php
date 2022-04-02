@@ -66,7 +66,7 @@ class Timer
         "Type=oneshot\n" .
         "# We log to SQL.\n" .
         "StandardOutput=null\n" .
-        "ExecStart=docker run $this->docker_image $this->bot_id\n" .
+        "ExecStart=docker run --rm $this->docker_image $this->bot_id\n" .
         "\n";
 
         $path = "$dir/$this->identifier.service";
