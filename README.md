@@ -26,3 +26,14 @@ composer require php-mqtt/client
 composer require aws/aws-sdk-php
 ```
 See scripts/web.sh for PHP built-in web server.
+
+## Installation (Rough Guide)
+
+ * Install python3 and PHP dependencies.
+ * Install MySQL database (webrobot.sql).
+ * Install docker.io
+ * Set up MYSQL database user/pass/host.
+ * Configure config.ini for database credentials. Either locally or AWS Secrets Manager.
+ * As a user with sudo root credentials run 'sudo sh install.sh' to create docker image.
+ * Configure Apache/NGINX to serve web/ content.
+ * Launch via the web interface.
