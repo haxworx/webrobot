@@ -216,7 +216,7 @@ class Robot:
         status_code, url, path, query, content_type, metadata,
         checksum, encoding, length, data) VALUES (%s, %s, %s,
         'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-        %s, %s, %s, COMPRESS(%s))
+        %s, %s, %s, %s)
         """
         val = (res['bot_id'], now, now, res['domain'], res['scheme'],
                res['link_source'], res['modified'], res['status_code'],
