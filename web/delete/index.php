@@ -36,7 +36,7 @@ if (!isset($_POST['domain']) || empty($_POST['domain'])) {
     return;
 }
 
-$bot_id  = $_POST['bot_id'];
+$bot_id = $_POST['bot_id'];
 $domain = $_POST['domain'];
 $scheme = $_POST['scheme'];
 
