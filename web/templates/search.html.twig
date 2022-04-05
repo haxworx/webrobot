@@ -2,8 +2,22 @@
 
 {% block content %}
 
+
+<form name="search" id="search" action="/search/" method="get">
+<select name="domain">
 {% for domain in domains %}
-<p>{{ domain }}</p>
+   <option {% if wanted_domain == domain %} selected {% endif %} value="{{ domain }}">{{ domain }}</option>
+{% endfor %}
+<input type="text" name="search">
+<input type="submit" value="Search">
+</select>
+
+<p>Searching {{ search }} in {{ wanted_domain }} .</p>
+
+<p>Found a total {{ results_count }} results.</p>
+
+{% for result in results %}
+<p>{{ result.id }} => {{ result.url }} </p>
 {% endfor %}
 
 {% endblock %}
