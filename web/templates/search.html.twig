@@ -4,13 +4,14 @@
 
 
 <form name="search" id="search" action="/search/" method="get">
-<select name="domain">
+<select class="search_select" name="domain">
 {% for domain in domains %}
    <option {% if wanted_domain == domain %} selected {% endif %} value="{{ domain }}">{{ domain }}</option>
 {% endfor %}
-<input type="text" name="search">
-<input type="submit" value="Search">
 </select>
+<input class="search_input" type="text" name="search">
+<input class="search_submit" type="submit" value="Search">
+</form>
 
 <p>Searching {{ search }} in {{ wanted_domain }} .</p>
 

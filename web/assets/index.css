@@ -65,7 +65,7 @@ th, td {
 }
 
 
-.table_submit {
+.search_submit, .table_submit {
   font-family: "Fjalla One", Sans, sans-serif;
   background-color: #89ac26;
   color: white;
@@ -76,7 +76,20 @@ th, td {
   cursor: pointer;
 }
 
-.table_submit:hover {
+.search_select, .search_input, .search_submit {
+  font-family: "Fjalla One", Sans, sans-serif;
+  font-size: 11pt;
+  font-weight: bold;
+  border: none;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+.search_input {
+  width: 70%;
+}
+
+.search_submit:hover, .table_submit:hover {
   color: white;
   cursor: pointer;
   background-color: #9abd37;;
@@ -101,6 +114,7 @@ th, td {
   color: #FF4500;
   display: none;
 }
+
 
 .create_input, .confirm_cancel, .create_label, .create_submit, .create_number {
   font-family: "Fjalla One", Sans, sans-serif;
