@@ -21,7 +21,7 @@ if ((!isset($_POST['token'])) || ($_POST['token'] !== $session->getToken())) {
     return;
 }
 
-if (!isset($_POST['bot_id']) || empty($_POST['bot_id'])) {
+if (!isset($_POST['bot_id']) || (!preg_match('/^[0-9]+$/', $_POST['bot_id'])) {
     header("Location: / ");
     return;
 }
