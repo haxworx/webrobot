@@ -70,6 +70,7 @@ CREATE TABLE `tbl_crawl_settings` (
   `import_sitemaps` boolean DEFAULT NULL,
   `retry_max` int DEFAULT NULL,
   `start_time` time DEFAULT NULL,
+  `end_time` datetime DEFAULT NULL,
   `daily` boolean DEFAULT NULL,
   `weekly` boolean DEFAULT NULL,
   `weekday` varchar(32) DEFAULT NULL,

@@ -236,6 +236,25 @@ class Robot:
 
         return everything_is_fine
 
+    def finished(self, res):
+        everything_is_fine = True
+
+        now = datetime.now()
+
+        SQL = """
+        UPDATE tbl_crawl_settings SET end_time = %s WHERE bot_id = %s
+        """
+        cursor = self.dbh.cnx.cursor()
+        try:
+            cursor.execute(SQL, (now, res['bot_id']))
+            self.dbh.cnx.commit()
+        except mysql.connector.Error as e:
+            self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
+            everything_is_fine = False
+        cursor.close()
+
+        return everything_is_fine
+
     def save_errors(self, res):
         """
         Record to database any web page that does not reply with HTTP status
@@ -433,6 +452,8 @@ class Robot:
         self.log.info("/%s/%s/info/finished/saved/%i", self.hostname, self.domain, self.save_count)
         self.mqtt_client.publish(crawler.config.mqtt_topic, "FINISHED: {}" . format(self.bot_id));
         self.mqtt_client.loop_stop();
+
+        self.finished({ 'bot_id': self.bot_id })
 
 def on_connect(client, userdata, flags, rc):
     """
