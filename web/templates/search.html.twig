@@ -4,7 +4,6 @@
 
 
 <form name="search" id="search" action="/search/" method="get">
-<input type="hidden" name="token" value="{{ token }}">
 <select class="search_select" name="bot_id">
 {% for robot in robots %}
    <option {% if bot_id == robot.bot_id %} selected {% endif %} value="{{ robot.bot_id }}">{{ robot.address }}</option>
