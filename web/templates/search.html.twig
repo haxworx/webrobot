@@ -4,16 +4,15 @@
 
 
 <form name="search" id="search" action="/search/" method="get">
-<select class="search_select" name="domain">
-{% for domain in domains %}
-   <option {% if wanted_domain == domain %} selected {% endif %} value="{{ domain }}">{{ domain }}</option>
+<input type="hidden" name="token" value="{{ token }}">
+<select class="search_select" name="bot_id">
+{% for robot in robots %}
+   <option {% if bot_id == robot.bot_id %} selected {% endif %} value="{{ robot.bot_id }}">{{ robot.address }}</option>
 {% endfor %}
 </select>
 <input class="search_input" type="text" name="search">
 <input class="search_submit" type="submit" value="Search">
 </form>
-
-<p>Searching {{ search }} in {{ wanted_domain }} .</p>
 
 <p>Found a total {{ results_count }} results.</p>
 

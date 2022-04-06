@@ -14,12 +14,12 @@ if (!$session->IsAuthorized()) {
 
 $session->startExtend();
 
-$wanted_domain = false;
+$bot_id = false;
 $search_term = false;
 
-if (isset($_GET['domain'])) {
-    if (preg_match('/^[A-Za-z0-9\.]+$/', $_GET['domain'])) {
-        $wanted_domain = $_GET['domain'];
+if (isset($_GET['bot_id'])) {
+    if (preg_match('/^[0-9]+$/', $_GET['bot_id'])) {
+        $bot_id = intval($_GET['bot_id']);
     }
 }
 
@@ -29,7 +29,7 @@ if (isset($_GET['search'])) {
     }
 }
 
-$robot_ids = [];
+$robots = [];
 $results = [];
 
 try {
@@ -41,11 +41,14 @@ try {
 }
 
 try {
-    $SQL = "SELECT bot_id FROM tbl_crawl_settings WHERE user_id = ?";
+    $SQL = "SELECT bot_id, address FROM tbl_crawl_settings WHERE user_id = ?";
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute([$session->getUserID()]);
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $robot_ids[] = $row['bot_id'];
+        $robots[] = [
+            'bot_id'  => $row['bot_id'],
+            'address' => $row['address'],
+        ];
     }
 } catch (Exception $e) {
     error_log(__FILE__ . ':' . __LINE__ . ':' . $e->getMessage());
@@ -53,26 +56,11 @@ try {
     return;
 }
 
-$domains = [];
-
-try {
-    $SQL = "SELECT distinct(domain) FROM tbl_crawl_data WHERE bot_id IN (" .implode(",", $robot_ids) . ")";
-    $stmt = $db->pdo->prepare($SQL);
-    $stmt->execute();
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $domains[] = $row['domain'];
-    }
-} catch (Exception $e) {
-    error_log(__FILE__ . ':' .  __LINE__ . ':' . $e->getMessage());
-    http_response_code(500);
-    return;
-}
-
-if (($wanted_domain !== false) && ($search_term !== false)) {
+if (($bot_id !== false) && ($search_term !== false)) {
     try {
-        $SQL = "SELECT id, url FROM tbl_crawl_data WHERE domain = ? AND data LIKE ?";
+        $SQL = "SELECT id, url, scheme, domain FROM tbl_crawl_data WHERE bot_id = ? AND data LIKE ?";
         $stmt = $db->pdo->prepare($SQL);
-        $stmt->execute([$wanted_domain, '%'. $search_term . '%']);
+        $stmt->execute([$bot_id, '%'. $search_term . '%']);
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $results[] = [ 'id' => $row['id'], 'url' => $row['url'] ];
         }
@@ -89,9 +77,9 @@ $template = $twig->load('search.html.twig');
 
 echo $template->render([
     'token'          => $session->getToken(),
-    'domains'        => $domains,
+    'robots'         => $robots,
     'search'         => $search_term,
-    'wanted_domain'  => $wanted_domain,
+    'bot_id'         => $bot_id,
     'results'        => $results,
     'results_count'  => count($results),
 ]);
