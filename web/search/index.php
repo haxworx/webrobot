@@ -64,7 +64,6 @@ if (($bot_id !== false) && ($search_term !== false)) {
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $results[] = [ 'id' => $row['id'], 'url' => $row['url'] ];
         }
-
     } catch (Exception $e) {
         error_log(__FILE__ . ':' . __LINE__ . ':' . $e->getMessage());
         http_response_code(500);

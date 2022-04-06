@@ -3,6 +3,7 @@
 require_once 'lib/Database.php';
 require_once 'lib/Twig.php';
 require_once 'lib/Session.php';
+require_once 'lib/Common.php';
 
 $session = new Session;
 if (!$session->IsAuthorized()) {
@@ -26,7 +27,7 @@ try {
             'address'     => $row['address'],
             'domain'      => $row['domain'],
             'start_time'  => $row['start_time'],
-            'end_time'    => $row['end_time'],
+            'end_time'    => Common::FuzzyDateTime($row['end_time']),
             'agent'       => $row['agent'],
             'weekday'     => $row['weekday']
         ];

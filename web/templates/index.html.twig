@@ -8,15 +8,17 @@
       <th class="crawlers">address</th>
       <th class="crawlers">user-agent</th>
       <th class="crawlers">launch</th>
+      <th class="crawlers">last</th>
       <th class="crawlers">frequency</th>
       <th class="crawlers_action">actions</th>
     </tr>
   </thead>
 {% for robot in robots %}
   <tr>
-    <td>{{robot.address}}</td>
+    <td>{{ robot.address }}</td>
     <td>{{ robot.agent }}</td>
-    <td>{{robot.start_time}}</td>
+    <td>{{ robot.start_time }}</td>
+    <td>{{ robot.end_time }}</td>
 {% if robot.weekday == null %}
     <td>daily</td>
 {% else %}
