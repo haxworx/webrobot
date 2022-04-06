@@ -12,7 +12,7 @@ class Common
         $now = new DateTime();
         $secs = $now->format('U') - $date->format('U');
         if ($secs < 3600) {
-            $out = ($secs / 60) . ' minutes ago';
+            $out = round($secs / 60, 1) . ' minutes ago';
         } else if (($secs > 3600) && ($secs < 86400)) {
             $out = round($secs / 3600, 1) . ' hours ago';
         } else {
