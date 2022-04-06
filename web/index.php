@@ -26,7 +26,7 @@ try {
             'address'     => $row['address'],
             'domain'      => $row['domain'],
             'start_time'  => $row['start_time'],
-            'end_time'    => $row['end_time'];
+            'end_time'    => $row['end_time'],
             'agent'       => $row['agent'],
             'weekday'     => $row['weekday']
         ];
