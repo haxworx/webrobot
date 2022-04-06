@@ -46,6 +46,14 @@ try {
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute([$bot_id]);
 
+    $SQL = "DELETE FROM tbl_crawl_data WHERE bot_id = ?";
+    $stmt = $db->pdo->prepare($SQL);
+    $stmt->execute([$bot_id]);
+
+    $SQL = "DELETE FROM tbl_crawl_errors WHERE bot_id = ?";
+    $stmt = $db->pdo->prepare($SQL);
+    $stmt->execute([$bot_id]);
+
     $SQL = "DELETE FROM tbl_crawl_allowed_content WHERE bot_id = ?";
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute([$bot_id]);
