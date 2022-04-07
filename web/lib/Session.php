@@ -19,13 +19,14 @@ class Session
                 'samesite' => 'Strict',
             ]);
             session_start();
-            session_regenerate_id();
-            $this->setIpAddress($_SERVER['REMOTE_ADDR']);
-            $this->setUserAgent($_SERVER['HTTP_USER_AGENT']);
-            $this->setModified();
-        }
-        if (!isset($this->token)) {
-            $this->setToken();
+            if (!isset($this->started)) {
+                session_regenerate_id();
+                $this->setIpAddress($_SERVER['REMOTE_ADDR']);
+                $this->setUserAgent($_SERVER['HTTP_USER_AGENT']);
+                $this->setModified();
+                $this->setToken();
+                $this->started = true;
+            }
         }
     }
 
@@ -40,7 +41,7 @@ class Session
         # Destroy our previous session and create new.
         $this->destroy();
         $this->start();
-	$this->setAuthorizedSecret($this->getSecret());
+        $this->setAuthorizedSecret($this->getSecret());
         $this->setUserID($user_id);
         # Reset our CSRF token.
         $this->setToken();
@@ -49,7 +50,7 @@ class Session
     public function IsAuthorized()
     {
         if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+            $this->start();
         }
 
         if (!$this->IsValid()) {
@@ -77,7 +78,7 @@ class Session
         if (isset($this->authorized_secret)) {
             return $this->authorized_secret;
         }
-	return false;
+        return false;
     }
 
     private function setSecret($secret)
@@ -90,7 +91,7 @@ class Session
         if (isset($this->secret)) {
             return $this->secret;
         }
-	return false;
+        return false;
     }
 
     private function UserIDValid()
@@ -105,7 +106,7 @@ class Session
     public function IsValid()
     {
         if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+            $this->start();
         }
 
         if (($this->getIpAddress() !== $_SERVER['REMOTE_ADDR']) || ($this->getUserAgent() !== $_SERVER['HTTP_USER_AGENT'])) {
@@ -117,7 +118,7 @@ class Session
     public function extend()
     {
         if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+            $this->start();
         }
         $this->setModified();
     }
@@ -221,7 +222,7 @@ class Session
     public function destroy()
     {
         if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+            $this->start();
         }
         $_SESSION = [];
         setcookie(session_name(), "", [
