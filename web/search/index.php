@@ -16,6 +16,8 @@ $session->startExtend();
 
 $bot_id = false;
 $search_term = false;
+$next = 0;
+$prev = false;
 
 if (isset($_GET['bot_id'])) {
     if (preg_match('/^[0-9]+$/', $_GET['bot_id'])) {
@@ -26,6 +28,12 @@ if (isset($_GET['bot_id'])) {
 if (isset($_GET['search'])) {
     if (preg_match('/[A-Za-z0-9 ]+$/', $_GET['search'])) {
         $search_term = $_GET['search'];
+    }
+}
+
+if (isset($_GET['next'])) {
+    if (preg_match('/^[0-9]+$/', $_GET['next'])) {
+        $next = intval($_GET['next']);
     }
 }
 
@@ -57,19 +65,27 @@ try {
 }
 
 if (($bot_id !== false) && ($search_term !== false)) {
+    if ($next >= 10) {
+        $prev = $next - 10;
+    }
+
     try {
-        $SQL = "SELECT id, url, scheme, domain FROM tbl_crawl_data WHERE bot_id = ? AND data LIKE ?";
+        $SQL = "SELECT id, url, scheme, domain FROM tbl_crawl_data WHERE bot_id = ? AND data LIKE ? LIMIT ?, ?";
         $stmt = $db->pdo->prepare($SQL);
-        $stmt->execute([$bot_id, '%'. $search_term . '%']);
+        $stmt->execute([$bot_id, '%'. $search_term . '%', $next, 11]);
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $results[] = [ 'id' => $row['id'], 'url' => $row['url'] ];
+        }
+        if (count($results) == 11) {
+            unset($results[10]);
+        } else {
+            $next = false;
         }
     } catch (Exception $e) {
         error_log(__FILE__ . ':' . __LINE__ . ':' . $e->getMessage());
         http_response_code(500);
         return;
     }
-
 }
 
 $template = $twig->load('search.html.twig');
@@ -79,6 +95,8 @@ echo $template->render([
     'robots'         => $robots,
     'search'         => $search_term,
     'bot_id'         => $bot_id,
+    'next'           => $next !== false ? $next + 10 : false,
+    'prev'           => $prev !== false ? $prev : false,
     'results'        => $results,
     'results_count'  => count($results),
 ]);

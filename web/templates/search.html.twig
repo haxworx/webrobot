@@ -4,19 +4,31 @@
 
 
 <form name="search" id="search" action="/search/" method="get">
-<select class="search_select" name="bot_id">
+  <select class="search_select" name="bot_id">
 {% for robot in robots %}
-   <option {% if bot_id == robot.bot_id %}selected{% endif %} value="{{ robot.bot_id }}">{{ robot.address }}</option>
+    <option {% if bot_id == robot.bot_id %}selected{% endif %} value="{{ robot.bot_id }}">{{ robot.address }}</option>
 {% endfor %}
-</select>
-<input class="search_input" type="text" name="search">
-<input class="search_submit" type="submit" value="Search">
+  </select>
+  <input class="search_input" type="text" name="search">
+  <input class="search_submit" type="submit" value="Search">
 </form>
 
 <p>Found a total {{ results_count }} results.</p>
 
+<div class="search_results">
 {% for result in results %}
-<p>{{ result.id }} => {{ result.url }} </p>
+  <p>{{ result.id }} => {{ result.url }} </p>
 {% endfor %}
+{% if prev is not same as(false) %}
+  <button class="search_pages" onclick='window.location="/search/?bot_id={{ bot_id }}&amp;search={{ search }}&amp;next={{ prev }}"'>Prev</button>
+{% endif %}
+{% if next is not same as(false) %}
+  <button class="search_pages" onclick='window.location="/search/?bot_id={{ bot_id }}&amp;search={{ search }}&amp;next={{ next }}"'>Next</button>
+{% endif %}
+</div>
+<div class="search_content">
+  <p>Content goes here.</p>
+</div>
+
 
 {% endblock %}
