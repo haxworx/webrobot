@@ -16,7 +16,7 @@ $session->startExtend();
 
 $content_types = [];
 
-if ((!isset($_GET['bot_id'])) | ((empty($_GET['bot_id'])))) {
+if ((!isset($_GET['bot_id'])) || (!preg_match('/^[0-9]+$/', $_GET['bot_id']))) {
     header("Location: /");
     return;
 }
@@ -26,16 +26,21 @@ $bot_id = $_GET['bot_id'];
 try {
     $db = new DB;
     $SQL = "SELECT bot_id, scheme, address, domain, agent,
-	    delay, ignore_query, import_sitemaps, retry_max,
-	    start_time, daily, weekly, weekday FROM tbl_crawl_settings
-	    WHERE bot_id = ?";
+            delay, ignore_query, import_sitemaps, retry_max,
+            start_time, daily, weekly, weekday FROM tbl_crawl_settings
+            WHERE bot_id = ?";
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute([$bot_id]);
     $botrow = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($botrow === false) {
+        error_log(__FILE__ . ':' . __LINE__ . ':' . 'No data');
+        http_response_code(500);
+        return;
+    }
 
     $content_ids = [];
     $SQL = "SELECT content_id FROM tbl_crawl_allowed_content
-	    WHERE bot_id = ?";
+            WHERE bot_id = ?";
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute([$botrow['bot_id']]);
     while (($row = $stmt->fetch(PDO::FETCH_ASSOC))) {
@@ -49,8 +54,8 @@ try {
     while (($row = $stmt->fetch(PDO::FETCH_ASSOC))) {
         $content_types[] = [
             'content_id' => $row['content_id'],
-	    'content_type' => $row['content_type'],
-	    'selected' => (in_array($row['content_id'], $content_ids) ? true : false),
+            'content_type' => $row['content_type'],
+            'selected' => (in_array($row['content_id'], $content_ids) ? true : false),
         ];
     }
 
@@ -66,7 +71,6 @@ echo $template->render([
      'bot'           => $botrow,
      'content_types' => $content_types,
      'token'         => $session->getToken(),
-
 ]);
 
 ?>
