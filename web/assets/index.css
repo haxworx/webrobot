@@ -64,7 +64,7 @@ th, td {
   padding-bottom: 5px;
 }
 
-button.search_pages, .search_submit, .table_submit {
+button.search_pages, .search_submit, .table_submit, .create_submit, .search_submit {
   font-family: "Fjalla One", Sans, sans-serif;
   background-color: #89ac26;
   color: white;
@@ -73,9 +73,12 @@ button.search_pages, .search_submit, .table_submit {
   width: 64px;
   margin-bottom: 5px;
   cursor: pointer;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  border-radius: 5px;
 }
 
-button.search_pages, .search_select, .search_input, .search_submit {
+.search_select, .search_input {
   font-family: "Fjalla One", Sans, sans-serif;
   font-size: 11pt;
   font-weight: bold;
@@ -140,6 +143,7 @@ button.search_pages, .search_select, .search_input, .search_submit {
   color: white;
   font-weight: bold;
   width: 120px;
+  border-radius: 5px;
 }
 
 .create_submit {
