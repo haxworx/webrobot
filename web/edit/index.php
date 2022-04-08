@@ -21,7 +21,7 @@ if ((!isset($_GET['bot_id'])) || (!preg_match('/^[0-9]+$/', $_GET['bot_id']))) {
     return;
 }
 
-$bot_id = $_GET['bot_id'];
+$bot_id = intval($_GET['bot_id']);
 
 try {
     $db = new DB;

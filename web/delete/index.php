@@ -21,27 +21,27 @@ if ((!isset($_POST['token'])) || ($_POST['token'] !== $session->getToken())) {
     return;
 }
 
-if (!isset($_POST['bot_id']) || (!preg_match('/^[0-9]+$/', $_POST['bot_id'])) {
+if (!isset($_POST['bot_id']) || (!preg_match('/^[0-9]+$/', $_POST['bot_id']))) {
     header("Location: / ");
     return;
 }
 
-if (!isset($_POST['scheme']) || empty($_POST['scheme'])) {
-    header("Location: /");
-    return;
-}
-
-if (!isset($_POST['domain']) || empty($_POST['domain'])) {
-    header("Location: /");
-    return;
-}
-
-$bot_id = $_POST['bot_id'];
-$domain = $_POST['domain'];
-$scheme = $_POST['scheme'];
+$bot_id = intval($_POST['bot_id']);
+$domain = false;
+$scheme = false;
 
 try {
     $db = new DB();
+
+    $SQL = "SELECT domain, scheme FROM tbl_crawl_settings WHERE bot_id = ?";
+    $stmt = $db->pdo->prepare($SQL);
+    $stmt->execute([$bot_id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row !== false) {
+        $domain = $row['domain'];
+        $scheme = $row['scheme'];
+    }
+
     $SQL = "DELETE FROM tbl_crawl_settings WHERE bot_id = ?";
     $stmt = $db->pdo->prepare($SQL);
     $stmt->execute([$bot_id]);
@@ -61,7 +61,11 @@ try {
     error_log(__FILE__ . ':' . __LINE__ . ':' . $e->getMessage());
 }
 
-Timer::remove($bot_id, $scheme, $domain);
+if (($domain !== false) && ($scheme !== false)) {
+    Timer::remove($bot_id, $scheme, $domain);
+} else {
+    error_log(__FILE__ . ':' . __LINE__ . ':' . 'Failed to remove timer unit.');
+}
 
 header("Location: /");
 ?>

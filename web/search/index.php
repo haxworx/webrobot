@@ -16,7 +16,7 @@ $session->startExtend();
 
 $bot_id = false;
 $search_term = false;
-$next = 0;
+$next = false;
 $prev = false;
 
 if (isset($_GET['bot_id'])) {
@@ -77,6 +77,9 @@ if (($bot_id !== false) && ($search_term !== false)) {
             $results[] = [ 'id' => $row['id'], 'url' => $row['url'] ];
         }
         if (count($results) == 11) {
+            if ($next === false) {
+                $next = 0;
+            }
             unset($results[10]);
         } else {
             $next = false;
