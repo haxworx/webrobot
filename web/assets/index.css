@@ -108,7 +108,13 @@ button.search_pages, .search_submit, .crawlers_submit, .create_submit, .search_s
 }
 
 #confirm { 
-  text-align: left;
+  text-align: center;
+  padding-left: auto;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-right: auto;
+  border: 1px solid #7ea02b;
+  border-radius: 5px;
 }
 
 #login_error, #create_error {
