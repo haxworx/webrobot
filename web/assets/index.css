@@ -64,7 +64,7 @@ th, td {
   padding-bottom: 5px;
 }
 
-button.search_pages, .search_submit, .table_submit, .create_submit, .search_submit {
+button.search_pages, .search_submit, .crawlers_submit, .create_submit, .search_submit {
   font-family: "Fjalla One", Sans, sans-serif;
   background-color: #89ac26;
   color: white;
@@ -91,7 +91,7 @@ button.search_pages, .search_submit, .table_submit, .create_submit, .search_subm
   width: 70%;
 }
 
-.search_submit:hover, .table_submit:hover {
+.search_submit:hover, .crawlers_submit:hover {
   color: white;
   cursor: pointer;
   background-color: #9abd37;;

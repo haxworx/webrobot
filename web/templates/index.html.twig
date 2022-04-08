@@ -27,13 +27,13 @@
     <td class="crawlers_action">
       <form action="/edit" method="get">
         <input type="hidden" name="bot_id" value="{{robot.bot_id}}">
-        <input type="submit" class="table_submit" value="Edit">
+        <input type="submit" class="crawlers_submit" value="Edit">
       </form>
       <form action="/confirm/" method="post">
         <input type="hidden" name="token" value="{{ token }}">
         <input type="hidden" name="bot_id" value="{{robot.bot_id}}">
         <input type="hidden" name="action" value="delete">
-        <input type="submit" class="table_submit" value="Delete">
+        <input type="submit" class="crawlers_submit" value="Delete">
       </form>
     </td>
   </tr>
