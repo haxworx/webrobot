@@ -1,24 +1,33 @@
 {% extends "base.html.twig" %}
 
+{% block head %}
+  <script type="text/javascript" src="/assets/search.js"></script>
+{% endblock %}
+
 {% block content %}
 
-
+<div class="search_box">
 <form name="search" id="search" action="/search/" method="get">
   <select class="search_select" name="bot_id">
 {% for robot in robots %}
     <option {% if bot_id == robot.bot_id %}selected{% endif %} value="{{ robot.bot_id }}">{{ robot.address }}</option>
 {% endfor %}
   </select>
-  <input class="search_input" type="text" name="search">
+  <input class="search_input" type="text" name="search" value="{{ search }}">
   <input class="search_submit" type="submit" value="Search">
 </form>
+</div>
 
 <p>Found a total {{ results_count }} results.</p>
 
-<div class="search_results">
+<div id="search_results">
 {% for result in results %}
-  <p>{{ result.id }} => {{ result.url }} </p>
+  <div class="result">
+  <label class="result_date">{{ result.scan_date }}</label>
+  <label class="result" onclick='display_result({{ result.id }})'>{{ result.url }}</label>
+  </div>
 {% endfor %}
+<div class="search_buttons">
 {% if prev is not same as(false) %}
   <button class="search_pages" onclick='window.location="/search/?bot_id={{ bot_id }}&amp;search={{ search }}&amp;next={{ prev }}"'>Prev</button>
 {% endif %}
@@ -26,9 +35,9 @@
   <button class="search_pages" onclick='window.location="/search/?bot_id={{ bot_id }}&amp;search={{ search }}&amp;next={{ next }}"'>Next</button>
 {% endif %}
 </div>
-<div class="search_content">
-  <p>Content goes here.</p>
 </div>
+<iframe id="search_content">
+</iframe>
 
 
 {% endblock %}

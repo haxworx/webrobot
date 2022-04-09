@@ -70,11 +70,11 @@ if (($bot_id !== false) && ($search_term !== false)) {
     }
 
     try {
-        $SQL = "SELECT id, url, scheme, domain FROM tbl_crawl_data WHERE bot_id = ? AND data LIKE ? LIMIT ?, ?";
+        $SQL = "SELECT id, url, scan_date, domain FROM tbl_crawl_data WHERE bot_id = ? AND data LIKE ? LIMIT ?, ?";
         $stmt = $db->pdo->prepare($SQL);
         $stmt->execute([$bot_id, '%'. $search_term . '%', $next, 11]);
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $results[] = [ 'id' => $row['id'], 'url' => $row['url'] ];
+            $results[] = [ 'id' => $row['id'], 'url' => $row['url'], 'scan_date' => $row['scan_date'] ];
         }
         if (count($results) == 11) {
             if ($next === false) {

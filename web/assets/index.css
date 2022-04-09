@@ -42,6 +42,7 @@ li.menu_logout {
   margin-left: 40px;
   margin-right: 40px;
   padding-top: 40px;
+  height: 100%;
 }
 
 table.crawlers {
@@ -78,6 +79,11 @@ button.search_pages, .search_submit, .crawlers_submit, .create_submit, .search_s
   border-radius: 5px;
 }
 
+.search_box {
+  text-align: center;
+  width: 100%;
+}
+
 .search_select, .search_input {
   font-family: "Fjalla One", Sans, sans-serif;
   font-size: 11pt;
@@ -88,7 +94,7 @@ button.search_pages, .search_submit, .crawlers_submit, .create_submit, .search_s
 }
 
 .search_input {
-  width: 70%;
+  width: 60%;
 }
 
 .search_submit:hover, .crawlers_submit:hover {
@@ -97,14 +103,31 @@ button.search_pages, .search_submit, .crawlers_submit, .create_submit, .search_s
   background-color: #9abd37;;
 }
 
-.search_content {
+#search_content {
+   padding-left: 20px;
+   padding-right: 20px;
+   background-color: #efefef;
    width: 75%;
+   height: 75vh;
    float: right;
 }
 
-.search_results {
+.result {
+  cursor: pointer;
+  padding-bottom: 10px;
+}
+
+#search_results {
   width: 20%;
+  height: 80vh;
   float: left;
+}
+.search_buttons {
+  align: center;
+}
+
+.result_date {
+  color: #FF4500;
 }
 
 #confirm { 
