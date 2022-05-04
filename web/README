@@ -1,3 +1,0 @@
-composer require twig/twig
-composer require php-mqtt/client
-composer require aws/aws-sdk-php

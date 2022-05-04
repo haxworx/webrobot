@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `tbl_crawl_data`;
-CREATE TABLE `tbl_crawl_data` (
+DROP TABLE IF EXISTS `crawl_data`;
+CREATE TABLE `crawl_data` (
   `id` int NOT NULL AUTO_INCREMENT,
   `bot_id` int DEFAULT NULL,
   `srv_date` date DEFAULT(CURRENT_DATE),
@@ -24,8 +24,8 @@ CREATE TABLE `tbl_crawl_data` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `tbl_crawl_errors`;
-CREATE TABLE `tbl_crawl_errors` (
+DROP TABLE IF EXISTS `crawl_errors`;
+CREATE TABLE `crawl_errors` (
   `id` int NOT NULL AUTO_INCREMENT,
   `bot_id` int DEFAULT NULL,
   `srv_date` date DEFAULT(CURRENT_DATE),
@@ -40,8 +40,8 @@ CREATE TABLE `tbl_crawl_errors` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `tbl_crawl_log`;
-CREATE TABLE `tbl_crawl_log` (
+DROP TABLE IF EXISTS `crawl_log`;
+CREATE TABLE `crawl_log` (
   `id` int NOT NULL AUTO_INCREMENT,
   `bot_id` int DEFAULT NULL,
   `srv_date` date DEFAULT(CURRENT_DATE),
@@ -57,8 +57,8 @@ CREATE TABLE `tbl_crawl_log` (
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `tbl_crawl_settings`;
-CREATE TABLE `tbl_crawl_settings` (
+DROP TABLE IF EXISTS `crawl_settings`;
+CREATE TABLE `crawl_settings` (
   `bot_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
   `scheme` varchar(32) DEFAULT NULL,
@@ -71,29 +71,26 @@ CREATE TABLE `tbl_crawl_settings` (
   `retry_max` int DEFAULT NULL,
   `start_time` time DEFAULT NULL,
   `end_time` datetime DEFAULT NULL,
-  `daily` boolean DEFAULT NULL,
-  `weekly` boolean DEFAULT NULL,
-  `weekday` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`bot_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `tbl_content_types`;
-CREATE TABLE `tbl_content_types` (
+DROP TABLE IF EXISTS `content_types`;
+CREATE TABLE `content_types` (
   `content_id` int NOT NULL AUTO_INCREMENT,
   `content_type` varchar(128) DEFAULT NULL,
   `description` text DEFAULT NULL,
   PRIMARY KEY(`content_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `tbl_crawl_allowed_content`;
-CREATE TABLE `tbl_crawl_allowed_content` (
+DROP TABLE IF EXISTS `crawl_allowed_content`;
+CREATE TABLE `crawl_allowed_content` (
   `id` int NOT NULL AUTO_INCREMENT,
   `bot_id` int DEFAULT NULL,
   `content_id` int DEFAULT NULL,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `tbl_content_types` (`content_type`, `description`)
+INSERT INTO `content_types` (`content_type`, `description`)
 VALUES
     ('text/plain', 'Text'),
     ('text/html', 'HTML'),
@@ -102,8 +99,8 @@ VALUES
     ('text/xml', 'Text XML'),
     ('application/json', 'Application JSON');
 
-DROP TABLE IF EXISTS `tbl_global_settings`;
-CREATE TABLE `tbl_global_settings` (
+DROP TABLE IF EXISTS `global_settings`;
+CREATE TABLE `global_settings` (
   `id` int NOT NULL AUTO_INCREMENT,
   `time_stamp` timestamp DEFAULT NULL,
   `in_use` boolean DEFAULT NULL,
@@ -116,15 +113,15 @@ CREATE TABLE `tbl_global_settings` (
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `tbl_users`;
-CREATE TABLE `tbl_users` (
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
    `user_id` int NOT NULL AUTO_INCREMENT,
    `username` varchar(128) NOT NULL UNIQUE,
    `password` varchar(255) DEFAULT NULL,
    PRIMARY KEY(`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `tbl_global_settings`
+INSERT INTO `global_settings`
     (`time_stamp`, `in_use`, `max_crawlers`, `debug`, `docker_image`, `mqtt_host`, `mqtt_port`, `mqtt_topic`)
     VALUES
     (NOW(), true, 5, true, 'spiderz', 'datacentre', 1883, 'testing');

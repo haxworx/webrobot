@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Web Robot Controller{% endblock %}
+
+{% block body %}
+<h1>Scheduled</h1>
+<hr>
+<table width="100%" class="table table-striped">
+    <thead>
+        <tr><th>address</th><th>agent</th><th>start</th><th class="text-center">actions</th></tr>
+    </thead>
+    <tbody>
+{% for crawler in crawlersSettings %}
+        <tr>
+            <td>{{ crawler.address }}</td>
+            <td> {{ crawler.agent }}</td>
+            <td>{{ crawler.startTime|date('H:i:s') }}</td>
+            <td class="text-center">
+                <a href="{{ path('app_robot_schedule_edit', { bot_id: crawler.botId }) }}">Edit</a>
+            </td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+

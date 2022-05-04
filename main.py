@@ -211,7 +211,7 @@ class Robot:
         now = datetime.now()
 
         SQL = """
-        INSERT INTO tbl_crawl_data (bot_id, scan_date, scan_time_stamp,
+        INSERT INTO crawl_data (bot_id, scan_date, scan_time_stamp,
         scan_time_zone, domain, scheme, link_source, modified,
         status_code, url, path, query, content_type, metadata,
         checksum, encoding, length, data) VALUES (%s, %s, %s,
@@ -242,7 +242,7 @@ class Robot:
         now = datetime.now()
 
         SQL = """
-        UPDATE tbl_crawl_settings SET end_time = %s WHERE bot_id = %s
+        UPDATE crawl_settings SET end_time = %s WHERE bot_id = %s
         """
         cursor = self.dbh.cnx.cursor()
         try:
@@ -266,7 +266,7 @@ class Robot:
         now = datetime.now()
 
         SQL = """
-        INSERT INTO tbl_crawl_errors (bot_id, scan_date,
+        INSERT INTO crawl_errors (bot_id, scan_date,
         scan_time_stamp, scan_time_zone, status_code,
         url, link_source, description) VALUES (%s, %s, %s,
         'Europe/London', %s, %s, %s, %s)

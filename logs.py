@@ -19,7 +19,7 @@ class DatabaseHandler(StreamHandler):
         now = datetime.now()
 
         SQL = """
-        INSERT INTO tbl_crawl_log (bot_id, scan_date, scan_time_stamp,
+        INSERT INTO crawl_log (bot_id, scan_date, scan_time_stamp,
         crawler_name, hostname, ip_address, level_number,
         level_name, message) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """

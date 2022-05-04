@@ -69,7 +69,7 @@ class Config:
 
             SQL = """
             SELECT scheme, address, domain, agent, delay, ignore_query,
-            import_sitemaps, retry_max FROM tbl_crawl_settings WHERE
+            import_sitemaps, retry_max FROM crawl_settings WHERE
             bot_id = %s
             """
 
@@ -92,13 +92,11 @@ class Config:
             self.retry_max = row[7]
 
             SQL = """
-            SELECT content_type FROM tbl_crawl_allowed_content INNER JOIN
-            tbl_content_types ON tbl_crawl_allowed_content.content_id =
-            tbl_content_types.content_id WHERE bot_id = %s
+            SELECT content_type FROM content_types
             """
 
             cursor = dbh.cnx.cursor()
-            cursor.execute(SQL, [self.bot_id,])
+            cursor.execute(SQL, [])
             rows = cursor.fetchall()
             cursor.close()
 
@@ -110,7 +108,7 @@ class Config:
 
             SQL = """
             SELECT mqtt_host, mqtt_port, mqtt_topic FROM
-            tbl_global_settings ORDER BY id DESC LIMIT 1
+            global_settings ORDER BY id DESC LIMIT 1
             """
             cursor = dbh.cnx.cursor()
             cursor.execute(SQL, [])

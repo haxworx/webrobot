@@ -18,7 +18,7 @@ def main(bot_id):
                            config.db_host, config.db_name)
 
     SQL = """
-    SELECT COUNT(*) FROM tbl_crawl_data WHERE bot_id = %s
+    SELECT COUNT(*) FROM crawl_data WHERE bot_id = %s
     AND scan_date = DATE(NOW())
     """
     cursor = dbh.cnx.cursor()
