@@ -32,7 +32,7 @@ class CrawlSettingsRepository extends ServiceEntityRepository
             ->andWhere('c.botId != :botId')
             ->SetParameter('botId', $botId)
             ->getQuery()
-            ->getOneorNullResult();
+            ->getOneOrNullResult();
     }
 
     public function countByUserId($userId): int
@@ -43,5 +43,14 @@ class CrawlSettingsRepository extends ServiceEntityRepository
             ->setParameter('id', $userId)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function findOneByBotId($botId)
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.botId = :id')
+            ->setParameter('id', $botId)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

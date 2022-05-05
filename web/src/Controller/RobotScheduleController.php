@@ -74,7 +74,7 @@ class RobotScheduleController extends AbstractController
     {
         $user = $this->getUser();
         $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
-        $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneBy(['botId' => $bot_id, 'userId' => $user->getId()]);
+        $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($bot_id);
         if (!$crawlSettings) {
             throw $this->createNotFoundException(
                 'No bot for id: ' . $bot_id
@@ -129,7 +129,7 @@ class RobotScheduleController extends AbstractController
     {
         $user = $this->getUser();
         $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
-        $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneBy(['botId' => $bot_id, 'userId' => $user->getId()]);
+        $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($bot_id);
         if (!$crawlSettings) {
             throw $this->createNotFoundException(
                 'No bot for id: ' . $bot_id
@@ -140,6 +140,21 @@ class RobotScheduleController extends AbstractController
         $timer->remove();
 
         $entityManager = $doctrine->getManager();
+
+        $crawlErrors = $doctrine->getRepository(CrawlErrors::class)->findAllByBotId($bot_id);
+        foreach ($crawlErrors as $crawlError) {
+            $entityManager->remove($crawlError);
+        }
+
+        $crawlData = $doctrine->getRepository(CrawlData::class)->findAllByBotId($bot_id);
+        foreach ($crawlData as $data) {
+            $entityManager->remove($data);
+        }
+
+        $crawlLog = $doctrine->getRepository(CrawlLog::class)->findAllByBotId($bot_id);
+        foreach ($crawlLog as $log) {
+            $entityManager->remove($log);
+        }
 
         $entityManager->remove($crawlSettings);
         $entityManager->flush();

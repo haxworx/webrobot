@@ -22,4 +22,13 @@ class CrawlErrorsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    public function findAllByBotId($botId): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.botId = :id')
+            ->setParameter('id', $botId)
+            ->getQuery()
+            ->execute();
+    }
 }
