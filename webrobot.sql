@@ -234,3 +234,18 @@ CREATE TABLE `user` (
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2022-05-04 17:43:14
+
+
+INSERT INTO `tbl_content_types` (`content_type`, `description`)
+VALUES
+    ('text/plain', 'Text'),
+    ('text/html', 'HTML'),
+    ('text/css', 'CSS'),
+    ('application/xml', 'Application XML'),
+    ('text/xml', 'Text XML'),
+    ('application/json', 'Application JSON');
+
+INSERT INTO `tbl_global_settings`
+    (`time_stamp`, `in_use`, `max_crawlers`, `debug`, `docker_image`, `mqtt_host`, `mqtt_port`, `mqtt_topic`)
+    VALUES
+    (NOW(), true, 5, true, 'spiderz', 'datacentre', 1883, 'testing');
