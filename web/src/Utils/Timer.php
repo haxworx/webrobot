@@ -107,12 +107,9 @@ class Timer
     {
         $files = [ "$this->identifier.service", "$this->identifier.timer" ];
 
-        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $this->identifier.service");
-        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user disable $this->identifier.service");
-        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $this->identifier.timer");
-        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user disable $this->identifier.timer");
-
         foreach ($files as $file) {
+            system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $file");
+            system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user disable $file");
             $dir = $this->getSaveDirectory();
             $path = $dir . "/$file";
             system("sudo -u spider rm $path");
