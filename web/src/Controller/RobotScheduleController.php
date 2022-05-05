@@ -19,7 +19,7 @@ class RobotScheduleController extends AbstractController
     #[Route('/robot/schedule', name: 'app_robot_schedule')]
     public function index(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier): Response
     {
-        $settings = $doctrine->getRepository(GlobalSettings::class)->findOneBy(['id'=> '1']);
+        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->findOneBy(['id'=> '1']);
         $crawlSettings = new CrawlSettings();
 
         $form = $this->createForm(RobotScheduleType::class, $crawlSettings);
@@ -30,7 +30,7 @@ class RobotScheduleController extends AbstractController
             $repository = $doctrine->getRepository(CrawlSettings::class);
             $count = $repository->countByUserId($user->getId());
 
-            if ($count < $settings->getMaxCrawlers()) {
+            if ($count < $globalSettings->getMaxCrawlers()) {
                 $parsed = parse_url($crawlSettings->getAddress());
                 if ((array_key_exists('scheme', $parsed) && (array_key_exists('host', $parsed)))) {
                     $crawlSettings->setScheme($parsed['scheme']);
@@ -47,7 +47,7 @@ class RobotScheduleController extends AbstractController
                     $entityManager->persist($crawlSettings);
                     $entityManager->flush();
 
-                    $timer = new Timer($this->createTimerArgs($settings, $crawlSettings));
+                    $timer = new Timer($globalSettings, $crawlSettings);
                     $timer->create();
 
                     $notifier->send(new Notification('Robot scheduled.', ['browser']));
@@ -70,7 +70,7 @@ class RobotScheduleController extends AbstractController
     public function edit(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $bot_id): Response
     {
         $user = $this->getUser();
-        $settings = $doctrine->getRepository(GlobalSettings::class)->findOneBy(['id'=> '1']);
+        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->findOneBy(['id'=> '1']);
         $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneBy(['botId' => $bot_id, 'userId' => $user->getId()]);
         if (!$crawlSettings) {
             throw $this->createNotFoundException(
@@ -107,7 +107,7 @@ class RobotScheduleController extends AbstractController
                 $entityManager->persist($crawlSettings);
                 $entityManager->flush();
 
-                $timer = new Timer($this->createTimerArgs($settings, $crawlSettings));
+                $timer = new Timer($globalSettings, $crawlSettings);
                 $timer->update();
 
                 $notifier->send(new Notification('Robot scheduled.', ['browser']));
@@ -121,26 +121,11 @@ class RobotScheduleController extends AbstractController
         ]);
     }
 
-    private function createTimerArgs(GlobalSettings $settings, CrawlSettings $crawlSettings): array
-    {
-        $args = [
-            'bot_id'       => $crawlSettings->getBotId(),
-            'user_id'      => $crawlSettings->getUserId(),
-            'domain'       => $crawlSettings->getDomain(),
-            'address'      => $crawlSettings->getAddress(),
-            'scheme'       => $crawlSettings->getScheme(),
-            'agent'        => $crawlSettings->getAgent(),
-            'time'         => $crawlSettings->getStartTime()->format('H:i:s'),
-            'docker_image' => $settings->getDockerImage(),
-        ];
-
-        return $args;
-    }
-
     #[Route('/robot/schedule/remove/{bot_id}', name: 'app_robot_schedule_remove')]
     public function remove(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $bot_id): Response
     {
         $user = $this->getUser();
+        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->findOneBy(['id'=> '1']);
         $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneBy(['botId' => $bot_id, 'userId' => $user->getId()]);
         if (!$crawlSettings) {
             throw $this->createNotFoundException(
@@ -148,7 +133,8 @@ class RobotScheduleController extends AbstractController
             );
         }
 
-        Timer::remove($crawlSettings->getBotId(), $crawlSettings->getUserId(), $crawlSettings->getScheme(), $crawlSettings->getDomain());
+        $timer = new Timer($globalSettings, $crawlSettings);
+        $timer->remove();
 
         $entityManager = $doctrine->getManager();
 

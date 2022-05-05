@@ -2,6 +2,9 @@
 
 namespace App\Utils;
 
+use App\Entity\CrawlSettings;
+use App\Entity\GlobalSettings;
+
 class Timer
 {
     private $identifier;
@@ -10,39 +13,41 @@ class Timer
     private $address;
     private $scheme;
     private $domain;
-    private $agent;
     private $daily;
     private $time;
-    private $docker_image;
+    private $dockerImage;
 
-    public function __construct($args)
+    public function __construct(GlobalSettings $globalSettings, CrawlSettings $crawlSettings)
     {
-        $this->botId = $args['bot_id'];
-        $this->userId = $args['user_id'];
-        $this->scheme = $args['scheme'];
-        $this->domain = $args['domain'];
-        $this->address = $args['address'];
-        $this->agent = $args['agent'];
-        $this->time = $args['time'];
-        $this->docker_image = $args['docker_image'];
-        $this->identifier = $this->createIdentifier($this->botId, $this->userId, $this->scheme, $this->domain);
+        $this->botId       = $crawlSettings->getBotId();
+        $this->userId      = $crawlSettings->getUserId();
+        $this->domain      = $crawlSettings->getDomain();
+        $this->address     = $crawlSettings->getAddress();
+        $this->scheme      = $crawlSettings->getScheme();
+        $this->time        = $crawlSettings->getStartTime()->format('H:i:s');
+        $this->dockerImage = $globalSettings->getDockerImage();
+        $this->identifier  = $this->createIdentifier($this->botId, $this->userId, $this->scheme, $this->domain);
     }
 
-    private static function createIdentifier($botId, $userId, $domain, $scheme)
+    private function createIdentifier($botId, $userId, $domain, $scheme): string
     {
         return $botId . '.' . $userId . '.' . $scheme . '.' . $domain;
     }
 
     public function update()
     {
-        $this->remove($this->botId, $this->userId, $this->scheme, $this->domain);
+        $this->remove();
         $this->create();
+    }
+
+    public static function getSaveDirectory(): string
+    {
+        return "/home/spider/.config/systemd/user";
     }
 
     public function create()
     {
-        $home = "/home/spider";
-        $dir = $home . '/.config/systemd/user';
+        $dir = $this->getSaveDirectory();
         if (!file_exists($dir)) {
             if (!mkdir($dir, 0755, true)) {
                 error_log(__FILE__ . ':' . __LINE__ . ':' . "Unable to create directory: $dir\n");
@@ -58,7 +63,7 @@ class Timer
         "Type=oneshot\n" .
         "# We log to SQL.\n" .
         "StandardOutput=null\n" .
-        "ExecStart=docker run --rm $this->docker_image $this->botId\n" .
+        "ExecStart=docker run --rm $this->dockerImage $this->botId\n" .
         "\n";
 
         $path = "$dir/$this->identifier.service";
@@ -98,19 +103,17 @@ class Timer
         }
     }
 
-    public static function remove($botId, $userId, $scheme, $domain)
+    public function remove()
     {
-        $identifier = self::createIdentifier($botId, $userId, $scheme, $domain);
-        $files = [ "$identifier.service", "$identifier.timer" ];
-        $home = "/home/spider";
+        $files = [ "$this->identifier.service", "$this->identifier.timer" ];
 
-        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $identifier.service");
-        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user disable $identifier.service");
-        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $identifier.timer");
-        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user disable $identifier.timer");
+        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $this->identifier.service");
+        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user disable $this->identifier.service");
+        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $this->identifier.timer");
+        system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user disable $this->identifier.timer");
 
         foreach ($files as $file) {
-            $dir = $home . '/.config/systemd/user';
+            $dir = $this->getSaveDirectory();
             $path = $dir . "/$file";
             system("sudo -u spider rm $path");
         }
