@@ -4,13 +4,14 @@ namespace App\Repository;
 
 use App\Entity\CrawlSettings;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method CrawlSettings|null find($id, $lockMode = null, $lockVersion = null)
  * @method CrawlSettings|null findOneBy(array $criteria, array $orderBy = null)
  * @method CrawlSettings[]    findAll()
  * @method CrawlSettings[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method CrawlSettings|bool IsNewOrSame(int $userId, string $scheme, string $domain)
  */
 class CrawlSettingsRepository extends ServiceEntityRepository
 {
@@ -19,41 +20,28 @@ class CrawlSettingsRepository extends ServiceEntityRepository
         parent::__construct($registry, CrawlSettings::class);
     }
 
-    // /**
-    //  * @return CrawlSettings[] Returns an array of CrawlSettings objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function isNewOrSame($userId, $botId, $scheme, $domain): bool
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
+        return (bool) $this->createQueryBuilder('c')
+            ->andWhere('c.userId = :id')
+            ->setParameter('id', $userId)
+            ->andWhere('c.scheme = :scheme')
+            ->setParameter('scheme', $scheme)
+            ->andWhere('c.domain = :domain')
+            ->setParameter('domain', $domain)
+            ->andWhere('c.botId != :botId')
+            ->SetParameter('botId', $botId)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getOneorNullResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?CrawlSettings
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 
     public function countByUserId($userId): int
     {
         return $this->createQueryBuilder('c')
-        ->andWhere('c.user_id = :id')
-        ->setParameter('id', $userId)
-        ->getQuery()
-        ->getSingleScalarResult();
+            ->select('count(c.userId)')
+            ->andWhere('c.userId = :id')
+            ->setParameter('id', $userId)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

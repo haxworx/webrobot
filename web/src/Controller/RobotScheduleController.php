@@ -27,9 +27,9 @@ class RobotScheduleController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $this->getUser();
-
             $repository = $doctrine->getRepository(CrawlSettings::class);
             $count = $repository->countByUserId($user->getId());
+
             if ($count < $settings->getMaxCrawlers()) {
                 $parsed = parse_url($crawlSettings->getAddress());
                 if ((array_key_exists('scheme', $parsed) && (array_key_exists('host', $parsed)))) {
@@ -47,17 +47,7 @@ class RobotScheduleController extends AbstractController
                     $entityManager->persist($crawlSettings);
                     $entityManager->flush();
 
-                    $args = [
-                        'bot_id'       => $crawlSettings->getBotId(),
-                        'domain'       => $crawlSettings->getDomain(),
-                        'address'      => $crawlSettings->getAddress(),
-                        'scheme'       => $crawlSettings->getScheme(),
-                        'agent'        => $crawlSettings->getAgent(),
-                        'time'         => $crawlSettings->getStartTime()->format('H:i:s'),
-                        'docker_image' => $settings->getDockerImage(),
-                    ];
-
-                    $timer = new Timer($args);
+                    $timer = new Timer($this->createTimerArgs($settings, $crawlSettings));
                     $timer->create();
 
                     $notifier->send(new Notification('Robot scheduled.', ['browser']));
@@ -108,30 +98,16 @@ class RobotScheduleController extends AbstractController
                 $crawlSettings->setScheme($parsed['scheme']);
                 $crawlSettings->setDomain($parsed['host']);
             }
-            $exists = $doctrine->getRepository(CrawlSettings::class)->findOneBy(
-                ['userId' => $user->getId(), 'scheme' => $crawlSettings->getScheme(), 'domain' => $crawlSettings->getDomain()]
-            );
-            // XXX: Temporary hack to allow update.
-            if ($exists->getBotId() === $crawlSettings->getBotId()) {
-                $exists = false;
-            }
+
+            $repository = $doctrine->getRepository(CrawlSettings::class);
+            $exists = $repository->isNewOrSame($user->getId(), $crawlSettings->getBotId(), $crawlSettings->getScheme(), $crawlSettings->getDomain());
             if (!$exists) {
                 // Update our entity and save to database.
                 $entityManager = $doctrine->getManager();
                 $entityManager->persist($crawlSettings);
                 $entityManager->flush();
 
-                $args = [
-                    'bot_id'       => $crawlSettings->getBotId(),
-                    'domain'       => $crawlSettings->getDomain(),
-                    'address'      => $crawlSettings->getAddress(),
-                    'scheme'       => $crawlSettings->getScheme(),
-                    'agent'        => $crawlSettings->getAgent(),
-                    'time'         => $crawlSettings->getStartTime()->format('H:i:s'),
-                    'docker_image' => $settings->getDockerImage(),
-                ];
-
-                $timer = new Timer($args);
+                $timer = new Timer($this->createTimerArgs($settings, $crawlSettings));
                 $timer->update();
 
                 $notifier->send(new Notification('Robot scheduled.', ['browser']));
@@ -145,6 +121,21 @@ class RobotScheduleController extends AbstractController
         ]);
     }
 
+    private function createTimerArgs(GlobalSettings $settings, CrawlSettings $crawlSettings): array
+    {
+        $args = [
+            'bot_id'       => $crawlSettings->getBotId(),
+            'user_id'      => $crawlSettings->getUserId(),
+            'domain'       => $crawlSettings->getDomain(),
+            'address'      => $crawlSettings->getAddress(),
+            'scheme'       => $crawlSettings->getScheme(),
+            'agent'        => $crawlSettings->getAgent(),
+            'time'         => $crawlSettings->getStartTime()->format('H:i:s'),
+            'docker_image' => $settings->getDockerImage(),
+        ];
+
+        return $args;
+    }
 
     #[Route('/robot/schedule/remove/{bot_id}', name: 'app_robot_schedule_remove')]
     public function remove(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $bot_id): Response
@@ -157,7 +148,7 @@ class RobotScheduleController extends AbstractController
             );
         }
 
-        Timer::remove($crawlSettings->getBotId(), $crawlSettings->getScheme(), $crawlSettings->getDomain());
+        Timer::remove($crawlSettings->getBotId(), $crawlSettings->getUserId(), $crawlSettings->getScheme(), $crawlSettings->getDomain());
 
         $entityManager = $doctrine->getManager();
 

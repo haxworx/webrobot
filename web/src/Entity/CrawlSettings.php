@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\CrawlSettingsRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Validator as CrawlSettingsAssert;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -10,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * CrawlSettings
  *
  * @ORM\Table(name="crawl_settings")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=CrawlSettingsRepository::class)
  */
 class CrawlSettings
 {
