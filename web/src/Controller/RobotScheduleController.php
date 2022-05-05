@@ -52,7 +52,7 @@ class RobotScheduleController extends AbstractController
 
                     $notifier->send(new Notification('Robot scheduled.', ['browser']));
 
-                    $this->redirectToRoute('app_index');
+                    return $this->redirectToRoute('app_index');
                 } else {
                     $notifier->send(new Notification('Robot already exists with that scheme and domain.', ['browser']));
                 }

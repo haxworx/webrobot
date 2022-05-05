@@ -4,7 +4,7 @@ namespace App\Utils;
 
 class FuzzyDateTime
 {
-    public static function get(\DateTime $dateTime)
+    public static function get(?\DateTime $dateTime): string
     {
         $out = "Unknown";
         if ($dateTime === null) {

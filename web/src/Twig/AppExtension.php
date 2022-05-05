@@ -15,7 +15,7 @@ class AppExtension extends AbstractExtension
         ];
     }
 
-    public function fuzzyDate(\DateTime $dateTime): string
+    public function fuzzyDate(?\DateTime $dateTime): string
     {
         return FuzzyDateTime::get($dateTime);
     }
