@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\CrawlSettings;
 use App\Entity\GlobalSettings;
+use App\Entity\CrawlData;
+use App\Entity\CrawlErrors;
+use App\Entity\CrawlLog;
 use App\Utils\Timer;
 use App\Form\RobotScheduleType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,14 +22,14 @@ class RobotScheduleController extends AbstractController
     #[Route('/robot/schedule', name: 'app_robot_schedule')]
     public function index(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier): Response
     {
-        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->findOneBy(['id'=> '1']);
+        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
         $crawlSettings = new CrawlSettings();
+        $user = $this->getUser();
 
         $form = $this->createForm(RobotScheduleType::class, $crawlSettings);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->getUser();
             $repository = $doctrine->getRepository(CrawlSettings::class);
             $count = $repository->countByUserId($user->getId());
 
@@ -70,7 +73,7 @@ class RobotScheduleController extends AbstractController
     public function edit(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $bot_id): Response
     {
         $user = $this->getUser();
-        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->findOneBy(['id'=> '1']);
+        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
         $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneBy(['botId' => $bot_id, 'userId' => $user->getId()]);
         if (!$crawlSettings) {
             throw $this->createNotFoundException(
@@ -125,7 +128,7 @@ class RobotScheduleController extends AbstractController
     public function remove(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $bot_id): Response
     {
         $user = $this->getUser();
-        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->findOneBy(['id'=> '1']);
+        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
         $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneBy(['botId' => $bot_id, 'userId' => $user->getId()]);
         if (!$crawlSettings) {
             throw $this->createNotFoundException(

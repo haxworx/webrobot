@@ -3,12 +3,13 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\GlobalSettingsRepository;
 
 /**
  * GlobalSettings
  *
  * @ORM\Table(name="global_settings")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=GlobalSettingsRepository::class)
  */
 class GlobalSettings
 {

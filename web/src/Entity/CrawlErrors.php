@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CrawlErrorsRepository;
 
 /**
  * CrawlErrors
  *
  * @ORM\Table(name="crawl_errors")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=CrawlErrorsRepository::class)
+
  */
 class CrawlErrors
 {

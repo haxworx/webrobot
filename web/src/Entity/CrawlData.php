@@ -3,12 +3,13 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CrawlDataRepository;
 
 /**
  * CrawlData
  *
  * @ORM\Table(name="crawl_data")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=CrawlDataRepository::class)
  */
 class CrawlData
 {

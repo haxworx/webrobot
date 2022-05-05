@@ -15,7 +15,7 @@ class GlobalSettingsController extends AbstractController
     #[Route('/global/settings', name: 'app_global_settings')]
     public function index(Request $request, ManagerRegistry $doctrine): Response
     {
-        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->findOneBy(['id' => 1]);
+        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
         if (!$globalSettings) {
             throw $this->createNotFoundException(
                 'No global settings found.'
