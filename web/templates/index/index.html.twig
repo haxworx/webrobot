@@ -7,7 +7,7 @@
 <hr>
 <table width="100%" class="table table-striped">
     <thead>
-        <tr><th>address</th><th>agent</th><th>start</th><th>last</th><th class="text-center">actions</th></tr>
+        <tr><th>address</th><th>agent</th><th>start</th><th>finished</th><th class="text-center">actions</th></tr>
     </thead>
     <tbody>
 {% for crawler in crawlersSettings %}
@@ -18,7 +18,7 @@
 {% if crawler.endTime == null %}
             <td>never</td>
 {% else %}
-            <td>{{ crawler.endTime|date('H:i:s') }}</td>
+            <td>{{ crawler.endTime|fuzzy_date }}</td>
 {% endif %}
             <td class="text-center">
                 <a href="{{ path('app_robot_schedule_edit', { bot_id: crawler.botId }) }}">Edit</a>

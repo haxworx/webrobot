@@ -17,7 +17,7 @@ class IndexController extends AbstractController
         $entityManager = $doctrine->getManager();
 
         $crawlersSettings = $doctrine->getRepository(CrawlSettings::class)->findAll(['user_id' => $user->getId()]);
- 
+
         return $this->render('index/index.html.twig', [
             'crawlersSettings' => $crawlersSettings,
         ]);
