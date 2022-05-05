@@ -15,11 +15,7 @@
             <td>{{ crawler.address }}</td>
             <td> {{ crawler.agent }}</td>
             <td>{{ crawler.startTime|date('H:i:s') }}</td>
-{% if crawler.endTime == null %}
-            <td>never</td>
-{% else %}
             <td>{{ crawler.endTime|fuzzy_date }}</td>
-{% endif %}
             <td class="text-center">
                 <a href="{{ path('app_robot_schedule_edit', { bot_id: crawler.botId }) }}">Edit</a>
             </td>
