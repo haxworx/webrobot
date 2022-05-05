@@ -118,6 +118,13 @@ class CrawlSettings
         return $this->botId;
     }
 
+    public function setBotId(int $botId): self
+    {
+        $this->botId = $botId;
+
+        return $this;
+    }
+
     public function getUserId(): ?int
     {
         return $this->userId;

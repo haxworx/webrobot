@@ -45,6 +45,11 @@ class Timer
         return "/home/spider/.config/systemd/user";
     }
 
+    public function getSystemdUnitFiles(): array
+    {
+        return [ "$this->identifier.service", "$this->identifier.timer" ];
+    }
+
     public function create()
     {
         $dir = $this->getSaveDirectory();
@@ -105,7 +110,7 @@ class Timer
 
     public function remove()
     {
-        $files = [ "$this->identifier.service", "$this->identifier.timer" ];
+        $files = $this->getSystemdUnitFiles();
 
         foreach ($files as $file) {
             system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $file");
