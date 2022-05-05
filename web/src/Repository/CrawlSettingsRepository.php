@@ -22,7 +22,7 @@ class CrawlSettingsRepository extends ServiceEntityRepository
 
     public function isNewOrSame($userId, $botId, $scheme, $domain): bool
     {
-        return (bool) $this->createQueryBuilder('c')
+        return !(bool) $this->createQueryBuilder('c')
             ->andWhere('c.userId = :id')
             ->setParameter('id', $userId)
             ->andWhere('c.scheme = :scheme')

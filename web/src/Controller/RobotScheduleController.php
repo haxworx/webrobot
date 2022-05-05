@@ -100,8 +100,8 @@ class RobotScheduleController extends AbstractController
             }
 
             $repository = $doctrine->getRepository(CrawlSettings::class);
-            $exists = $repository->isNewOrSame($user->getId(), $crawlSettings->getBotId(), $crawlSettings->getScheme(), $crawlSettings->getDomain());
-            if (!$exists) {
+            $isNewOrSame = $repository->isNewOrSame($user->getId(), $crawlSettings->getBotId(), $crawlSettings->getScheme(), $crawlSettings->getDomain());
+            if ($isNewOrSame) {
                 // Update our entity and save to database.
                 $entityManager = $doctrine->getManager();
                 $entityManager->persist($crawlSettings);
