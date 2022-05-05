@@ -22,9 +22,16 @@ class RobotScheduleController extends AbstractController
     #[Route('/robot/schedule', name: 'app_robot_schedule')]
     public function index(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier): Response
     {
-        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
-        $crawlSettings = new CrawlSettings();
         $user = $this->getUser();
+
+        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
+        if (!$globalSettings) {
+            throw $this->createNotFoundException(
+                'No global settings found.'
+            );
+        }
+
+        $crawlSettings = new CrawlSettings();
 
         $form = $this->createForm(RobotScheduleType::class, $crawlSettings);
         $form->handleRequest($request);
@@ -50,6 +57,7 @@ class RobotScheduleController extends AbstractController
                     $entityManager->persist($crawlSettings);
                     $entityManager->flush();
 
+                    // Create our systemd timer.
                     $timer = new Timer($globalSettings, $crawlSettings);
                     $timer->create();
 
@@ -74,6 +82,12 @@ class RobotScheduleController extends AbstractController
     {
         $user = $this->getUser();
         $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
+        if (!$globalSettings) {
+            throw $this->createNotFoundException(
+                'No global settings found.'
+            );
+        }
+
         $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($bot_id);
         if (!$crawlSettings) {
             throw $this->createNotFoundException(
@@ -110,6 +124,7 @@ class RobotScheduleController extends AbstractController
                 $entityManager->persist($crawlSettings);
                 $entityManager->flush();
 
+                // Update our systemd timer.
                 $timer = new Timer($globalSettings, $crawlSettings);
                 $timer->update();
 
@@ -128,7 +143,14 @@ class RobotScheduleController extends AbstractController
     public function remove(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $bot_id): Response
     {
         $user = $this->getUser();
+
         $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
+        if (!$globalSettings) {
+            throw $this->createNotFoundException(
+                'No global settings found.'
+            );
+        }
+
         $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($bot_id);
         if (!$crawlSettings) {
             throw $this->createNotFoundException(
@@ -136,9 +158,11 @@ class RobotScheduleController extends AbstractController
             );
         }
 
+        // Remove our systemd timer.
         $timer = new Timer($globalSettings, $crawlSettings);
         $timer->remove();
 
+        // Remove our database data related to the bot id.
         $entityManager = $doctrine->getManager();
 
         $crawlErrors = $doctrine->getRepository(CrawlErrors::class)->findAllByBotId($bot_id);
