@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\GlobalSettings;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -15,7 +16,7 @@ class GlobalSettingsType extends AbstractType
         $builder
             ->add('maxCrawlers')
             ->add('debug')
-            ->add('dockerImage')
+            ->add('dockerImage', TextType::class, ['attr' => ['readonly' => true ]])
             ->add('mqttHost')
             ->add('mqttPort')
             ->add('mqttTopic')
