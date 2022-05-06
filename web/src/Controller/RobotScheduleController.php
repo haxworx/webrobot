@@ -43,11 +43,7 @@ class RobotScheduleController extends AbstractController
             if ($count >= $globalSettings->getMaxCrawlers()) {
                 $notifier->send(new Notification('Reached maximum number of crawlers ('. $count .').', ['browser']));
             } else {
-                $parsed = parse_url($crawlSettings->getAddress());
-                if ((array_key_exists('scheme', $parsed) && (array_key_exists('host', $parsed)))) {
-                    $crawlSettings->setScheme($parsed['scheme']);
-                    $crawlSettings->setDomain($parsed['host']);
-                }
+                $crawlSettings->setSchemeAndDomain();
 
                 $exists = $repository->settingsExists($crawlSettings, $user->getId());
                 if ($exists) {
@@ -106,12 +102,6 @@ class RobotScheduleController extends AbstractController
             // Was 'Delete' button clicked?
             if ($form->get('delete')->isClicked()) {
                 return $this->redirectToRoute('app_robot_schedule_remove', ['botId' => $botId ]);
-            }
-
-            $parsed = parse_url($crawlSettings->getAddress());
-            if ((array_key_exists('scheme', $parsed) && (array_key_exists('host', $parsed)))) {
-                $crawlSettings->setScheme($parsed['scheme']);
-                $crawlSettings->setDomain($parsed['host']);
             }
 
             $repository = $doctrine->getRepository(CrawlSettings::class);

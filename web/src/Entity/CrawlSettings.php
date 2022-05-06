@@ -256,4 +256,23 @@ class CrawlSettings
 
         return $this;
     }
+
+    public function setSchemeAndDomain(): self
+    {
+        if ($this->address === null) {
+            throw new \Exception('Setting scheme and domain from null');
+        }
+
+        $parsed = parse_url($this->getAddress());
+        if ($parsed === false) {
+            throw new \Exception('Unable to parse URL components from address.');
+        }
+        if ((array_key_exists('scheme', $parsed) && (array_key_exists('host', $parsed)))) {
+            $this->setScheme($parsed['scheme']);
+            $this->setDomain($parsed['host']);
+        } else {
+            throw new \Exception('No scheme or host available parsing address.');
+        }
+        return $this;
+    }
 }
