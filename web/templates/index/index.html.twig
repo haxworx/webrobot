@@ -17,7 +17,7 @@
             <td>{{ crawler.startTime|date('H:i:s') }}</td>
             <td>{{ crawler.endTime|fuzzy_date }}</td>
             <td class="text-center">
-                <a href="{{ path('app_robot_schedule_edit', { bot_id: crawler.botId }) }}">Edit</a>
+                <a href="{{ path('app_robot_schedule_edit', { botId: crawler.botId }) }}">Edit</a>
             </td>
         </tr>
 {% endfor %}

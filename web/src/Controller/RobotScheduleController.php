@@ -77,8 +77,8 @@ class RobotScheduleController extends AbstractController
         ]);
     }
 
-    #[Route('/robot/schedule/edit/{bot_id}', name: 'app_robot_schedule_edit')]
-    public function edit(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $bot_id): Response
+    #[Route('/robot/schedule/edit/{botId}', name: 'app_robot_schedule_edit')]
+    public function edit(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $botId): Response
     {
         $user = $this->getUser();
         $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
@@ -88,10 +88,10 @@ class RobotScheduleController extends AbstractController
             );
         }
 
-        $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($bot_id);
+        $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
         if (!$crawlSettings) {
             throw $this->createNotFoundException(
-                'No bot for id: ' . $bot_id
+                'No bot for id: ' . $botId
             );
         }
 
@@ -107,7 +107,7 @@ class RobotScheduleController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Was 'Delete' button clicked?
             if ($form->get('delete')->isClicked()) {
-                return $this->redirectToRoute('app_robot_schedule_remove', ['bot_id' => $bot_id ]);
+                return $this->redirectToRoute('app_robot_schedule_remove', ['botId' => $botId ]);
             }
 
             $parsed = parse_url($crawlSettings->getAddress());
@@ -139,8 +139,8 @@ class RobotScheduleController extends AbstractController
         ]);
     }
 
-    #[Route('/robot/schedule/remove/{bot_id}', name: 'app_robot_schedule_remove')]
-    public function remove(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $bot_id): Response
+    #[Route('/robot/schedule/remove/{botId}', name: 'app_robot_schedule_remove')]
+    public function remove(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $botId): Response
     {
         $user = $this->getUser();
 
@@ -151,10 +151,10 @@ class RobotScheduleController extends AbstractController
             );
         }
 
-        $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($bot_id);
+        $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
         if (!$crawlSettings) {
             throw $this->createNotFoundException(
-                'No bot for id: ' . $bot_id
+                'No bot for id: ' . $botId
             );
         }
 
@@ -165,17 +165,17 @@ class RobotScheduleController extends AbstractController
         // Remove our database data related to the bot id.
         $entityManager = $doctrine->getManager();
 
-        $crawlErrors = $doctrine->getRepository(CrawlErrors::class)->findAllByBotId($bot_id);
+        $crawlErrors = $doctrine->getRepository(CrawlErrors::class)->findAllByBotId($botId);
         foreach ($crawlErrors as $crawlError) {
             $entityManager->remove($crawlError);
         }
 
-        $crawlData = $doctrine->getRepository(CrawlData::class)->findAllByBotId($bot_id);
+        $crawlData = $doctrine->getRepository(CrawlData::class)->findAllByBotId($botId);
         foreach ($crawlData as $data) {
             $entityManager->remove($data);
         }
 
-        $crawlLog = $doctrine->getRepository(CrawlLog::class)->findAllByBotId($bot_id);
+        $crawlLog = $doctrine->getRepository(CrawlLog::class)->findAllByBotId($botId);
         foreach ($crawlLog as $log) {
             $entityManager->remove($log);
         }
