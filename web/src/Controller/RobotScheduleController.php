@@ -40,7 +40,9 @@ class RobotScheduleController extends AbstractController
             $repository = $doctrine->getRepository(CrawlSettings::class);
             $count = $repository->countByUserId($user->getId());
 
-            if ($count < $globalSettings->getMaxCrawlers()) {
+            if ($count >= $globalSettings->getMaxCrawlers()) {
+                $notifier->send(new Notification('Reached maximum number of crawlers ('. $count .').', ['browser']));
+            } else {
                 $parsed = parse_url($crawlSettings->getAddress());
                 if ((array_key_exists('scheme', $parsed) && (array_key_exists('host', $parsed)))) {
                     $crawlSettings->setScheme($parsed['scheme']);
@@ -67,8 +69,6 @@ class RobotScheduleController extends AbstractController
 
                     return $this->redirectToRoute('app_index');
                 }
-            } else {
-                $notifier->send(new Notification('Reached maximum number of crawlers ('. $count .').', ['browser']));
             }
         }
 
