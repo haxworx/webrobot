@@ -13,7 +13,6 @@ class Timer
     private $address;
     private $scheme;
     private $domain;
-    private $daily;
     private $time;
     private $dockerImage;
 
@@ -55,7 +54,7 @@ class Timer
         $dir = $this->getSaveDirectory();
         if (!file_exists($dir)) {
             if (!mkdir($dir, 0755, true)) {
-                error_log(__FILE__ . ':' . __LINE__ . ':' . "Unable to create directory: $dir\n");
+                throw \Exception("Unable to create directory: $dir");
             }
         }
 
@@ -75,11 +74,15 @@ class Timer
         $tmpName = tempnam("/tmp", "SPIDER");
 
         $f = fopen($tmpName, 'w');
-        if ($f !== false) {
+        if ($f === false) {
+            throw \Exception("Unable to open $tmpName");
+        } else {
             fprintf($f, $data);
             fclose($f);
             chmod($tmpName, 0644);
-            system("sudo -u spider cp $tmpName $path");
+            if (system("sudo -u spider cp $tmpName $path") === false) {
+                throw \Exception("Unable to copy $tmpName to $path");
+            }
         }
 
         $onCalendar = "OnCalendar=*-*-* $this->time\n";
@@ -98,13 +101,21 @@ class Timer
         $tmpName = tempnam("/tmp", "SPIDER");
 
         $f = fopen($tmpName, 'w');
-        if ($f !== false) {
+        if ($f === false) {
+            throw \Exception('Unable to create temporary file.');
+        } else {
             fprintf($f, $data);
             fclose($f);
             chmod($tmpName, 0644);
-            system("sudo -u spider cp $tmpName $path");
-            system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user enable $this->identifier.timer");
-            system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user start $this->identifier.timer");
+            if (system("sudo -u spider cp $tmpName $path") === false) {
+                throw \Exception('Unable to copy temporary file.');
+            }
+            if (system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user enable $this->identifier.timer") === false) {
+                throw \Exception('Unable to enable systemd timer');
+            }
+            if (system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user start $this->identifier.timer") === false) {
+                throw \Exception('Unable to start systemd timer');
+            }
         }
     }
 
@@ -113,11 +124,17 @@ class Timer
         $files = $this->getSystemdUnitFiles();
 
         foreach ($files as $file) {
-            system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $file");
-            system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user disable $file");
+            if (system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $file") === false) {
+                throw \Exception('Unable to stop systemd timer');
+            }
+            if (system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user disable $file") === false) {
+                throw \Exception('Unable to disable systemd timer');
+            }
             $dir = $this->getSaveDirectory();
             $path = $dir . "/$file";
-            system("sudo -u spider rm $path");
+            if (system("sudo -u spider rm $path") === false) {
+                throw \Exception("Unable to remove $path");
+            }
         }
     }
 }
