@@ -118,7 +118,9 @@ class RobotScheduleController extends AbstractController
 
             $repository = $doctrine->getRepository(CrawlSettings::class);
             $isNewOrSame = $repository->isNewOrSame($user->getId(), $crawlSettings->getBotId(), $crawlSettings->getScheme(), $crawlSettings->getDomain());
-            if ($isNewOrSame) {
+            if (!$isNewOrSame) {
+                $notifier->send(new Notification('Robot already exists with that scheme and domain.', ['browser']));
+            } else {
                 // Update our entity and save to database.
                 $entityManager = $doctrine->getManager();
                 $entityManager->persist($crawlSettings);
@@ -129,8 +131,6 @@ class RobotScheduleController extends AbstractController
                 $timer->update();
 
                 $notifier->send(new Notification('Robot scheduled.', ['browser']));
-            } else {
-                $notifier->send(new Notification('Robot already exists with that scheme and domain.', ['browser']));
             }
         }
 
