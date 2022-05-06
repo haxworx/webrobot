@@ -19,7 +19,7 @@ class RobotScheduleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('address', TextType::class)
+            ->add('address', TextType::class, [ 'attr' => ['readonly' => $options['address_readonly']]])
             ->add('agent', TextType::class)
             ->add('delay', NumberType::class, ['html5' => true ])
             ->add('ignoreQuery', CheckboxType::class, ['label' => 'Ignore query?', 'required' => false, 'data' => $options['ignore_query']])
@@ -42,6 +42,7 @@ class RobotScheduleType extends AbstractType
             'delete_button_hidden' => true,
             'ignore_query' => true,
             'import_sitemaps' => true,
+            'address_readonly' => false,
         ]);
     }
 }
