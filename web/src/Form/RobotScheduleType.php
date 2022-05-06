@@ -19,18 +19,46 @@ class RobotScheduleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('address', TextType::class, [ 'attr' => ['readonly' => $options['address_readonly']]])
+            ->add('address', TextType::class, [
+                'attr' => [
+                    'readonly' => $options['address_readonly'],
+                ]
+            ])
             ->add('agent', TextType::class)
-            ->add('delay', NumberType::class, ['html5' => true ])
-            ->add('ignoreQuery', CheckboxType::class, ['label' => 'Ignore query?', 'required' => false, 'data' => $options['ignore_query']])
-            ->add('importSitemaps', CheckboxType::class, ['label' => 'Import sitemaps?', 'required' => false, 'data' => $options['import_sitemaps']])
-            ->add('retryMax', NumberType::class, ['label' => 'Retry max', 'html5' => true])
-            ->add('startTime', TimeType::class, ['label' => 'Start time'])
-            ->add('save', SubmitType::class, ['label' => $options['save_button_label'], 'attr' => array('style' => 'float: left')])
+            ->add('delay', NumberType::class, [
+                'html5' => true,
+            ])
+            ->add('ignoreQuery', CheckboxType::class, [
+                'label' => 'Ignore query?', 
+                'required' => false,
+                'data' => $options['ignore_query'],
+            ])
+            ->add('importSitemaps', CheckboxType::class, [
+                'label' => 'Import sitemaps?',
+                'required' => false,
+                'data' => $options['import_sitemaps'],
+            ])
+            ->add('retryMax', NumberType::class, [
+                'label' => 'Retry max',
+                'html5' => true,
+            ])
+            ->add('startTime', TimeType::class, [
+                'label' => 'Start time',
+            ])
+            ->add('save', SubmitType::class, [
+                'label' => $options['save_button_label'],
+                'attr' => ['style' => 'float: left'],
+            ])
         ;
 
         if (!$options['delete_button_hidden']) {
-            $builder->add('delete', SubmitType::class, ['label' => 'Delete', 'attr' => ['class' => 'btn-danger', 'style' => 'margin-left: 10px']]);
+            $builder->add('delete', SubmitType::class, [
+                'label' => 'Delete',
+                'attr' => [
+                    'class' => 'btn-danger',
+                    'style' => 'margin-left: 10px',
+                ],
+            ]);
         }
     }
 
