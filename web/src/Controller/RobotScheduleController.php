@@ -143,7 +143,7 @@ class RobotScheduleController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user) {
-            throw new $this->createNotFoundException(
+            throw $this->createNotFoundException(
                 'No user found.'
             );
         }
