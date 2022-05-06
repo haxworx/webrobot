@@ -49,10 +49,7 @@ class RobotScheduleController extends AbstractController
                     $crawlSettings->setDomain($parsed['host']);
                 }
 
-                $exists = $doctrine->getRepository(CrawlSettings::class)->findOneBy(
-                    ['userId' => $user->getId(), 'scheme' => $crawlSettings->getScheme(), 'domain' => $crawlSettings->getDomain()]
-                );
-
+                $exists = $repository->settingsExists($crawlSettings, $user->getId());
                 if ($exists) {
                     $notifier->send(new Notification('Robot already exists with that scheme and domain.', ['browser']));
                 } else {
@@ -118,7 +115,7 @@ class RobotScheduleController extends AbstractController
             }
 
             $repository = $doctrine->getRepository(CrawlSettings::class);
-            $isNewOrSame = $repository->isNewOrSame($user->getId(), $crawlSettings->getBotId(), $crawlSettings->getScheme(), $crawlSettings->getDomain());
+            $isNewOrSame = $repository->isNewOrSame($crawlSettings, $user->getId());
             if (!$isNewOrSame) {
                 $notifier->send(new Notification('Robot already exists with that scheme and domain.', ['browser']));
             } else {

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\CrawlSettings;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,17 +21,30 @@ class CrawlSettingsRepository extends ServiceEntityRepository
         parent::__construct($registry, CrawlSettings::class);
     }
 
-    public function isNewOrSame($userId, $botId, $scheme, $domain): bool
+    public function settingsExists(CrawlSettings $crawlSettings, int $userId): bool
+    {
+        return (bool) $this->createQueryBuilder('c')
+            ->andWhere('c.userId = :id')
+            ->setParameter('id', $userId)
+            ->andWhere('c.scheme = :scheme')
+            ->setParameter('scheme', $crawlSettings->getScheme())
+            ->andWhere('c.domain = :domain')
+            ->setParameter('domain', $crawlSettings->getDomain())
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function isNewOrSame(CrawlSettings $crawlSettings, int $userId): bool
     {
         return !(bool) $this->createQueryBuilder('c')
             ->andWhere('c.userId = :id')
             ->setParameter('id', $userId)
             ->andWhere('c.scheme = :scheme')
-            ->setParameter('scheme', $scheme)
+            ->setParameter('scheme', $crawlSettings->getScheme())
             ->andWhere('c.domain = :domain')
-            ->setParameter('domain', $domain)
+            ->setParameter('domain', $crawlSettings->getDomain())
             ->andWhere('c.botId != :botId')
-            ->SetParameter('botId', $botId)
+            ->SetParameter('botId', $crawlSettings->getBotId())
             ->getQuery()
             ->getOneOrNullResult();
     }
