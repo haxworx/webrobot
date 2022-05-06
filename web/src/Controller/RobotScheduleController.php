@@ -51,7 +51,9 @@ class RobotScheduleController extends AbstractController
                     ['userId' => $user->getId(), 'scheme' => $crawlSettings->getScheme(), 'domain' => $crawlSettings->getDomain()]
                 );
 
-                if (!$exists) {
+                if ($exists) {
+                    $notifier->send(new Notification('Robot already exists with that scheme and domain.', ['browser']));
+                } else {
                     $crawlSettings->setUserId($user->getId());
                     $entityManager = $doctrine->getManager();
                     $entityManager->persist($crawlSettings);
@@ -64,8 +66,6 @@ class RobotScheduleController extends AbstractController
                     $notifier->send(new Notification('Robot scheduled.', ['browser']));
 
                     return $this->redirectToRoute('app_index');
-                } else {
-                    $notifier->send(new Notification('Robot already exists with that scheme and domain.', ['browser']));
                 }
             } else {
                 $notifier->send(new Notification('Reached maximum number of crawlers ('. $count .').', ['browser']));
@@ -100,6 +100,7 @@ class RobotScheduleController extends AbstractController
             'delete_button_hidden' => false,
             'ignore_query' => $crawlSettings->getIgnoreQuery(),
             'import_sitemaps' => $crawlSettings->getImportSitemaps(),
+            'address_readonly' => true,
         ));
 
         $form->handleRequest($request);
