@@ -23,6 +23,11 @@ class RobotScheduleController extends AbstractController
     public function index(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier): Response
     {
         $user = $this->getUser();
+        if (!$user) {
+            throw $this->createNotFoundException(
+                'No user found.'
+            );
+        }
 
         $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
         if (!$globalSettings) {
@@ -74,6 +79,12 @@ class RobotScheduleController extends AbstractController
     public function edit(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $botId): Response
     {
         $user = $this->getUser();
+        if (!$user) {
+            throw $this->createNotFoundException(
+                'No user found.'
+            );
+        }
+
         $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
         if (!$globalSettings) {
             throw $this->createNotFoundException(
@@ -131,6 +142,11 @@ class RobotScheduleController extends AbstractController
     public function remove(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $botId): Response
     {
         $user = $this->getUser();
+        if (!$user) {
+            throw new $this->createNotFoundException(
+                'No user found.'
+            );
+        }
 
         $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
         if (!$globalSettings) {

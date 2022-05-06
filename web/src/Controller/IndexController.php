@@ -14,7 +14,11 @@ class IndexController extends AbstractController
     public function index(ManagerRegistry $doctrine): Response
     {
         $user = $this->getUser();
-        $entityManager = $doctrine->getManager();
+        if (!$user) {
+            throw $this->createNotFoundException(
+                'No user found.'
+            );
+        }
 
         $crawlersSettings = $doctrine->getRepository(CrawlSettings::class)->findAll(['user_id' => $user->getId()]);
 
