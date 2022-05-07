@@ -21,9 +21,7 @@ Install PHP and the following:
 
 ```
 cd web
-composer require twig/twig
-composer require php-mqtt/client
-composer require aws/aws-sdk-php
+composer update
 ```
 See scripts/web.sh for PHP built-in web server.
 
