@@ -61,9 +61,14 @@ class RobotScheduleController extends AbstractController
 
                     // Create our systemd timer.
                     $timer = new Timer($globalSettings, $crawlSettings);
-                    $timer->create();
-
-                    $notifier->send(new Notification('Robot scheduled.', ['browser']));
+                    if ($timer->create()) {
+                        $notifier->send(new Notification('Robot scheduled.', ['browser']));
+                    } else {
+                        $entityManager->remove($crawlSettings);
+                        $entityManager->flush();
+                        $notifier->send(new Notification('There was a problem scheduling the robot.', ['browser']));
+                        return $this->redirectToRoute('app_robot_schedule');
+                    }
 
                     return $this->redirectToRoute('app_index');
                 }
@@ -123,13 +128,15 @@ class RobotScheduleController extends AbstractController
                 // Update our entity and save to database.
                 $entityManager = $doctrine->getManager();
                 $entityManager->persist($crawlSettings);
-                $entityManager->flush();
 
                 // Update our systemd timer.
                 $timer = new Timer($globalSettings, $crawlSettings);
-                $timer->update();
-
-                $notifier->send(new Notification('Robot scheduled.', ['browser']));
+                if (!$timer->update()) {
+                    $notifier->send(New Notification('There was a problem updating the schedule.', ['browser']));
+                } else {
+                    $entityManager->flush();
+                    $notifier->send(new Notification('Robot scheduled.', ['browser']));
+                }
             }
         }
 

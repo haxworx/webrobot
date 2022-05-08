@@ -35,10 +35,10 @@ class Timer
         return $botId . '.' . $userId . '.' . $scheme . '.' . $domain;
     }
 
-    public function update()
+    public function update(): bool
     {
         $this->remove();
-        $this->create();
+        return $this->create();
     }
 
     public static function getSaveDirectory(): string
@@ -51,12 +51,13 @@ class Timer
         return [ "$this->identifier.service", "$this->identifier.timer" ];
     }
 
-    public function create()
+    public function create(): bool
     {
         $dir = $this->getSaveDirectory();
         if (!file_exists($dir)) {
             if (!mkdir($dir, 0755, true)) {
-                throw \Exception("Unable to create directory: $dir");
+
+                return false;
             }
         }
 
@@ -77,7 +78,8 @@ class Timer
 
         $f = fopen($tmpName, 'w');
         if ($f === false) {
-            throw \Exception("Unable to open $tmpName");
+
+            return false;
         } else {
             fprintf($f, $data);
             fclose($f);
@@ -87,6 +89,7 @@ class Timer
                 $process->mustRun();
             } catch (ProcessFailedException $exception) {
 
+                return false;
             }
         }
 
@@ -107,7 +110,8 @@ class Timer
 
         $f = fopen($tmpName, 'w');
         if ($f === false) {
-            throw \Exception('Unable to create temporary file.');
+
+            return false;
         } else {
             fprintf($f, $data);
             fclose($f);
@@ -118,6 +122,7 @@ class Timer
                 $process->mustRun();
             } catch (ProcessFailedException $exception) {
 
+                return false;
             }
 
             $process = new Process(['sudo', '-E', '-u', 'spider', 'systemctl', '--user', 'enable', "$this->identifier.timer"], null, [
@@ -127,6 +132,7 @@ class Timer
                 $process->mustRun();
             } catch (ProcessFailedException $exception) {
 
+                return false;
             }
 
             $process = new Process(['sudo', '-E', '-u', 'spider', 'systemctl', '--user', 'start', "$this->identifier.timer"], null, [
@@ -136,8 +142,11 @@ class Timer
                 $process->mustRun();
             } catch (ProcessFailedException $exception) {
 
+                return false;
             }
         }
+
+        return true;
     }
 
     public function remove()
