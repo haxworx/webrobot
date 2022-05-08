@@ -34,16 +34,18 @@ class CrawlSettingsRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function isNewOrSame(CrawlSettings $crawlSettings, int $userId): bool
+    public function isSameAddress(CrawlSettings $crawlSettings, int $userId): bool
     {
-        return !(bool) $this->createQueryBuilder('c')
+        return (bool) $this->createQueryBuilder('c')
             ->andWhere('c.userId = :id')
             ->setParameter('id', $userId)
+            ->andWhere('c.address = :address')
+            ->setParameter('address', $crawlSettings->getAddress())
             ->andWhere('c.scheme = :scheme')
             ->setParameter('scheme', $crawlSettings->getScheme())
             ->andWhere('c.domain = :domain')
             ->setParameter('domain', $crawlSettings->getDomain())
-            ->andWhere('c.botId != :botId')
+            ->andWhere('c.botId = :botId')
             ->SetParameter('botId', $crawlSettings->getBotId())
             ->getQuery()
             ->getOneOrNullResult();
