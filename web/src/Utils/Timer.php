@@ -35,6 +35,11 @@ class Timer
         return $botId . '.' . $userId . '.' . $scheme . '.' . $domain;
     }
 
+    public function getIdentifier(): string
+    {
+        return $this->identifier;
+    }
+
     public function update(): bool
     {
         $this->remove();
