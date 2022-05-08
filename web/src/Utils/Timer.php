@@ -4,6 +4,8 @@ namespace App\Utils;
 
 use App\Entity\CrawlSettings;
 use App\Entity\GlobalSettings;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class Timer
 {
@@ -80,8 +82,11 @@ class Timer
             fprintf($f, $data);
             fclose($f);
             chmod($tmpName, 0644);
-            if (system("sudo -u spider cp $tmpName $path") === false) {
-                throw \Exception("Unable to copy $tmpName to $path");
+            $process = new Process(['sudo', '-u', 'spider', 'cp', $tmpName, $path]);
+            try {
+                $process->mustRun();
+            } catch (ProcessFailedException $exception) {
+
             }
         }
 
@@ -107,14 +112,30 @@ class Timer
             fprintf($f, $data);
             fclose($f);
             chmod($tmpName, 0644);
-            if (system("sudo -u spider cp $tmpName $path") === false) {
-                throw \Exception('Unable to copy temporary file.');
+
+            $process = new Process(['sudo', '-E', '-u', 'spider', 'cp', $tmpName, $path]);
+            try {
+                $process->mustRun();
+            } catch (ProcessFailedException $exception) {
+
             }
-            if (system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user enable $this->identifier.timer") === false) {
-                throw \Exception('Unable to enable systemd timer');
+
+            $process = new Process(['sudo', '-E', '-u', 'spider', 'systemctl', '--user', 'enable', "$this->identifier.timer"], null, [
+                'XDG_RUNTIME_DIR' => '/run/user/2222',
+            ]);
+            try {
+                $process->mustRun();
+            } catch (ProcessFailedException $exception) {
+
             }
-            if (system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user start $this->identifier.timer") === false) {
-                throw \Exception('Unable to start systemd timer');
+
+            $process = new Process(['sudo', '-E', '-u', 'spider', 'systemctl', '--user', 'start', "$this->identifier.timer"], null, [
+                'XDG_RUNTIME_DIR' => '/run/user/2222',
+            ]);
+            try {
+                $process->mustRun();
+            } catch (ProcessFailedException $exception) {
+
             }
         }
     }
@@ -124,16 +145,32 @@ class Timer
         $files = $this->getSystemdUnitFiles();
 
         foreach ($files as $file) {
-            if (system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user stop $file") === false) {
-                throw \Exception('Unable to stop systemd timer');
+            $process = new Process(['sudo', '-E', '-u', 'spider', 'systemctl', '--user', 'stop', $file], null, [
+                'XDG_RUNTIME_DIR' => '/run/user/2222',
+            ]);
+            try {
+                $process->mustRun();
+            } catch (ProcessFailedException $exception) {
+
             }
-            if (system("sudo -u spider XDG_RUNTIME_DIR=/run/user/2222 systemctl --user disable $file") === false) {
-                throw \Exception('Unable to disable systemd timer');
+
+            $process = new Process(['sudo', '-E', '-u', 'spider', 'systemctl', '--user', 'disable', $file], null, [
+                'XDG_RUNTIME_DIR' => '/run/user/2222',
+            ]);
+            try {
+                $process->mustRun();
+            } catch (ProcessFailedException $exception) {
+
             }
+
             $dir = $this->getSaveDirectory();
             $path = $dir . "/$file";
-            if (system("sudo -u spider rm $path") === false) {
-                throw \Exception("Unable to remove $path");
+
+            $process = new Process(['sudo', '-u', 'spider', 'rm', $path]);
+            try {
+                $process->mustRun();
+            } catch (ProcessFailedException $exception) {
+
             }
         }
     }
