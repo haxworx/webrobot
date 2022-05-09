@@ -86,7 +86,6 @@ class CrawlSettingsRepository extends ServiceEntityRepository
     public function findAllByUserId($userId): array
     {
         return $this->createQueryBuilder('c')
-            ->select('c.botId, c.address, c.domain, c.scheme, c.agent, c.startTime, c.endTime')
             ->andWhere('c.userId = :id')
             ->setParameter('id', $userId)
             ->getQuery()

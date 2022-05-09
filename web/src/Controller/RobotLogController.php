@@ -4,15 +4,17 @@ namespace App\Controller;
 
 use App\Entity\CrawlLog;
 use App\Entity\CrawlSettings;
+use App\Form\RobotLogType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 
 class RobotLogController extends AbstractController
 {
     #[Route('/robot/log', name: 'app_robot_log')]
-    public function index(ManagerRegistry $doctrine): Response
+    public function index(Request $request, ManagerRegistry $doctrine): Response
     {
         $user = $this->getUser();
         if (!$user) {
@@ -22,11 +24,18 @@ class RobotLogController extends AbstractController
         }
 
         $crawlers = $doctrine->getRepository(CrawlSettings::class)->findAllByUserId($user->getId());
-#        $scanDates = $doctrine->getRepository(CrawlLog::class)->findAllScanDatesByUserId($user->getId());
-        var_dump($crawlers);
+        $form = $this->createForm(RobotLogType::class, null, [
+            'crawlers' => $crawlers,
+        ]);
 
-        return $this->render('robot_log/index.html.twig', [
-            'controller_name' => 'RobotLogController',
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+
+        }
+
+        return $this->renderForm('robot_log/index.html.twig', [
+            'form' => $form,
         ]);
     }
 }
