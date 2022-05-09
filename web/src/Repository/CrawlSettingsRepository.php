@@ -6,6 +6,7 @@ use App\Entity\CrawlSettings;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\AbstractQuery;
 
 /**
  * @method CrawlSettings|null find($id, $lockMode = null, $lockVersion = null)
@@ -68,5 +69,27 @@ class CrawlSettingsRepository extends ServiceEntityRepository
             ->setParameter('id', $botId)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function findAllBotIdsByUserId($userId): array
+    {
+        $result = $this->createQueryBuilder('c')
+            ->select('c.botId')
+            ->andWhere('c.userId = :id')
+            ->setParameter('id', $userId)
+            ->groupBy('c.botId')
+            ->getQuery()
+            ->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
+        return $result;
+    }
+
+    public function findAllByUserId($userId): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.botId, c.address, c.domain, c.scheme, c.agent, c.startTime, c.endTime')
+            ->andWhere('c.userId = :id')
+            ->setParameter('id', $userId)
+            ->getQuery()
+            ->getResult();
     }
 }

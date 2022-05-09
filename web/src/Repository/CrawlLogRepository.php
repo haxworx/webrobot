@@ -31,4 +31,15 @@ class CrawlLogRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute();
     }
+
+    public function findAllScanDatesByUserId(int $userId): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.scanDate')
+            ->where('c.userId = :id')
+            ->setParameter('id', $userId)
+            ->groupBy('c.scanDate')
+            ->getQuery()
+            ->getResult();
+    }
 }
