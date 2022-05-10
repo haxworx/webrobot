@@ -1,9 +1,7 @@
-* Start collecting some data.
-* Think about basic auth? Is it worth it?
-* Add a global settings editor.
 * Add a basic search tool for parsing results from the data.
 * Write scripts for setting SQL user rights.
-* Look into HTTP headers for locking things down.
-* Think of a third way to retrieve database credentials:
-    Querying a remote server for this is mental.
 * Add more comments.
+* Add AWS auth to the Symfony UI.
+* Add a script to setup seperate permissions for the crawler and UI (SQL).
+* Make the web logging better.
+* Think about reintroducing MQTT into the Symfony UI.
