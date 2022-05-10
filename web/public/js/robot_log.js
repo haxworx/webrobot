@@ -12,6 +12,10 @@ window.onload = function() {
         }
     });
 
+    // Date selected only rendered when a valid botId is.
+
+    if (!logDates) return;
+
     logDates.addEventListener('change', (event) => {
         if (event.target.value) {
             searchParams.set('scanDate', event.target.value);
