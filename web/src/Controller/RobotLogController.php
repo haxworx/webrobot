@@ -23,19 +23,30 @@ class RobotLogController extends AbstractController
             );
         }
 
+        $scanDates = null;
+        $logs = null;
+
+        $botId = $request->query->get('botId');
+        $scanDate = $request->query->get('scanDate');
+        if ($botId) {
+            $scanDates = $doctrine->getRepository(CrawlLog::class)->findUniqueScanDatesByBotId($botId);
+        }
+
+        $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
         $crawlers = $doctrine->getRepository(CrawlSettings::class)->findAllByUserId($user->getId());
         $form = $this->createForm(RobotLogType::class, null, [
             'crawlers' => $crawlers,
+            'crawler' => $crawler,
+            'scan_date' => $scanDate,
+            'scan_dates' => $scanDates,
         ]);
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-
-
+        if (($botId) && ($scanDate)) {
+            $logs = $doctrine->getRepository(CrawlLog::class)->findAllByBotIdAndScanDate($botId, $scanDate);
         }
-
         return $this->renderForm('robot_log/index.html.twig', [
             'form' => $form,
+            'logs' => $logs,
         ]);
     }
 }

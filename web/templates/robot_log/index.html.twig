@@ -1,11 +1,23 @@
 {% extends 'base.html.twig' %}
 
+{% block head %}
+<script src="/js/robot_log.js"></script>
+{% endblock %}
 {% block title %}Web Robot Log{% endblock %}
 
 {% block body %}
 <h1>Logs</h1>
 <hr>
 <div>
-    {{ form(form) }}
+    {{ form_start(form) }}
+    {{ form_end(form) }}
 </div>
+
+{% if logs %}
+<pre class="overflow-auto bg-light border p-3">
+{% for log in logs %}
+{{ log.scanTimeStamp|date('Y-m-d H:i:s') }}:{{ log.message }}
+{% endfor %}
+</pre>
+{% endif %}
 {% endblock %}

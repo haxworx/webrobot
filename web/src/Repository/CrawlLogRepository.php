@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\CrawlLog;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\AbstractQuery;
 
 class CrawlLogRepository extends ServiceEntityRepository
 {
@@ -32,13 +33,26 @@ class CrawlLogRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    public function findAllScanDatesByUserId(int $userId): array
+    public function findUniqueScanDatesByBotId(int $botId): array
     {
         return $this->createQueryBuilder('c')
             ->select('c.scanDate')
-            ->where('c.userId = :id')
-            ->setParameter('id', $userId)
+            ->where('c.botId = :id')
+            ->setParameter('id', $botId)
             ->groupBy('c.scanDate')
+            ->orderBy('c.scanDate', 'DESC')
+            ->getQuery()
+            ->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
+
+    }
+
+    public function findAllByBotIdAndScanDate(int $botId, string $scanDate): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.botId = :id')
+            ->setParameter('id', $botId)
+            ->andWhere('c.scanDate = :scanDate')
+            ->setParameter('scanDate', $scanDate)
             ->getQuery()
             ->getResult();
     }
