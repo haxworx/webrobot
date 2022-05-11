@@ -52,6 +52,17 @@ class CrawlSettingsRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function userOwnsBot(int $userId, int $botId): bool
+    {
+        return (bool) $this->createQueryBuilder('c')
+            ->andWhere('c.userId = :userId')
+            ->setParameter('userId', $userId)
+            ->andWhere('c.botId = :botId')
+            ->setParameter('botId', $botId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function countByUserId($userId): int
     {
         return $this->createQueryBuilder('c')

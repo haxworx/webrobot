@@ -28,10 +28,14 @@ class RobotLogController extends AbstractController
         $lastId = null;
 
         $botId = $request->query->get('botId');
-        $scanDate = $request->query->get('scanDate');
         if ($botId) {
+            if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
+                throw new \Exception('Bot not owned by user.');
+            }
             $scanDates = $doctrine->getRepository(CrawlLog::class)->findUniqueScanDatesByBotId($botId);
         }
+
+        $scanDate = $request->query->get('scanDate');
 
         $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
         $crawlers = $doctrine->getRepository(CrawlSettings::class)->findAllByUserId($user->getId());
@@ -79,6 +83,10 @@ class RobotLogController extends AbstractController
         $scanDate = $obj['scan_date'];
         $botId = $obj['bot_id'];
         $token = $obj['token'];
+
+        if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
+            throw new \Exception('Bot not owned by user.');
+        }
 
         if (!$this->isCsrfTokenValid('update-log', $token)) {
             throw new \Exception("CSRF Token Invalid");
