@@ -25,6 +25,7 @@ class RobotLogController extends AbstractController
 
         $scanDates = null;
         $logs = null;
+        $lastId = null;
 
         $botId = $request->query->get('botId');
         $scanDate = $request->query->get('scanDate');
@@ -43,10 +44,53 @@ class RobotLogController extends AbstractController
 
         if (($botId) && ($scanDate)) {
             $logs = $doctrine->getRepository(CrawlLog::class)->findAllByBotIdAndScanDate($botId, $scanDate);
+            $lastId = $logs[count($logs) -1]->getId();
         }
         return $this->renderForm('robot_log/index.html.twig', [
-            'form' => $form,
-            'logs' => $logs,
+            'form'      => $form,
+            'logs'      => $logs,
+            'last_id'   => $lastId,
+            'bot_id'    => $botId,
+            'scan_date' => $scanDate,
         ]);
+    }
+
+    #[Route('/robot/log/more', name: 'app_robot_log_stream')]
+    public function more(Request $request, ManagerRegistry $doctrine): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createNotFoundException(
+                'No user found.'
+            );
+        }
+        $obj = json_decode($request->getContent(), true);
+
+        if ((!$obj) || (!array_key_exists('last_id', $obj)) || (!array_key_exists('scan_date', $obj)) || (!array_key_exists('bot_id', $obj))) {
+            throw $this->createNotFoundException("Missing parameters");
+        }
+
+        $lastId = $obj['last_id'];
+        $scanDate = $obj['scan_date'];
+        $botId = $obj['bot_id'];
+
+        $text = "";
+        $logs = $doctrine->getRepository(CrawlLog::class)->findAllNew($botId, $scanDate, $lastId);
+        $n = count($logs);
+        if ($n) {
+            $obj['last_id'] = $logs[$n - 1]->getId();
+            foreach ($logs as $log) {
+                $text .= $log->getScanTimestamp()->format('Y-m-d H:i:s') . ':' . $log->getMessage() . "\n";
+            }
+
+            $obj['logs'] = $text;
+        }
+
+
+        $response = new Response();
+        $response->setContent(json_encode($obj));
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
     }
 }

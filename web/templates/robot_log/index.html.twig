@@ -14,10 +14,17 @@
 </div>
 
 {% if logs %}
-<pre class="overflow-auto bg-light border p-3 rounded-3 text-secondary" style="height: 480px;">
+<pre class="overflow-auto bg-light border p-3 rounded-3 text-secondary" style="height: 480px;" id="log-panel">
 {% for log in logs %}
 {{ log.scanTimeStamp|date('Y-m-d H:i:s') }}:{{ log.message }}
 {% endfor %}
 </pre>
 {% endif %}
+
+{% if last_id %}
+<script>
+logsUpdate({{ bot_id }}, {{ last_id }}, '{{ scan_date }}');
+</script>
+{% endif %}
+
 {% endblock %}
