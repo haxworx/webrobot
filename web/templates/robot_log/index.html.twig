@@ -14,7 +14,7 @@
 </div>
 
 {% if logs %}
-<pre class="overflow-auto bg-light border p-3">
+<pre class="overflow-auto bg-light border p-3 rounded-3 text-secondary" style="height: 480px;">
 {% for log in logs %}
 {{ log.scanTimeStamp|date('Y-m-d H:i:s') }}:{{ log.message }}
 {% endfor %}

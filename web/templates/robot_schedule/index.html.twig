@@ -1,12 +1,44 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Web Robot Schedule{% endblock %}
+{% block head %}
+<script src="/js/robot_schedule.js"></script>
+{% endblock %}
 
 {% block body %}
+
+{% if delete_path %}
+
+<div class="modal" tabindex="-1" id="deleteModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Are you sure?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the selected robot?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button onclick="window.location.href='{{ delete_path }}'" type="button" data-bs-dismiss="modal" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 <h1>Schedule</h1>
 <hr>
 <div>
-    {{ form(form) }}
+    {{ form_start(form) }}
+    {{ form_end(form) }}
+    {% if delete_path %}
+        <button type="button" style="margin-left: 10px;" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+      Delete
+    </button>
+    {% endif %}
 </div>
+
 
 {% endblock %}

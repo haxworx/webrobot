@@ -50,16 +50,6 @@ class RobotScheduleType extends AbstractType
                 'attr' => ['style' => 'float: left'],
             ])
         ;
-
-        if (!$options['delete_button_hidden']) {
-            $builder->add('delete', SubmitType::class, [
-                'label' => 'Delete',
-                'attr' => [
-                    'class' => 'btn-danger',
-                    'style' => 'margin-left: 10px',
-                ],
-            ]);
-        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void

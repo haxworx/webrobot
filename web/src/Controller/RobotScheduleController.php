@@ -77,6 +77,7 @@ class RobotScheduleController extends AbstractController
 
         return $this->renderForm('robot_schedule/index.html.twig', [
             'form' => $form,
+            'delete_path' => false,
         ]);
     }
 
@@ -115,11 +116,6 @@ class RobotScheduleController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Was 'Delete' button clicked?
-            if ($form->get('delete')->isClicked()) {
-                return $this->redirectToRoute('app_robot_schedule_remove', ['botId' => $botId ]);
-            }
-
             $repository = $doctrine->getRepository(CrawlSettings::class);
             $isSame = $repository->isSameAddress($crawlSettings, $user->getId());
             if (!$isSame) {
@@ -142,6 +138,7 @@ class RobotScheduleController extends AbstractController
 
         return $this->renderForm('robot_schedule/index.html.twig', [
             'form' => $form,
+            'delete_path' => $this->generateUrl('app_robot_schedule_remove', ['botId' => $botId ]),
         ]);
     }
 
