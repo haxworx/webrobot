@@ -1,9 +1,10 @@
 
-function logsUpdate(botId, lastId, scanDate) {
+function logsUpdate(botId, lastId, scanDate, token) {
     let postObj = {
         bot_id: botId,
         last_id: lastId,
         scan_date: scanDate,
+        token: token,
     }
 
     let logPanel = document.getElementById('log-panel');

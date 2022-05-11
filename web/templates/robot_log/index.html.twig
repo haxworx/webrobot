@@ -23,7 +23,7 @@
 
 {% if last_id %}
 <script>
-logsUpdate({{ bot_id }}, {{ last_id }}, '{{ scan_date }}');
+logsUpdate({{ bot_id }}, {{ last_id }}, '{{ scan_date }}', '{{ csrf_token('update-log') }}');
 </script>
 {% endif %}
 
