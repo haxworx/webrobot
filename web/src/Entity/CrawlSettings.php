@@ -114,12 +114,16 @@ class CrawlSettings
     private $endTime;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @var bool|null
+     *
+     * @ORM\Column(name="is_running", type="boolean", nullable=true)
      */
     private $IsRunning;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @var bool|null
+     *
+     * @ORM\Column(name="has_error", type="boolean", nullable=true)
      */
     private $HasError;
 
@@ -291,7 +295,7 @@ class CrawlSettings
         return $this->IsRunning;
     }
 
-    public function setIsRunning(bool $IsRunning): self
+    public function setIsRunning(?bool $IsRunning): self
     {
         $this->IsRunning = $IsRunning;
 
@@ -303,7 +307,7 @@ class CrawlSettings
         return $this->HasError;
     }
 
-    public function setHasError(bool $HasError): self
+    public function setHasError(?bool $HasError): self
     {
         $this->HasError = $HasError;
 
