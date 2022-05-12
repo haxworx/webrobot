@@ -21,7 +21,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button onclick="window.location.href='{{ delete_path }}'" type="button" data-bs-dismiss="modal" class="btn btn-danger">Delete</button>
+        <button onclick="removeCrawler('{{ delete_path }}');" type="button" data-bs-dismiss="modal" class="btn btn-danger">Delete</button>
       </div>
     </div>
   </div>
@@ -37,6 +37,11 @@
         <button type="button" style="margin-left: 10px;" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
       Delete
     </button>
+    <br>
+    <div class="clearfix">
+        <div id="spinner" class="visually-hidden spinner-border text-primary float-end" role="status">
+        </div>
+    </div>
     {% endif %}
 </div>
 
