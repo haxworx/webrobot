@@ -37,9 +37,9 @@ class RobotScheduleController extends AbstractController
             );
         }
 
-        $crawlSettings = new CrawlSettings();
+        $crawler = new CrawlSettings();
 
-        $form = $this->createForm(RobotScheduleType::class, $crawlSettings);
+        $form = $this->createForm(RobotScheduleType::class, $crawler);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -49,23 +49,23 @@ class RobotScheduleController extends AbstractController
             if ($count >= $globalSettings->getMaxCrawlers()) {
                 $notifier->send(new Notification('Reached maximum number of crawlers ('. $count .').', ['browser']));
             } else {
-                $crawlSettings->setSchemeAndDomain();
+                $crawler->setSchemeAndDomain();
 
-                $exists = $repository->settingsExists($crawlSettings, $user->getId());
+                $exists = $repository->settingsExists($crawler, $user->getId());
                 if ($exists) {
                     $notifier->send(new Notification('Robot already exists with that scheme and domain.', ['browser']));
                 } else {
-                    $crawlSettings->setUserId($user->getId());
+                    $crawler->setUserId($user->getId());
                     $entityManager = $doctrine->getManager();
-                    $entityManager->persist($crawlSettings);
+                    $entityManager->persist($crawler);
                     $entityManager->flush();
 
                     // Create our systemd timer.
-                    $timer = new Timer($globalSettings, $crawlSettings);
+                    $timer = new Timer($globalSettings, $crawler);
                     if ($timer->create()) {
                         $notifier->send(new Notification('Robot scheduled.', ['browser']));
                     } else {
-                        $entityManager->remove($crawlSettings);
+                        $entityManager->remove($crawler);
                         $entityManager->flush();
                         $notifier->send(new Notification('There was a problem scheduling the robot.', ['browser']));
                         return $this->redirectToRoute('app_robot_schedule');
@@ -99,18 +99,18 @@ class RobotScheduleController extends AbstractController
             );
         }
 
-        $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
-        if (!$crawlSettings) {
+        $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
+        if (!$crawler) {
             throw $this->createNotFoundException(
                 'No bot for id: ' . $botId
             );
         }
 
-        $form = $this->createForm(RobotScheduleType::class, $crawlSettings, array(
+        $form = $this->createForm(RobotScheduleType::class, $crawler, array(
             'save_button_label' => 'Update',
             'delete_button_hidden' => false,
-            'ignore_query' => $crawlSettings->getIgnoreQuery(),
-            'import_sitemaps' => $crawlSettings->getImportSitemaps(),
+            'ignore_query' => $crawler->getIgnoreQuery(),
+            'import_sitemaps' => $crawler->getImportSitemaps(),
             'address_readonly' => true,
         ));
 
@@ -118,23 +118,23 @@ class RobotScheduleController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $repository = $doctrine->getRepository(CrawlSettings::class);
-            $isSame = $repository->isSameAddress($crawlSettings, $user->getId());
+            $isSame = $repository->isSameAddress($crawler, $user->getId());
             if (!$isSame) {
                 $notifier->send(new Notification('Unable to change existing domain.', ['browser']));
             } else {
                 // Update our entity and save to database.
                 $entityManager = $doctrine->getManager();
-                $entityManager->persist($crawlSettings);
+                $entityManager->persist($crawler);
 
                 // Stop any running container.
-                $containerId = $crawlSettings->getContainerId();
+                $containerId = $crawler->getContainerId();
                 if ($containerId) {
                     $container = new Docker($containerId);
                     $container->stop();
                 }
 
                 // Update our systemd timer.
-                $timer = new Timer($globalSettings, $crawlSettings);
+                $timer = new Timer($globalSettings, $crawler);
                 if (!$timer->update()) {
                     $notifier->send(New Notification('There was a problem updating the schedule.', ['browser']));
                 } else {
@@ -167,22 +167,22 @@ class RobotScheduleController extends AbstractController
             );
         }
 
-        $crawlSettings = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
-        if (!$crawlSettings) {
+        $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
+        if (!$crawler) {
             throw $this->createNotFoundException(
                 'No bot for id: ' . $botId
             );
         }
 
         // Stop any running container.
-        $containerId = $crawlSettings->getContainerId();
+        $containerId = $crawler->getContainerId();
         if ($containerId) {
             $container = new Docker($containerId);
             $container->stop();
         }
 
         // Remove our systemd timer.
-        $timer = new Timer($globalSettings, $crawlSettings);
+        $timer = new Timer($globalSettings, $crawler);
         $timer->remove();
 
         // Remove our database data related to the bot id.
@@ -203,7 +203,7 @@ class RobotScheduleController extends AbstractController
             $entityManager->remove($log);
         }
 
-        $entityManager->remove($crawlSettings);
+        $entityManager->remove($crawler);
         $entityManager->flush();
 
         $notifier->send(new Notification('Robot removed.', ['browser']));

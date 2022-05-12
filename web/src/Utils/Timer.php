@@ -18,14 +18,14 @@ class Timer
     private $time;
     private $dockerImage;
 
-    public function __construct(GlobalSettings $globalSettings, CrawlSettings $crawlSettings)
+    public function __construct(GlobalSettings $globalSettings, CrawlSettings $crawler)
     {
-        $this->botId       = $crawlSettings->getBotId();
-        $this->userId      = $crawlSettings->getUserId();
-        $this->domain      = $crawlSettings->getDomain();
-        $this->address     = $crawlSettings->getAddress();
-        $this->scheme      = $crawlSettings->getScheme();
-        $this->time        = $crawlSettings->getStartTime()->format('H:i:s');
+        $this->botId       = $crawler->getBotId();
+        $this->userId      = $crawler->getUserId();
+        $this->domain      = $crawler->getDomain();
+        $this->address     = $crawler->getAddress();
+        $this->scheme      = $crawler->getScheme();
+        $this->time        = $crawler->getStartTime()->format('H:i:s');
         $this->dockerImage = $globalSettings->getDockerImage();
         $this->identifier  = $this->createIdentifier($this->botId, $this->userId, $this->scheme, $this->domain);
     }

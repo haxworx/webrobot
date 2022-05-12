@@ -22,32 +22,32 @@ class CrawlSettingsRepository extends ServiceEntityRepository
         parent::__construct($registry, CrawlSettings::class);
     }
 
-    public function settingsExists(CrawlSettings $crawlSettings, int $userId): bool
+    public function settingsExists(CrawlSettings $crawler, int $userId): bool
     {
         return (bool) $this->createQueryBuilder('c')
             ->andWhere('c.userId = :id')
             ->setParameter('id', $userId)
             ->andWhere('c.scheme = :scheme')
-            ->setParameter('scheme', $crawlSettings->getScheme())
+            ->setParameter('scheme', $crawler->getScheme())
             ->andWhere('c.domain = :domain')
-            ->setParameter('domain', $crawlSettings->getDomain())
+            ->setParameter('domain', $crawler->getDomain())
             ->getQuery()
             ->getOneOrNullResult();
     }
 
-    public function isSameAddress(CrawlSettings $crawlSettings, int $userId): bool
+    public function isSameAddress(CrawlSettings $crawler, int $userId): bool
     {
         return (bool) $this->createQueryBuilder('c')
             ->andWhere('c.userId = :id')
             ->setParameter('id', $userId)
             ->andWhere('c.address = :address')
-            ->setParameter('address', $crawlSettings->getAddress())
+            ->setParameter('address', $crawler->getAddress())
             ->andWhere('c.scheme = :scheme')
-            ->setParameter('scheme', $crawlSettings->getScheme())
+            ->setParameter('scheme', $crawler->getScheme())
             ->andWhere('c.domain = :domain')
-            ->setParameter('domain', $crawlSettings->getDomain())
+            ->setParameter('domain', $crawler->getDomain())
             ->andWhere('c.botId = :botId')
-            ->SetParameter('botId', $crawlSettings->getBotId())
+            ->SetParameter('botId', $crawler->getBotId())
             ->getQuery()
             ->getOneOrNullResult();
     }

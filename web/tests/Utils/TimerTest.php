@@ -15,15 +15,15 @@ class TimerTest extends TestCase
     {
         $globalSettings = new GlobalSettings;
         $globalSettings->setDockerImage('testing');
-        $crawlSettings = new CrawlSettings;
-        $crawlSettings->setBotId(999999);
-        $crawlSettings->setUserId(999999);
-        $crawlSettings->setDomain('localhost');
-        $crawlSettings->setAddress('https://localhost');
-        $crawlSettings->setScheme('https');
-        $crawlSettings->setStartTime(new \DateTime("NOW"));
+        $crawler = new CrawlSettings;
+        $crawler->setBotId(999999);
+        $crawler->setUserId(999999);
+        $crawler->setDomain('localhost');
+        $crawler->setAddress('https://localhost');
+        $crawler->setScheme('https');
+        $crawler->setStartTime(new \DateTime("NOW"));
 
-        $timer = new Timer($globalSettings, $crawlSettings);
+        $timer = new Timer($globalSettings, $crawler);
         $files = $timer->getSystemdUnitFiles();
 
         $timer->create();

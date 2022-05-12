@@ -20,10 +20,10 @@ class IndexController extends AbstractController
             );
         }
 
-        $crawlersSettings = $doctrine->getRepository(CrawlSettings::class)->findAllByUserId($user->getId());
+        $crawlers = $doctrine->getRepository(CrawlSettings::class)->findAllByUserId($user->getId());
 
         return $this->render('index/index.html.twig', [
-            'crawlersSettings' => $crawlersSettings,
+            'crawlers' => $crawlers,
         ]);
     }
 }
