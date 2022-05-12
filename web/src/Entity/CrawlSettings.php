@@ -113,6 +113,16 @@ class CrawlSettings
      */
     private $endTime;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $IsRunning;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $HasError;
+
     public function getBotId(): ?int
     {
         return $this->botId;
@@ -273,6 +283,30 @@ class CrawlSettings
         } else {
             throw new \Exception('No scheme or host available parsing address.');
         }
+        return $this;
+    }
+
+    public function getIsRunning(): ?bool
+    {
+        return $this->IsRunning;
+    }
+
+    public function setIsRunning(bool $IsRunning): self
+    {
+        $this->IsRunning = $IsRunning;
+
+        return $this;
+    }
+
+    public function getHasError(): ?bool
+    {
+        return $this->HasError;
+    }
+
+    public function setHasError(bool $HasError): self
+    {
+        $this->HasError = $HasError;
+
         return $this;
     }
 }

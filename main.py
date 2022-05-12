@@ -35,6 +35,8 @@ class Robot:
     _domain = None
     _ip_address = None
     _url = None
+    _is_running = False
+    _has_error = False
     dbh = None
 
     def __init__(self, bot_id):
@@ -98,6 +100,22 @@ class Robot:
     @bot_id.setter
     def bot_id(self, value):
         self._bot_id = value
+
+    @property
+    def has_error(self):
+        return self._has_error
+
+    @has_error.setter
+    def has_error(self, has_error):
+        self._has_error = has_error
+
+    @property
+    def is_running(self):
+        return self._is_running
+
+    @is_running.setter
+    def is_running(self, running):
+        self._is_running = running;
 
     @property
     def name(self):
@@ -229,6 +247,7 @@ class Robot:
             self.dbh.cnx.commit()
         except mysql.connector.Error as e:
             self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
+            self.has_error = True
             everything_is_fine = False
 
         cursor.close()
@@ -238,18 +257,37 @@ class Robot:
 
     def finished(self, res):
         everything_is_fine = True
+        self.is_running = False
 
         now = datetime.now()
 
         SQL = """
-        UPDATE crawl_settings SET end_time = %s WHERE bot_id = %s
+        UPDATE crawl_settings SET end_time = %s, is_running = %s, has_error = %s WHERE bot_id = %s
         """
         cursor = self.dbh.cnx.cursor()
         try:
-            cursor.execute(SQL, (now, res['bot_id']))
+            cursor.execute(SQL, (now, self.is_running, self.has_error, res['bot_id']))
             self.dbh.cnx.commit()
         except mysql.connector.Error as e:
             self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
+            everything_is_fine = False
+        cursor.close()
+
+        return everything_is_fine
+
+    def started(self):
+        everything_is_fine = True
+        self.is_running = True
+        SQL = """
+        UPDATE crawl_settings SET is_running = %s WHERE bot_id = %s
+        """
+        cursor = self.dbh.cnx.cursor()
+        try:
+            cursor.execute(SQL, (self.is_running, self.bot_id))
+            self.dbh.cnx.commit()
+        except mysql.connector.Error as e:
+            self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
+            self.has_error = True
             everything_is_fine = False
         cursor.close()
 
@@ -280,6 +318,7 @@ class Robot:
         except mysql.connector.Error as e:
             self.log.critical("/%s/%s/critical/database/save/errors/%i/%s", self.hostname, self.domain, e.errno, e.msg)
             everything_is_fine = False
+            self.has_error = False
 
         cursor.close()
         return everything_is_fine
@@ -352,6 +391,7 @@ class Robot:
                        'description': e.reason}
                 if not self.save_errors(res):
                     self.log.critical("/%s/%s/critical/database/errors/save", self.hostname, self.domain)
+                    self.has_error = True
                     break
 
             except error.URLError as e:
@@ -362,6 +402,7 @@ class Robot:
                 if self.retry_count > self.config.retry_max:
                     self.log.critical("/%s/%s/critical/connect/retry_max/%i",
                                       self.hostname, self.domain, self.config.retry_max)
+                    self.has_error = True
                     break
                 else:
                     self.page_list.again()
@@ -420,6 +461,7 @@ class Robot:
                     if not self.save_results(res):
                         self.log.critical("/%s/%s/critical/database/data/save",
                                           self.hostname, self.domain)
+                        self.has_error = True
                         break
 
                     count = 0
@@ -448,6 +490,7 @@ class Robot:
         # End of the crawling main loop.
         if core.shutdown_gracefully():
             self.log.critical("/%s/%s/critical/interrupted", self.hostname, self.domain)
+            self.has_error = True
 
         self.log.info("/%s/%s/info/finished/saved/%i", self.hostname, self.domain, self.save_count)
         self.mqtt_client.publish(crawler.config.mqtt_topic, "FINISHED: {}" . format(self.bot_id));

@@ -33,13 +33,6 @@ class CrawlErrors
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="srv_date", type="date", nullable=true, options={"default"="curdate()"})
-     */
-    private $srvDate = 'curdate()';
-
-    /**
-     * @var \DateTime|null
-     *
      * @ORM\Column(name="srv_time_stamp", type="datetime", nullable=true, options={"default"="CURRENT_TIMESTAMP"})
      */
     private $srvTimeStamp = 'CURRENT_TIMESTAMP';
