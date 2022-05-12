@@ -78,7 +78,7 @@ class RobotScheduleController extends AbstractController
 
         return $this->renderForm('robot_schedule/index.html.twig', [
             'form' => $form,
-            'delete_path' => false,
+            'is_edit' => false,
         ]);
     }
 
@@ -97,6 +97,10 @@ class RobotScheduleController extends AbstractController
             throw $this->createNotFoundException(
                 'No global settings found.'
             );
+        }
+
+        if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
+           throw new \Exception('Bot not owned by user.');
         }
 
         $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
@@ -146,12 +150,14 @@ class RobotScheduleController extends AbstractController
 
         return $this->renderForm('robot_schedule/index.html.twig', [
             'form' => $form,
-            'delete_path' => $this->generateUrl('app_robot_schedule_remove', ['botId' => $botId ]),
+            'bot_id' => $botId,
+            'is_edit' => true,
         ]);
     }
 
-    #[Route('/robot/schedule/remove/{botId}', name: 'app_robot_schedule_remove')]
-    public function remove(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $botId): Response
+    // See public/robot_schedule.js for POST request.
+    #[Route('/robot/schedule/remove/{botId}', name: 'app_robot_schedule_remove', methods: ['POST'])]
+    public function remove(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier): Response
     {
         $user = $this->getUser();
         if (!$user) {
@@ -165,6 +171,16 @@ class RobotScheduleController extends AbstractController
             throw $this->createNotFoundException(
                 'No global settings found.'
             );
+        }
+
+        $botId = $request->request->get('botId');
+        if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
+           throw new \Exception('Bot not owned by user.');
+        }
+
+        $token = $request->request->get('token');
+        if (!$this->isCsrfTokenValid('remove-crawler', $token)) {
+            throw new \Exception('Invalid CSRF token');
         }
 
         $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);

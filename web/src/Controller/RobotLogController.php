@@ -75,7 +75,8 @@ class RobotLogController extends AbstractController
 
         $obj = json_decode($request->getContent(), true);
 
-        if ((!$obj) || (!array_key_exists('last_id', $obj)) || (!array_key_exists('scan_date', $obj)) || (!array_key_exists('bot_id', $obj)) || (!array_key_exists('token', $obj))) {
+        if ((!$obj) || (!array_key_exists('last_id', $obj)) || (!array_key_exists('scan_date', $obj)) ||
+            (!array_key_exists('bot_id', $obj)) || (!array_key_exists('token', $obj))) {
             throw new \Exception('Missing parameters');
         }
 

@@ -7,7 +7,7 @@
 
 {% block body %}
 
-{% if delete_path %}
+{% if is_edit %}
 
 <div class="modal" tabindex="-1" id="deleteModal">
   <div class="modal-dialog">
@@ -21,7 +21,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button onclick="removeCrawler('{{ delete_path }}');" type="button" data-bs-dismiss="modal" class="btn btn-danger">Delete</button>
+        <button onclick="removeCrawler({{ bot_id }}, '{{ csrf_token('remove-crawler') }}');" type="button" data-bs-dismiss="modal" class="btn btn-danger">Delete</button>
       </div>
     </div>
   </div>
@@ -33,7 +33,7 @@
 <div>
     {{ form_start(form) }}
     {{ form_end(form) }}
-    {% if delete_path %}
+    {% if is_edit %}
         <button type="button" style="margin-left: 10px;" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
       Delete
     </button>
