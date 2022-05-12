@@ -26,5 +26,8 @@
 logsUpdate({{ bot_id }}, {{ last_id }}, '{{ scan_date }}', '{{ csrf_token('update-log') }}');
 </script>
 {% endif %}
-
+<div class="clearfix">
+    <div id="spinner" class="visually-hidden spinner-border text-primary float-end" role="status">
+    </div>
+</div>
 {% endblock %}

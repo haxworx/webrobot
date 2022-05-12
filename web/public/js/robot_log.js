@@ -24,6 +24,9 @@ function logsUpdate(botId, lastId, scanDate, token) {
                     postData = JSON.stringify(postObj);
                     logPanel.innerHTML = logPanel.innerHTML + postObj['logs'];
                     logPanel.scrollTop = logPanel.scrollHeight;
+                    // Show spinner if we have "live" log data.
+                    let spinner = document.getElementById('spinner');
+                    spinner.classList.remove('visually-hidden');
                 }
             }
         }
