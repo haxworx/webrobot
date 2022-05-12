@@ -8,6 +8,7 @@ use App\Entity\CrawlData;
 use App\Entity\CrawlErrors;
 use App\Entity\CrawlLog;
 use App\Utils\Timer;
+use App\Utils\Docker;
 use App\Form\RobotScheduleType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -125,6 +126,13 @@ class RobotScheduleController extends AbstractController
                 $entityManager = $doctrine->getManager();
                 $entityManager->persist($crawlSettings);
 
+                // Stop any running container.
+                $containerId = $crawlSettings->getContainerId();
+                if ($containerId) {
+                    $container = new Docker($containerId);
+                    $container->stop();
+                }
+
                 // Update our systemd timer.
                 $timer = new Timer($globalSettings, $crawlSettings);
                 if (!$timer->update()) {
@@ -164,6 +172,13 @@ class RobotScheduleController extends AbstractController
             throw $this->createNotFoundException(
                 'No bot for id: ' . $botId
             );
+        }
+
+        // Stop any running container.
+        $containerId = $crawlSettings->getContainerId();
+        if ($containerId) {
+            $container = new Docker($containerId);
+            $container->stop();
         }
 
         // Remove our systemd timer.
