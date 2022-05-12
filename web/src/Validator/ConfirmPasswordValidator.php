@@ -16,7 +16,7 @@ class ConfirmPasswordValidator extends ConstraintValidator
         }
 
         $password = $this->context->getRoot()->get('plainPassword')->getData();
-        if ($password != $value) {
+        if ($password !== $value) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value)
                 ->addViolation();
