@@ -357,6 +357,7 @@ class Robot:
         """
         Crawling logic.
         """
+        self.started()
         self.log.info("/%s/%s/info/start", self.hostname, self.domain)
         self.robots_text.parse(self.url)
         self.page_list.append(self.robots_text.url)
