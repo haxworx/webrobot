@@ -262,7 +262,7 @@ class Robot:
         now = datetime.now()
 
         SQL = """
-        UPDATE crawl_settings SET end_time = %s, is_running = %s, has_error = %s WHERE bot_id = %s
+        UPDATE crawl_settings SET end_time = %s, is_running = %s, has_error = %s, container_id = NULL WHERE bot_id = %s
         """
         cursor = self.dbh.cnx.cursor()
         try:
@@ -279,11 +279,11 @@ class Robot:
         everything_is_fine = True
         self.is_running = True
         SQL = """
-        UPDATE crawl_settings SET is_running = %s WHERE bot_id = %s
+        UPDATE crawl_settings SET is_running = %s, container_id = %s WHERE bot_id = %s
         """
         cursor = self.dbh.cnx.cursor()
         try:
-            cursor.execute(SQL, (self.is_running, self.bot_id))
+            cursor.execute(SQL, (self.is_running, self.hostname, self.bot_id))
             self.dbh.cnx.commit()
         except mysql.connector.Error as e:
             self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)

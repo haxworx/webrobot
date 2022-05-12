@@ -127,6 +127,11 @@ class CrawlSettings
      */
     private $HasError;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $ContainerId;
+
     public function getBotId(): ?int
     {
         return $this->botId;
@@ -310,6 +315,18 @@ class CrawlSettings
     public function setHasError(?bool $HasError): self
     {
         $this->HasError = $HasError;
+
+        return $this;
+    }
+
+    public function getContainerId(): ?string
+    {
+        return $this->ContainerId;
+    }
+
+    public function setContainerId(?string $ContainerId): self
+    {
+        $this->ContainerId = $ContainerId;
 
         return $this;
     }
