@@ -6,7 +6,7 @@ class FuzzyDateTime
 {
     public static function get(?\DateTime $dateTime): string
     {
-        $out = "Unknown";
+        $out = "n/a";
         if ($dateTime === null) {
             return $out;
         }
