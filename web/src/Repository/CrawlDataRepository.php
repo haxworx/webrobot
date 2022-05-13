@@ -31,4 +31,15 @@ class CrawlDataRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute();
     }
+
+    public function deleteAllByBotId(int $botId): void
+    {
+        $this->createQueryBuilder('c')
+            ->delete()
+            ->where('c.botId = :botId')
+            ->setParameter('botId', $botId)
+            ->getQuery()
+            ->execute();
+    }
+
 }

@@ -202,23 +202,11 @@ class RobotScheduleController extends AbstractController
         $timer->remove();
 
         // Remove our database data related to the bot id.
+        $doctrine->getRepository(CrawlData::class)->deleteAllByBotId($botId);
+        $doctrine->getRepository(CrawlErrors::class)->deleteAllByBotId($botId);
+        $doctrine->getRepository(CrawlLog::class)->deleteAllByBotId($botId);
+
         $entityManager = $doctrine->getManager();
-
-        $crawlErrors = $doctrine->getRepository(CrawlErrors::class)->findAllByBotId($botId);
-        foreach ($crawlErrors as $crawlError) {
-            $entityManager->remove($crawlError);
-        }
-
-        $crawlData = $doctrine->getRepository(CrawlData::class)->findAllByBotId($botId);
-        foreach ($crawlData as $data) {
-            $entityManager->remove($data);
-        }
-
-        $crawlLog = $doctrine->getRepository(CrawlLog::class)->findAllByBotId($botId);
-        foreach ($crawlLog as $log) {
-            $entityManager->remove($log);
-        }
-
         $entityManager->remove($crawler);
         $entityManager->flush();
 
