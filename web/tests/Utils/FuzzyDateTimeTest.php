@@ -10,7 +10,7 @@ class FuzzyDateTimeTest extends TestCase
     public function testNullDate(): void
     {
         $result = FuzzyDateTime::get(null);
-        $this->assertSame('Unknown', $result);
+        $this->assertSame('n/a', $result);
     }
 
     public function testPlural(): void

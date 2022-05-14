@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Tests\Utils;
+namespace App\Tests\Service;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use App\Entity\GlobalSettings;
 use App\Entity\CrawlSettings;
-use App\Utils\Timer;
+use App\Service\Timer;
 
 class TimerTest extends TestCase
 {
