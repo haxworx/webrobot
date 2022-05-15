@@ -1,10 +1,3 @@
-var myModal = document.getElementById('myModal')
-var myInput = document.getElementById('myInput')
-
-myModal.addEventListener('shown.bs.modal', function () {
-  myInput.focus()
-})
-
 // Show spinner, send POST request, redirect on success.
 function removeCrawler(botId, token) {
     let spinner = document.getElementById('spinner');
