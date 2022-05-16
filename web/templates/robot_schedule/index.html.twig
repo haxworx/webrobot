@@ -1,32 +1,8 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Web Robot Schedule{% endblock %}
-{% block head %}
-<script src="/js/robot_schedule.js"></script>
-{% endblock %}
 
 {% block body %}
-
-{% if is_edit %}
-
-<div class="modal" tabindex="-1" id="deleteModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Are you sure?</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete the selected robot?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button onclick="removeCrawler({{ bot_id }}, '{{ csrf_token('remove-crawler') }}');" type="button" data-bs-dismiss="modal" class="btn btn-danger">Delete</button>
-      </div>
-    </div>
-  </div>
-</div>
-{% endif %}
 
 <h1>Schedule</h1>
 <hr>
@@ -34,14 +10,35 @@
     {{ form_start(form) }}
     {{ form_end(form) }}
     {% if is_edit %}
-        <button id="robot_schedule_delete" type="button" style="margin-left: 10px;" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-      Delete
+  <div {{ stimulus_controller('robot-delete', {
+       botId:  bot_id, token: csrf_token('remove-crawler')
+  }) }}>
+    <div class="modal" tabindex="-1" data-robot-delete-target="modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Are you sure?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete the selected robot?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" {{ stimulus_action('robot-delete', 'remove') }}><div class="btn btn-danger">Delete</div></a>
+          </div>
+        </div>
+      </div>
+    </div>
+          <button id="robot_schedule_delete" type="button" style="margin-left: 10px;" class="btn btn-danger" data-action="robot-delete#confirm">
+        Delete
     </button>
     <br>
     <div class="clearfix">
-        <div id="spinner" class="visually-hidden spinner-border text-primary float-end" role="status">
+        <div data-robot-delete-target="spinner" class="visually-hidden spinner-border text-primary float-end" role="status">
         </div>
     </div>
+</div>
     {% endif %}
 </div>
 
