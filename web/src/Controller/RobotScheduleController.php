@@ -99,11 +99,7 @@ class RobotScheduleController extends AbstractController
             );
         }
 
-        if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
-           throw new \Exception('Bot not owned by user.');
-        }
-
-        $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
+        $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByUserIdAndBotId($user->getId(), $botId);
         if (!$crawler) {
             throw $this->createNotFoundException(
                 'No bot for id: ' . $botId
@@ -174,16 +170,13 @@ class RobotScheduleController extends AbstractController
         }
 
         $botId = $request->request->get('botId');
-        if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
-           throw new \Exception('Bot not owned by user.');
-        }
-
         $token = $request->request->get('token');
+
         if (!$this->isCsrfTokenValid('remove-crawler', $token)) {
             throw new \Exception('Invalid CSRF token');
         }
 
-        $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
+        $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByUserIdAndBotId($user->getId(), $botId);
         if (!$crawler) {
             throw $this->createNotFoundException(
                 'No bot for id: ' . $botId
