@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ['crawl', 'dates', 'panel'];
+    static targets = ['crawl', 'dates', 'panel', 'spinner'];
     static values = {
         botId: Number,
         token: String,
@@ -32,21 +32,23 @@ export default class extends Controller {
                 window.location.search = searchParams.toString();
             }
         });
+
         if (this.hasPanelTarget) {
-            this.update(this.botIdValue, this.lastIdValue, this.scanDateValue, this.tokenValue);
+            this.update();
         }
     }
 
-    update(botId, lastId, scanDate, token) {
+    update() {
         let postObj = {
-            bot_id: botId,
-            last_id: lastId,
-            scan_date: scanDate,
-            token: token,
+            bot_id: this.botIdValue,
+            last_id: this.lastIdValue,
+            scan_date: this.scanDateValue,
+            token: this.tokenValue,
         }
 
         let logPanel = this.panelTarget;
         logPanel.scrollTop = logPanel.scrollHeight;
+        let spinner = this.spinnerTarget;
 
         let postData = JSON.stringify(postObj);
 
@@ -64,7 +66,6 @@ export default class extends Controller {
                         logPanel.innerHTML = logPanel.innerHTML + postObj['logs'];
                         logPanel.scrollTop = logPanel.scrollHeight;
                         // Show spinner if we have "live" log data.
-                        let spinner = document.getElementById('spinner');
                         spinner.classList.remove('visually-hidden');
                     }
                 }
