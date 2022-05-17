@@ -39,6 +39,7 @@ export default class extends Controller {
     }
 
     update() {
+        let dataTime = null;
         let postObj = {
             bot_id: this.botIdValue,
             last_id: this.lastIdValue,
@@ -66,7 +67,16 @@ export default class extends Controller {
                         logPanel.innerHTML = logPanel.innerHTML + postObj['logs'];
                         logPanel.scrollTop = logPanel.scrollHeight;
                         // Show spinner if we have "live" log data.
-                        spinner.classList.remove('visually-hidden');
+                        if (spinner.classList.contains('visually-hidden')) {
+                            spinner.classList.remove('visually-hidden');
+                        }
+                        dataTime = Math.floor(Date.now() / 1000);
+                    }
+                    // If no data for more than 5 seconds, hide the spinner.
+                    if ((dataTime) && (((Date.now() / 1000) - dataTime) >= 5.0)) {
+                        if (!spinner.classList.contains('visually-hidden')) {
+                            spinner.classList.add('visually-hidden');
+                        }
                     }
                 }
             }

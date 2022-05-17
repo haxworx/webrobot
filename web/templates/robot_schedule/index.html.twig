@@ -9,7 +9,7 @@
 <div>
     {{ form_start(form) }}
     {{ form_end(form) }}
-    {% if is_edit %}
+{% if is_edit %}
   <div {{ stimulus_controller('robot-delete', {
        botId:  bot_id, token: csrf_token('remove-crawler')
   }) }}>
@@ -39,7 +39,7 @@
         </div>
     </div>
 </div>
-    {% endif %}
+{% endif %}
 </div>
 
 
