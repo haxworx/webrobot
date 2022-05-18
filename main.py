@@ -454,7 +454,7 @@ class Robot:
                            'query': query,
                            'checksum': checksum.hexdigest(),
                            'encoding': encoding,
-                           'length': length,
+                           'length': length or len(data),
                            'data': data}
 
                     self.log.info("/%s/%s/info/save/%s", self.hostname, self.domain, self.url)
