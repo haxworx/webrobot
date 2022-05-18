@@ -36,6 +36,11 @@ class RobotLogController extends AbstractController
         }
 
         $scanDate = $request->query->get('scanDate');
+        if (($scanDate) && (!preg_match('/\d{4}-\d{1,2}-\d{1,2}/', $scanDate, $matches))) {
+            throw new \Exception(
+                'Invalid date.'
+            );
+        }
 
         $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
         $crawlers = $doctrine->getRepository(CrawlSettings::class)->findAllByUserId($user->getId());

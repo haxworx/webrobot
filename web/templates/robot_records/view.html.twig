@@ -3,16 +3,34 @@
 {% block title %}View Records - {{ address }}{% endblock %}
 
 {% block body %}
-<h1>{{ address }}</h1>
-
+<h3>{{ address }} - {{ scan_date }}</h3>
+<hr>
+<table width="100%" class="table table-striped">
+    <thead>
+        <tr><th>id</th><th>url</th><th>timestamp</th><th>content type</th><th>content length</th><th>headers</th><th>checksum</th><th>data</th></tr>
+    </thead>
+    <tbody>
 {% for record in records %}
-<p>One</p>
+        <tr>
+            <td>{{ record.id }}</td>
+            <td>{{ record.url }}</td>
+            <td>{{ record.scanTimestamp|date('Y-m-d H:i:s') }}</td>
+            <td>{{ record.contentType }}</td>
+            <td>{{ record.length }}</td>
+            <td>{{ record.metadata|ellipsis }}</td>
+            <td>{{ record.checksum }}</td>
+            <td>{{ record.data }}</td>
+        </tr>
 {% endfor %}
+    </tbody>
+</table>
 
+  <ul class="pagination">
 {% if previous >= 0 %}
-    <a href="{{ path('app_records_view', { botId: bot_id, scanDate: scan_date, offset: previous }) }}">Previous</a>
+    <li class="page-item"><a class="page-link" href="{{ path('app_records_view', { botId: bot_id, scanDate: scan_date, offset: previous }) }}">Previous</a></li>
 {% endif %}
 {% if next < records|length %}
-    <a href="{{ path('app_records_view', { botId: bot_id, scanDate: scan_date, offset: next }) }}">Next</a>
+    <li class="page-item"><a class="page-link" href="{{ path('app_records_view', { botId: bot_id, scanDate: scan_date, offset: next }) }}">Next</a></li>
 {% endif %}
+  </ul>
 {% endblock %}
