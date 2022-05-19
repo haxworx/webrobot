@@ -22,24 +22,8 @@ class RobotRecordsController extends AbstractController
                 'No user found.'
             );
         }
-        $scanDates = null;
-        $botId = $request->query->getInt('botId', 0);
-        if (($botId < 0)) {
-            throw new \Exception(
-                'Invalid bot id.'
-            );
-        }
-        if (($botId) && ($doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId))) {
-            $scanDates = $doctrine->getRepository(CrawlData::class)->findUniqueScanDatesByBotId($botId);
-        }
 
-        $crawlers = $doctrine->getRepository(CrawlSettings::class)->findAllByUserId($user->getId());
-
-        return $this->render('robot_records/index.html.twig', [
-            'crawlers' => $crawlers,
-            'scan_dates' => $scanDates,
-            'bot_id' => $botId,
-        ]);
+        return $this->render('robot_records/index.html.twig');
     }
 
     #[Route('/robot/records/{botId}/date/{scanDate}', name: 'app_records_view')]

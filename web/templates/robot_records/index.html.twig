@@ -1,32 +1,24 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello RobotRecordsController!{% endblock %}
+{% block title %}Records Select{% endblock %}
 
 {% block body %}
+<h1>Records</h1>
+<hr>
 <div {{ stimulus_controller('robot-records', {
   baseUrl: path('app_robot_records'),
 }) }}>
   <div class="form-group">
     <label>Address</label>
     <select data-robot-records-target="botId" class="form-control">
-    {% if not bot_id %}
       <option value="" disabled selected hidden>Select an address...</option>
-    {% endif %}
-    {% for crawler in crawlers %}
-      <option value="{{ crawler.botId }}"{% if bot_id == crawler.botId %} selected{% endif %}>{{ crawler.address }}</option>
-    {% endfor %}
     </select>
   </div>
-{% if scan_dates %}
-  <div class="form-group">
+  <div class="form-group visually-hidden" data-robot-records-target="datesDiv">
     <label>Date</label>
     <select data-robot-records-target="dates", class="form-control">
       <option value="" disabled selected hidden>Select a date...</option>
-      {% for scan_date in scan_dates %}
-        <option value="{{ scan_date }}">{{ scan_date }}</option>
-      {% endfor %}
     </select>
   </div>
-{% endif %}
 </div>
 {% endblock %}
