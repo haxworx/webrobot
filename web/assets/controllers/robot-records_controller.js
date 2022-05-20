@@ -1,12 +1,9 @@
 import { Controller } from '@hotwired/stimulus';
 
-function removeOptions(selectElement) {
-    let length = selectElement.options.length - 1;
-
-    for (let i = length; i >= length; i--) {
-        if (selectElement[i].value !== '') {
-            selectElement.remove(i);
-        }
+function clearSelectElements(selectElement) {
+    let length = selectElement.options.length;
+    for (let i = length; i > 1; i--) { //(selectElement.options.length > 0) {
+        selectElement.remove(i);
     }
 }
 
@@ -63,10 +60,10 @@ export default class extends Controller {
 
         this.getRobots(addressField);
 
-        addressField.addEventListener('click', (event) => {
+        addressField.addEventListener('change', (event) => {
             if (event.target.value) {
                 this.botIdValue = event.target.value;
-                removeOptions(datesField);
+                clearSelectElements(datesField);
                 this.getDates(datesField, event.target.value);
                 if (datesDiv.classList.contains('visually-hidden')) {
                     datesDiv.classList.remove('visually-hidden');
@@ -74,7 +71,7 @@ export default class extends Controller {
             }
         });
 
-        datesField.addEventListener('click', (event) => {
+        datesField.addEventListener('change', (event) => {
             if ((event.target.value) && (this.botIdValue)) {
                 window.location = this.baseUrlValue + '/' + this.botIdValue + '/date/' + event.target.value;
             }

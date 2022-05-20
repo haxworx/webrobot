@@ -1,85 +1,138 @@
 import { Controller } from '@hotwired/stimulus';
 
+function clearSelectElements(selectElement) {
+    for (let i = selectElement.options.length - 1; i >= 0; i--) {
+        if (selectElement[i].value != "") {
+            selectElement.remove(i);
+        } else {
+            selectElement[i].selected = 'selected';
+        }
+    }
+}
+
 export default class extends Controller {
-    static targets = ['crawl', 'dates', 'panel', 'spinner'];
+    static targets = ['botId', 'dates', 'datesDiv', 'panel', 'token', 'spinner'];
     static values = {
         botId: Number,
-        token: String,
+        baseUrl: String,
         scanDate: String,
-        lastId: Number
+        token: String,
     }
-    connect() {
-        const addressField = this.crawlTarget;
-        let logDates = null;
-        if (this.hasDatesTarget) {
-            logDates = this.datesTarget;
-        }
 
-        let searchParams = new URLSearchParams(window.location.search);
+    getRobots(addressField) {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/robot/query/all', true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        xhr.send();
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                let robots = JSON.parse(xhr.response);
+                robots.forEach(function (item, index) {
+                    let option = document.createElement('option');
+                    option.text = item['address'];
+                    option.value = item['botId'];
+                    addressField.appendChild(option);
+                });
+            }
+        }
+    }
+
+    getDates(datesField, botId) {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/robot/query/dates/'+ botId, true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF=8');
+        xhr.send();
+
+        xhr.onload = function() {
+            clearSelectElements(datesField);
+            if (xhr.status === 200) {
+                let dates = JSON.parse(xhr.response);
+                dates.forEach(function (item, index) {
+                    let option = document.createElement('option');
+                    option.text = item;
+                    option.value = item;
+                    datesField.appendChild(option);
+                });
+            }
+        }
+    }
+
+    connect() {
+        const addressField = this.botIdTarget;
+        const datesField = this.datesTarget;
+        const datesDiv = this.datesDivTarget;
+        const panel = this.panelTarget;
+
+        this.getRobots(addressField);
+
         addressField.addEventListener('change', (event) => {
             if (event.target.value) {
-                searchParams.set('botId', event.target.value);
-                searchParams.delete('scanDate');
-                window.location.search = searchParams.toString();
+                panel.innerHTML = "";
+                this.botIdValue = event.target.value;
+                this.getDates(datesField, event.target.value);
+                if (datesDiv.classList.contains('visually-hidden')) {
+                    datesDiv.classList.remove('visually-hidden');
+                }
             }
         });
 
-        if (!logDates) return;
-
-        logDates.addEventListener('change', (event) => {
-            if (event.target.value) {
-                searchParams.set('scanDate', event.target.value);
-                window.location.search = searchParams.toString();
+        datesField.addEventListener('change', (event) => {
+            if ((event.target.value) && (this.botIdValue)) {
+                this.scanDateValue = event.target.value;
+                if (panel.classList.contains('visually-hidden')) {
+                    panel.classList.remove('visually-hidden');
+                }
+                panel.innerHTML = "";
+                this.getLog();
             }
         });
-
-        if (this.hasPanelTarget) {
-            this.update();
-        }
     }
 
-    update() {
-        let dataTime = null;
-        let postObj = {
+    getLog() {
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+        this.dataTime = null;
+        this.postObj = {
             bot_id: this.botIdValue,
-            last_id: this.lastIdValue,
+            last_id: 0,
             scan_date: this.scanDateValue,
             token: this.tokenValue,
-        }
+        };
+        this.postData = JSON.stringify(this.postObj);
+        this.downloadLog();
+        this.interval = setInterval(this.downloadLog.bind(this), 5000);
+    }
 
-        let logPanel = this.panelTarget;
-        logPanel.scrollTop = logPanel.scrollHeight;
-        let spinner = this.spinnerTarget;
+    downloadLog() {
+        var self = this;
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '/robot/log/more', true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        xhr.send(JSON.stringify(self.postObj));
 
-        let postData = JSON.stringify(postObj);
-
-        let interval = setInterval(function() {
-            let xhr = new XMLHttpRequest();
-            xhr.open('POST', '/robot/log/more', true);
-            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-            xhr.send(postData);
-
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    postObj = JSON.parse(xhr.response)
-                    if (postObj['logs']) {
-                        postData = JSON.stringify(postObj);
-                        logPanel.innerHTML = logPanel.innerHTML + postObj['logs'];
-                        logPanel.scrollTop = logPanel.scrollHeight;
-                        // Show spinner if we have "live" log data.
-                        if (spinner.classList.contains('visually-hidden')) {
-                            spinner.classList.remove('visually-hidden');
-                        }
-                        dataTime = Math.floor(Date.now() / 1000);
+        let logPanel = self.panelTarget;
+        let spinner = self.spinnerTarget;
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                self.postObj = JSON.parse(xhr.response);
+                if (self.postObj['logs']) {
+                    logPanel.innerHTML = logPanel.innerHTML + self.postObj['logs'];
+                    logPanel.scrollTop = logPanel.scrollHeight;
+                    delete(self.postObj.logs);
+                    self.postData = JSON.stringify(self.postObj);
+                    self.dataTime = Math.floor(Date.now() / 1000);
+                    if (spinner.classList.contains('visually-hidden')) {
+                        spinner.classList.remove('visually-hidden');
                     }
-                    // If no data for more than 5 seconds, hide the spinner.
-                    if ((dataTime) && (((Date.now() / 1000) - dataTime) >= 5.0)) {
-                        if (!spinner.classList.contains('visually-hidden')) {
-                            spinner.classList.add('visually-hidden');
-                        }
+                }
+                if ((self.dataTime) && (((Date.now() / 1000) - self.dataTime) >= 5.0)) {
+                    if (!spinner.classList.contains('visually-hidden')) {
+                        spinner.classList.add('visually-hidden');
                     }
                 }
             }
-        }, 5000);
+        }
     }
 }

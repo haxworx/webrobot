@@ -60,7 +60,7 @@ class CrawlLogRepository extends ServiceEntityRepository
     public function findAllNew($botId, $scanDate, $lastId)
     {
         return $this->createQueryBuilder('c')
-            ->andWhere('c.botId = :botId')
+            ->where('c.botId = :botId')
             ->setParameter('botId', $botId)
             ->andWhere('c.scanDate = :scanDate')
             ->setParameter('scanDate', $scanDate)

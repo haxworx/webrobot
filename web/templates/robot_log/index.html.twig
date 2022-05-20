@@ -6,30 +6,28 @@
 <h1>Logs</h1>
 <hr>
 <div {{ stimulus_controller('robot-log', {
-     botId:  bot_id, token: csrf_token('update-log'), scanDate: scan_date, lastId: last_id,
+     baseUrl: path('app_robot_log'), token: csrf_token('update-log')
 }) }}>
-<div>
-    {{ form_start(form) }}
-    {{ form_widget(form.crawl, { 'attr': {'data-robot-log-target': 'crawl' }}) }}
-    {% if form.dates is defined %}
-    {{ form_widget(form.dates, { 'attr': {'data-robot-log-target': 'dates' }}) }}
-    {% endif %}
-    {{ form_end(form) }}
-</div>
-
-
-
-{% if logs %}
-<pre class="overflow-auto bg-light border p-3 rounded-3 text-secondary" style="height: 480px;" data-robot-log-target="panel">
-{% for log in logs %}
-{{ log.scanTimeStamp|date('Y-m-d H:i:s') }}:{{ log.message }}
-{% endfor %}
-</pre>
-{% endif %}
-
-<div class="clearfix">
-    <div data-robot-log-target="spinner" class="visually-hidden spinner-border text-primary float-end" role="status">
+    <div class="form-group">
+        <label>Address</label>
+        <select data-robot-log-target="botId" class="form-control">
+            <option value="" selected disabled>Select an address...</option>
+        </select>
     </div>
-</div>
+
+    <div class="form-group visually-hidden" data-robot-log-target="datesDiv">
+        <label>Date</label>
+        <select data-robot-log-target="dates" class="form-control">
+            <option value="" selected disabled>Select a date...</option>
+        </select>
+    </div>
+
+    <pre class="visually-hidden overflow-auto bg-light border p-3 rounded-3 text-secondary" style="height: 480px;" data-robot-log-target="panel">
+    </pre>
+
+    <div class="clearfix">
+        <div data-robot-log-target="spinner" class="visually-hidden spinner-border text-primary float-end" role="status">
+        </div>
+    </div>
 </div> <!-- end of stimus robot-log controller -->
 {% endblock %}

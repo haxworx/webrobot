@@ -23,52 +23,10 @@ class RobotLogController extends AbstractController
             );
         }
 
-        $scanDates = null;
-        $logs = null;
-        $lastId = null;
-
-        $botId = $request->query->get('botId');
-        if ($botId) {
-            if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
-                throw new \Exception('Bot not owned by user.');
-            }
-            $scanDates = $doctrine->getRepository(CrawlLog::class)->findUniqueScanDatesByBotId($botId);
-        }
-
-        $scanDate = $request->query->get('scanDate');
-        if (($scanDate) && (!preg_match('/\d{4}-\d{1,2}-\d{1,2}/', $scanDate, $matches))) {
-            throw new \Exception(
-                'Invalid date.'
-            );
-        }
-
-        $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByBotId($botId);
-        $crawlers = $doctrine->getRepository(CrawlSettings::class)->findAllByUserId($user->getId());
-        $form = $this->createForm(RobotLogType::class, null, [
-            'crawlers' => $crawlers,
-            'crawler' => $crawler,
-            'scan_date' => $scanDate,
-            'scan_dates' => $scanDates,
-        ]);
-
-        if (($botId) && ($scanDate)) {
-            $logs = $doctrine->getRepository(CrawlLog::class)->findAllByBotIdAndScanDate($botId, $scanDate);
-            $n = count($logs);
-            if ($n) {
-                $lastId = $logs[$n - 1]->getId();
-            }
-        }
-
-        return $this->renderForm('robot_log/index.html.twig', [
-            'form'      => $form,
-            'logs'      => $logs,
-            'last_id'   => $lastId,
-            'bot_id'    => $botId,
-            'scan_date' => $scanDate,
-        ]);
+        return $this->render('robot_log/index.html.twig');
     }
 
-    #[Route('/robot/log/more', name: 'app_robot_log_stream')]
+    #[Route('/robot/log/more', name: 'app_robot_log_stream', format: 'json')]
     public function more(Request $request, ManagerRegistry $doctrine): Response
     {
         $user = $this->getUser();
@@ -104,7 +62,7 @@ class RobotLogController extends AbstractController
             $text = "";
             $obj['last_id'] = $logs[$n - 1]->getId();
             foreach ($logs as $log) {
-                $text .= $log->getScanTimestamp()->format('Y-m-d H:i:s') . ':' . $log->getMessage() . "\n";
+                $text .= $log->getId() . ':' .$log->getScanTimestamp()->format('Y-m-d H:i:s') . ':' . $log->getMessage() . "\n";
             }
             $obj['logs'] = $text;
         }
