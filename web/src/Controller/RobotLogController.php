@@ -36,17 +36,17 @@ class RobotLogController extends AbstractController
             );
         }
 
-        $obj = json_decode($request->getContent(), true);
+        $content = json_decode($request->getContent(), true);
 
-        if ((!$obj) || (!array_key_exists('last_id', $obj)) || (!array_key_exists('scan_date', $obj)) ||
-            (!array_key_exists('bot_id', $obj)) || (!array_key_exists('token', $obj))) {
+        if ((!$content) || (!array_key_exists('last_id', $content)) || (!array_key_exists('scan_date', $content)) ||
+            (!array_key_exists('bot_id', $content)) || (!array_key_exists('token', $content))) {
             throw new \Exception('Missing parameters');
         }
 
-        $lastId = $obj['last_id'];
-        $scanDate = $obj['scan_date'];
-        $botId = $obj['bot_id'];
-        $token = $obj['token'];
+        $lastId = $content['last_id'];
+        $scanDate = $content['scan_date'];
+        $botId = $content['bot_id'];
+        $token = $content['token'];
 
         if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
             throw new \Exception('Bot not owned by user.');
@@ -60,15 +60,15 @@ class RobotLogController extends AbstractController
         $n = count($logs);
         if ($n) {
             $text = "";
-            $obj['last_id'] = $logs[$n - 1]->getId();
+            $content['last_id'] = $logs[$n - 1]->getId();
             foreach ($logs as $log) {
                 $text .= $log->getId() . ':' .$log->getScanTimestamp()->format('Y-m-d H:i:s') . ':' . $log->getMessage() . "\n";
             }
-            $obj['logs'] = $text;
+            $content['logs'] = $text;
         }
 
         $response = new Response();
-        $response->setContent(json_encode($obj));
+        $response->setContent(json_encode($content));
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
