@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 
 function clearSelectElements(selectElement) {
     for (let i = selectElement.options.length - 1; i >= 0; i--) {
-        if (selectElement[i].value != "") {
+        if (selectElement.options[i].value != "") {
             selectElement.remove(i);
         } else {
             selectElement[i].selected = 'selected';

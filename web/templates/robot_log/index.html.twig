@@ -8,14 +8,14 @@
 <div {{ stimulus_controller('robot-log', {
      baseUrl: path('app_robot_log'), token: csrf_token('update-log')
 }) }}>
-    <div class="form-group">
+    <div class="form-group py-2">
         <label>Address</label>
         <select data-robot-log-target="botId" class="form-control">
             <option value="" selected disabled>Select an address...</option>
         </select>
     </div>
 
-    <div class="form-group visually-hidden" data-robot-log-target="datesDiv">
+    <div class="form-group visually-hidden py-2" data-robot-log-target="datesDiv">
         <label>Date</label>
         <select data-robot-log-target="dates" class="form-control">
             <option value="" selected disabled>Select a date...</option>

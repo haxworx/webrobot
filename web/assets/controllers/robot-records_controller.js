@@ -2,8 +2,10 @@ import { Controller } from '@hotwired/stimulus';
 
 function clearSelectElements(selectElement) {
     let length = selectElement.options.length;
-    for (let i = length; i > 1; i--) { //(selectElement.options.length > 0) {
-        selectElement.remove(i);
+    for (let i = length -1; i >= 0; i--) {
+        if (selectElement.options[i].value != "") {
+            selectElement.remove(i);
+        }
     }
 }
 
@@ -53,7 +55,6 @@ export default class extends Controller {
     }
 
     connect() {
-        let searchParams = new URLSearchParams(window.location.search);
         const addressField = this.botIdTarget;
         const datesField = this.datesTarget;
         const datesDiv = this.datesDivTarget;
