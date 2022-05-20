@@ -73,7 +73,7 @@ export default class extends Controller {
 
         datesField.addEventListener('change', (event) => {
             if ((event.target.value) && (this.botIdValue)) {
-                window.location = this.baseUrlValue + '/' + this.botIdValue + '/date/' + event.target.value;
+                window.location = this.baseUrlValue + '/' + this.botIdValue + '/date/' + event.target.value + '/offset/' + 0;
             }
         });
     }

@@ -26,8 +26,8 @@ class RobotRecordsController extends AbstractController
         return $this->render('robot_records/index.html.twig');
     }
 
-    #[Route('/robot/records/{botId}/date/{scanDate}', name: 'app_records_view')]
-    public function paginate(Request $request, CrawlDataRepository $recordsRepository, ManagerRegistry $doctrine, int $botId, string $scanDate): Response
+    #[Route('/robot/records/{botId}/date/{scanDate}/offset/{offset}', name: 'app_records_view')]
+    public function paginate(Request $request, CrawlDataRepository $recordsRepository, ManagerRegistry $doctrine, int $botId, string $scanDate, int $offset): Response
     {
         $user = $this->getUser();
         if (!$user) {
@@ -49,8 +49,7 @@ class RobotRecordsController extends AbstractController
             );
         }
 
-        $offset = $request->query->getInt('offset', 0);
-        if ((!is_int($offset)) || ($offset < 0)) {
+        if ($offset < 0) {
             throw new \Exception(
                 'Invalid offset.'
             );
