@@ -132,6 +132,11 @@ export default class extends Controller {
                         spinner.classList.add('visually-hidden');
                     }
                 }
+            } else {
+                if (self.interval) {
+                    clearInterval(self.interval);
+                    self.interval = null;
+                }
             }
         }
     }
