@@ -26,9 +26,13 @@ export default class extends Controller {
         let token = this.tokenValue;
 
         let save_button = document.getElementById('robot_schedule_save')
-        save_button.disabled = true;
+        if (save_button) {
+            save_button.disabled = true;
+        }
         let delete_button = document.getElementById('robot_schedule_delete');
-        delete_button.disabled = true;
+        if (delete_button) {
+            delete_button.disabled = true;
+        }
 
         let xhr = new XMLHttpRequest();
         xhr.open('POST', '/robot/schedule/remove/' + botId, true);

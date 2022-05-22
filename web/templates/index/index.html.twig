@@ -26,8 +26,9 @@
             <td>no</td>
             {% endif %}
             <td>{{ crawler.endTime|fuzzy_date }}</td>
-            <td class="text-center">
-                <a href="{{ path('app_robot_schedule_edit', { botId: crawler.botId }) }}">Edit</a>
+            <td>
+                <a href="{{ path('app_robot_schedule_edit', { botId: crawler.botId }) }}" class="text-decoration-none">&#128221; Edit</a>
+                {{ include('modal/modal_delete.twig', { 'bot_id': crawler.botId } ) }}
             </td>
         </tr>
 {% endfor %}
