@@ -18,17 +18,16 @@
         </div>
       </div>
     </div>
-
     {% if button is defined %}
-          <button id="robot_schedule_delete" type="button" style="margin-left: 10px;" class="btn btn-danger" data-action="robot-delete#confirm">
+        <button id="robot_schedule_delete" type="button" style="margin-left: 10px;" class="btn btn-danger" data-action="robot-delete#confirm">
         Delete
-    </button>
-    {% else %}
-    <a href="#" class="text-decoration-none" data-action="robot-delete#confirm">&#128465; Delete</div>
-    {% endif %}
-    <br>
-    <div class="clearfix">
-        <div data-robot-delete-target="spinner" class="visually-hidden spinner-border text-primary float-end" role="status">
+        </button>
+        <br>
+        <div class="clearfix">
+            <div data-robot-delete-target="spinner" class="visually-hidden spinner-border text-primary float-end" role="status">
+            </div>
         </div>
-    </div>
+    {% else %}
+    <a data-toggle="tooltip" title="Delete" href="#" class="text-decoration-none" data-action="robot-delete#confirm">&#128465;</a>
+    {% endif %}
 </div>

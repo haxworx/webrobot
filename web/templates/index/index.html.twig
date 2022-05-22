@@ -11,7 +11,7 @@
     </thead>
     <tbody>
 {% for crawler in crawlers %}
-        <tr>
+        <tr class="align-middle">
             <td>{{ crawler.address }}</td>
             <td>{{ crawler.agent }}</td>
             <td>{{ crawler.startTime|date('H:i:s') }}</td>
@@ -26,8 +26,8 @@
             <td>no</td>
             {% endif %}
             <td>{{ crawler.endTime|fuzzy_date }}</td>
-            <td>
-                <a href="{{ path('app_robot_schedule_edit', { botId: crawler.botId }) }}" class="text-decoration-none">&#128221; Edit</a>
+            <td class="text-center">
+                <a data-toggle="tooltip" title="Edit" href="{{ path('app_robot_schedule_edit', { botId: crawler.botId }) }}" class="text-decoration-none">&#128221;</a>
                 {{ include('modal/modal_delete.twig', { 'bot_id': crawler.botId } ) }}
             </td>
         </tr>
