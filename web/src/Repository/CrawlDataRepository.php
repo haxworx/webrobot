@@ -55,6 +55,15 @@ class CrawlDataRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    public function findOneById($id)
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function findAllByBotId($botId): array
     {
         return $this->createQueryBuilder('c')

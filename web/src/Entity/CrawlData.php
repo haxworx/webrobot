@@ -393,6 +393,11 @@ class CrawlData
         return $this->data;
     }
 
+    public function getDataStream()
+    {
+        return stream_get_contents($this->data);
+    }
+
     public function setData($data): self
     {
         $this->data = $data;

@@ -26,6 +26,31 @@ class RobotRecordsController extends AbstractController
         return $this->render('robot_records/index.html.twig');
     }
 
+    #[Route('/robot/records/view/{botId}/record/{recordId}', name: 'app_records_show')]
+    public function show(Request $request, ManagerRegistry $doctrine, int $botId, int $recordId): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createNotFoundException(
+                'No user found.'
+            );
+        }
+
+        if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
+            throw new \Exception(
+                'User does not own bot.'
+            );
+        }
+
+        $record = $doctrine->getRepository(CrawlData::class)->findOneById($recordId);
+        $headers = $record->getMetadata();
+
+        return $this->render('robot_records/record.html.twig', [
+            'headers' => $headers,
+            'data' => $record->getDataStream(),
+        ]);
+    }
+
     #[Route('/robot/records/{botId}/date/{scanDate}/offset/{offset}', name: 'app_records_view')]
     public function paginate(Request $request, CrawlDataRepository $recordsRepository, ManagerRegistry $doctrine, int $botId, string $scanDate, int $offset): Response
     {

@@ -3,11 +3,14 @@
 {% block title %}View Records - {{ address }}{% endblock %}
 
 {% block body %}
+<div {{ stimulus_controller('robot-records-view',
+    { botId: bot_id }
+) }}>
 <h3>{{ address }} - {{ scan_date }}</h3>
 <hr>
 <table width="100%" class="table table-striped">
     <thead>
-        <tr><th>id</th><th>url</th><th>timestamp</th><th>content type</th><th>content length</th><th>headers</th><th>checksum</th><th>data</th></tr>
+        <tr><th>id</th><th>url</th><th>timestamp</th><th>content type</th><th>content length</th><th>headers</th><th>checksum</th><th></th></tr>
     </thead>
     <tbody>
 {% for record in records %}
@@ -19,7 +22,7 @@
             <td>{{ record.length }}</td>
             <td>{{ record.metadata|ellipsis }}</td>
             <td>{{ record.checksum }}</td>
-            <td>{{ record.data }}</td>
+            <td><button class="btn btn-primary btn-sm" data-robot-records-view-id-param="{{ record.id }}" data-action="robot-records-view#show">View</button></td>
         </tr>
 {% endfor %}
     </tbody>
@@ -33,4 +36,9 @@
     <li class="page-item"><a class="page-link" href="{{ path('app_records_view', { botId: bot_id, scanDate: scan_date, offset: next }) }}">Next</a></li>
 {% endif %}
   </ul>
+
+<iframe data-robot-records-view-target="frame" class="record-view">
+</iframe>
+
+</div>
 {% endblock %}
