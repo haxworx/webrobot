@@ -43,6 +43,12 @@ class RobotRecordsController extends AbstractController
         }
 
         $record = $doctrine->getRepository(CrawlData::class)->findOneById($recordId);
+        if (!$record) {
+            throw $this->createNotFoundException(
+                'No record found.'
+            );
+        }
+
         $headers = $record->getMetadata();
 
         return $this->render('robot_records/record.html.twig', [
