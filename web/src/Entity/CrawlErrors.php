@@ -86,6 +86,11 @@ class CrawlErrors
      */
     private $description;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $launch_id;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -207,6 +212,18 @@ class CrawlErrors
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getLaunchId(): ?int
+    {
+        return $this->launch_id;
+    }
+
+    public function setLaunchId(int $launch_id): self
+    {
+        $this->launch_id = $launch_id;
 
         return $this;
     }

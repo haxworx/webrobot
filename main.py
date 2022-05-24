@@ -30,6 +30,7 @@ class Robot:
     LOCK_FILE = 'data/crawl.lock'
     PIDFILE = 'data/crawl.pid'
     _bot_id = None
+    _launch_id = None
     _cnx = None
     _name = None
     _domain = None
@@ -100,6 +101,14 @@ class Robot:
     @bot_id.setter
     def bot_id(self, value):
         self._bot_id = value
+
+    @property
+    def launch_id(self):
+        return self._launch_id;
+
+    @launch_id.setter
+    def launch_id(self, value):
+        self._launch_id = value
 
     @property
     def has_error(self):
@@ -229,14 +238,14 @@ class Robot:
         now = datetime.now()
 
         SQL = """
-        INSERT INTO crawl_data (bot_id, scan_date, scan_time_stamp,
+        INSERT INTO crawl_data (bot_id, launch_id, scan_date, scan_time_stamp,
         scan_time_zone, domain, scheme, link_source, modified,
         status_code, url, path, query, content_type, metadata,
-        checksum, encoding, length, data) VALUES (%s, %s, %s,
+        checksum, encoding, length, data) VALUES (%s, %s, %s, %s,
         'Europe/London', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
         %s, %s, %s, %s)
         """
-        val = (res['bot_id'], now, now, res['domain'], res['scheme'],
+        val = (self.bot_id, self.launch_id, now, now, res['domain'], res['scheme'],
                res['link_source'], res['modified'], res['status_code'],
                res['url'], res['path'], res['query'], res['content_type'],
                res['metadata'], res['checksum'], res['encoding'],
@@ -266,7 +275,20 @@ class Robot:
         """
         cursor = self.dbh.cnx.cursor()
         try:
-            cursor.execute(SQL, (now, self.is_running, self.has_error, res['bot_id']))
+            cursor.execute(SQL, (now, self.is_running, self.has_error, self.bot_id))
+            self.dbh.cnx.commit()
+        except mysql.connector.Error as e:
+            self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
+            everything_is_fine = False
+        cursor.close()
+
+        SQL = """
+        UPDATE crawl_launch SET end_time = %s WHERE id = %s
+        """
+
+        cursor = self.dbh.cnx.cursor()
+        try:
+            cursor.execute(SQL, (now, self.launch_id))
             self.dbh.cnx.commit()
         except mysql.connector.Error as e:
             self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
@@ -278,6 +300,24 @@ class Robot:
     def started(self):
         everything_is_fine = True
         self.is_running = True
+
+        now = datetime.now()
+
+        SQL = """
+        INSERT INTO crawl_launch (bot_id, start_time) VALUES (%s, %s)
+        """
+        cursor = self.dbh.cnx.cursor()
+        try:
+            cursor.execute(SQL, (self.bot_id, now))
+            self.dbh.cnx.commit()
+        except mysql.connector.Error as e:
+            self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
+            self.has_error = True
+            everything_is_fine = False
+
+        self.launch_id = cursor.lastrowid
+        cursor.close()
+
         SQL = """
         UPDATE crawl_settings SET is_running = %s, container_id = %s WHERE bot_id = %s
         """
@@ -304,12 +344,12 @@ class Robot:
         now = datetime.now()
 
         SQL = """
-        INSERT INTO crawl_errors (bot_id, scan_date,
+        INSERT INTO crawl_errors (bot_id, launch_id, scan_date,
         scan_time_stamp, scan_time_zone, status_code,
-        url, link_source, description) VALUES (%s, %s, %s,
+        url, link_source, description) VALUES (%s, %s, %s, %s,
         'Europe/London', %s, %s, %s, %s)
         """
-        val = (res['bot_id'], now, now, res['status_code'], res['url'],
+        val = (self.bot_id, self.launch_id, now, now, res['status_code'], res['url'],
                res['link_source'], res['description'])
         cursor = self.dbh.cnx.cursor()
         try:
@@ -385,8 +425,7 @@ class Robot:
                 (response, code) = downloader.get()
             except error.HTTPError as e:
                 self.log.info("/%s/%s/warning/%i/%s", self.hostname, self.domain, e.code, self.url)
-                res = {'bot_id': self.bot_id,
-                       'status_code': e.code,
+                res = {'status_code': e.code,
                        'url': self.url,
                        'link_source': page.link_source,
                        'description': e.reason}
@@ -441,8 +480,7 @@ class Robot:
                     data = response.read()
                     checksum = hashlib.md5(data)
 
-                    res = {'bot_id': self.bot_id,
-                           'domain': self.domain_parse(self.url),
+                    res = {'domain': self.domain_parse(self.url),
                            'scheme': scheme,
                            'link_source': page.link_source,
                            'modified': modified,

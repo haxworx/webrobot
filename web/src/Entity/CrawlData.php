@@ -155,6 +155,11 @@ class CrawlData
      */
     private $data;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $launch_id;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -401,6 +406,18 @@ class CrawlData
     public function setData($data): self
     {
         $this->data = $data;
+
+        return $this;
+    }
+
+    public function getLaunchId(): ?int
+    {
+        return $this->launch_id;
+    }
+
+    public function setLaunchId(int $launch_id): self
+    {
+        $this->launch_id = $launch_id;
 
         return $this;
     }
