@@ -30,8 +30,8 @@ export default class extends Controller {
                 let robots = JSON.parse(xhr.response);
                 robots.forEach(function (item, index) {
                     let option = document.createElement('option');
-                    option.text = item['address'];
-                    option.value = item['botId'];
+                    option.text = item.address;
+                    option.value = item.botId;
                     addressField.appendChild(option);
                 });
             }
@@ -117,8 +117,8 @@ export default class extends Controller {
         xhr.onload = function() {
             if (xhr.status === 200) {
                 self.postObj = JSON.parse(xhr.response);
-                if (self.postObj['logs']) {
-                    logPanel.innerHTML = logPanel.innerHTML + self.postObj['logs'];
+                if (self.postObj.logs) {
+                    logPanel.innerHTML = logPanel.innerHTML + self.postObj.logs;
                     logPanel.scrollTop = logPanel.scrollHeight;
                     delete(self.postObj.logs);
                     self.postData = JSON.stringify(self.postObj);
