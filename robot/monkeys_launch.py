@@ -19,8 +19,23 @@ def main():
     retry_count = 0
     config = Config(0)
     config.read_ini()
-    dbh = database.Connect(config.db_user, config.db_pass,
-                           config.db_host, config.db_name)
+
+
+    for _ in range(0, 11):
+        try:
+            dbh = mysql.connector.connect(user=config.db_user,
+                                          host=config.db_host,
+                                          password=config.db_pass,
+                                          database=config.db_name)
+        except mysql.connector.Error as e:
+            retry_count += 1
+            if retry_count >= RETRY_MAX:
+                print("Error: ({}) STATE: ({}) Message: ({}) Block: Retry" . format(e.errno, e.sqlstate, e.msg), file=sys.stderr)
+                sys.exit(1)
+            else:
+                time.sleep(1)
+                print("Retry...{}" . format(retry_count), file=sys.stderr)
+                continue
 
     seen = dict();
     seen['ids'] = []
@@ -36,14 +51,8 @@ def main():
             cursor.execute(SQL, ())
             rows = cursor.fetchall()
         except mysql.connector.Error as e:
-            retry_count += 1
-            if retry_count >= RETRY_MAX:
-                print("Error: ({}) STATE: ({}) Message: ({})" . format(e.errno, e.sqlstate, e.msg), file=sys.stderr)
-                sys.exit(2)
-            else:
-                print("retry...{}" . format(retry_count))
-                time.sleep(1)
-                continue
+            print("Error: ({}) STATE: ({}) Message: ({})" . format(e.errno, e.sqlstate, e.msg), file=sys.stderr)
+            sys.exit(2)
 
         now = datetime.datetime.now().strftime("%H:%M")
 
