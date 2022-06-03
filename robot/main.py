@@ -552,6 +552,7 @@ def on_message(client, userdata, msg):
     crawler = userdata;
     if msg.topic == crawler.config.mqtt_topic:
        received = str(msg.payload)
+       print("DEBUG MQTT: '{}'" . format(received), file=sys.stderr)
        matches = re.search('TERMINATE: (\d+)', received)
        if matches:
            if int(matches[1]) == crawler.bot_id:

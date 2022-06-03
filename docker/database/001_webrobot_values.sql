@@ -10,5 +10,5 @@ VALUES
 INSERT INTO `global_settings`
     (`time_stamp`, `in_use`, `max_crawlers`, `debug`, `docker_image`, `mqtt_host`, `mqtt_port`, `mqtt_topic`)
     VALUES
-    (NOW(), true, 5, true, 'spiderz', 'datacentre', 1883, 'testing');
+    (NOW(), true, 5, true, 'spiderz', 'mosquitto', 1883, 'testing');
 
