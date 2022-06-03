@@ -13,7 +13,7 @@ from mysql.connector import errorcode
 from urllib.parse import urlparse
 from config import Config
 
-RETRY_MAX = 10
+RETRY_MAX = 20
 
 def main():
     retry_count = 0
@@ -21,7 +21,7 @@ def main():
     config.read_ini()
 
 
-    for _ in range(0, 11):
+    for _ in range(0, 21):
         try:
             cnx = mysql.connector.connect(user=config.db_user,
                                           host=config.db_host,

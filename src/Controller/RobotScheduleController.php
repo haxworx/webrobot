@@ -7,8 +7,6 @@ use App\Entity\GlobalSettings;
 use App\Entity\CrawlData;
 use App\Entity\CrawlErrors;
 use App\Entity\CrawlLog;
-use App\Service\Timer;
-use App\Service\Docker;
 use App\Form\RobotScheduleType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Notifier\Notification\Notification;
 use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use PhpMqtt\Client\Exceptions\MqttClientException;
+use PhpMqtt\Client\MqttClient;
 
 class RobotScheduleController extends AbstractController
 {
@@ -118,11 +118,7 @@ class RobotScheduleController extends AbstractController
                 $entityManager->persist($crawler);
 
                 // Stop any running container.
-                $containerId = $crawler->getContainerId();
-                if ($containerId) {
-                    $container = new Docker($containerId);
-                    $container->stop();
-                }
+                $this->stopRobot($globalSettings, $botId);
 
                 $entityManager->flush();
                 $notifier->send(new Notification('Robot scheduled.', ['browser']));
@@ -169,11 +165,7 @@ class RobotScheduleController extends AbstractController
         }
 
         // Stop any running container.
-        $containerId = $crawler->getContainerId();
-        if ($containerId) {
-            $container = new Docker($containerId);
-            $container->stop();
-        }
+        $this->stopRobot($globalSettings, $botId);
 
         // Remove our database data related to the bot id.
         $doctrine->getRepository(CrawlData::class)->deleteAllByBotId($botId);
@@ -187,5 +179,21 @@ class RobotScheduleController extends AbstractController
         $notifier->send(new Notification('Robot removed.', ['browser']));
 
         return $this->redirectToRoute('app_index');
+    }
+
+    private function stopRobot(GlobalSettings $globalSettings, int $botId)
+    {
+        try {
+            $mqtt = new MqttClient($globalSettings->getMqttHost(),
+                                   $globalSettings->getMqttPort(),
+                                   'robot_controller'
+            );
+            $mqtt->connect();
+            $mqtt->publish($globalSettings->getMqttTopic(), "TERMINATE: $botId", 0);
+            $mqtt->disconnect();
+        } catch (MqttClientException $e) {
+
+
+        }
     }
 }
