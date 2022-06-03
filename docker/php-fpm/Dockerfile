@@ -23,6 +23,7 @@ RUN useradd -m -d /home/alastair alastair
 RUN usermod -a -G alastair www-data
 
 ENV TZ=Europe/London
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+    && printf '[PHP]\ndate.timezone = "%s"\n', $TZ > /usr/local/etc/php/conf.d/tzone.ini
 
 
