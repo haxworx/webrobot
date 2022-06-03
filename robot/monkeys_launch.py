@@ -23,7 +23,7 @@ def main():
 
     for _ in range(0, 11):
         try:
-            dbh = mysql.connector.connect(user=config.db_user,
+            cnx = mysql.connector.connect(user=config.db_user,
                                           host=config.db_host,
                                           password=config.db_pass,
                                           database=config.db_name)
@@ -46,7 +46,7 @@ def main():
         SQL = """
         SELECT bot_id, start_time FROM crawl_settings
         """
-        cursor = dbh.cnx.cursor()
+        cursor = cnx.cursor()
         try:
             cursor.execute(SQL, ())
             rows = cursor.fetchall()
@@ -68,11 +68,11 @@ def main():
                 seen['ids'].append(bot_id)
                 subprocess.run(["python3", "robot_start.py", str(bot_id)])
 
-        dbh.cnx.commit()
+        cnx.commit()
         cursor.close()
         time.sleep(1)
 
-    dbh.close()
+    cnx.close()
     return 0
 
 if __name__ == '__main__':
