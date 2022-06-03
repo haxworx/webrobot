@@ -11,4 +11,4 @@ python3 -m pip install mysql-connector-python paho.mqtt boto3
 mkdir -p /opt/crawler
 cd /opt/crawler
 git clone https://github.com/haxworx/webrobot --depth 1
-cp /config.ini /opt/crawler/webrobot
+cp /config.ini /opt/crawler/webrobot/webrobot

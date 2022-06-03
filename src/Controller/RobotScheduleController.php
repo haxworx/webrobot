@@ -60,16 +60,7 @@ class RobotScheduleController extends AbstractController
                     $entityManager->persist($crawler);
                     $entityManager->flush();
 
-                    // Create our systemd timer.
-                    $timer = new Timer($globalSettings, $crawler);
-                    if ($timer->create()) {
-                        $notifier->send(new Notification('Robot scheduled.', ['browser']));
-                    } else {
-                        $entityManager->remove($crawler);
-                        $entityManager->flush();
-                        $notifier->send(new Notification('There was a problem scheduling the robot.', ['browser']));
-                        return $this->redirectToRoute('app_robot_schedule');
-                    }
+                    $notifier->send(new Notification('Robot scheduled.', ['browser']));
 
                     return $this->redirectToRoute('app_index');
                 }
@@ -133,14 +124,8 @@ class RobotScheduleController extends AbstractController
                     $container->stop();
                 }
 
-                // Update our systemd timer.
-                $timer = new Timer($globalSettings, $crawler);
-                if (!$timer->update()) {
-                    $notifier->send(New Notification('There was a problem updating the schedule.', ['browser']));
-                } else {
-                    $entityManager->flush();
-                    $notifier->send(new Notification('Robot scheduled.', ['browser']));
-                }
+                $entityManager->flush();
+                $notifier->send(new Notification('Robot scheduled.', ['browser']));
             }
         }
 
@@ -189,10 +174,6 @@ class RobotScheduleController extends AbstractController
             $container = new Docker($containerId);
             $container->stop();
         }
-
-        // Remove our systemd timer.
-        $timer = new Timer($globalSettings, $crawler);
-        $timer->remove();
 
         // Remove our database data related to the bot id.
         $doctrine->getRepository(CrawlData::class)->deleteAllByBotId($botId);

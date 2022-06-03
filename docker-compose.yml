@@ -25,12 +25,12 @@ services:
     depends_on:
       - database
 
-###> doctrine/doctrine-bundle ###
   database:
     container_name: database
     build:
       context: ./docker/database
     image: mysql
+    platform: linux/x86_64
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_PASSWORD=password
@@ -38,6 +38,13 @@ services:
       - MYSQL_USER=username
     volumes:
       - database-data:/var/lib/mysql:rw
+    ports:
+      - "3306:3306"
+
+  launcher:
+    container_name: launcher
+    build:
+      context: ./docker/launcher
 
 volumes:
   database-data:

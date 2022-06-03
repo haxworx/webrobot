@@ -1,0 +1,4 @@
+Logging failed:
+	Error code: 1048
+	SQLSTATE:   23000
+	Message:    Column 'launch_id' cannot be null
