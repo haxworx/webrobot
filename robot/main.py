@@ -42,7 +42,7 @@ class Robot:
 
     def __init__(self, bot_id):
         self.bot_id = bot_id;
-        self.acquire_lock()
+#        self.acquire_lock()
         self.pidfile_create();
         atexit.register(self.cleanup)
 
@@ -191,7 +191,7 @@ class Robot:
         if self.dbh is not None:
             self.dbh.close()
         self.pidfile_delete()
-        self.release_lock()
+#        self.release_lock()
 
     def domain_parse(self, url):
         domain = urlparse(url).netloc

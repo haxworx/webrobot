@@ -4,6 +4,8 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx
+    build:
+      context: ./docker/nginx
     ports:
       - "8080:80"
     working_dir: /code
