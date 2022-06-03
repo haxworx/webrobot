@@ -45,6 +45,8 @@ services:
     container_name: launcher
     build:
       context: ./docker/launcher
+    depends_on:
+      - database
 
 volumes:
   database-data:

@@ -13,10 +13,12 @@ from mysql.connector import errorcode
 from urllib.parse import urlparse
 from config import Config
 
+RETRY_MAX = 10
+
 def main():
+    retry_count = 0
     config = Config(0)
     config.read_ini()
-
     dbh = database.Connect(config.db_user, config.db_pass,
                            config.db_host, config.db_name)
 
@@ -34,8 +36,14 @@ def main():
             cursor.execute(SQL, ())
             rows = cursor.fetchall()
         except mysql.connector.Error as e:
-            print("Error: ({}) STATE: ({}) Message: ({})" . format(e.errno, e.sqlstate, e.msg), file=sys.stderr)
-            sys.exit(2)
+            retry_count += 1
+            if retry_count >= RETRY_MAX:
+                print("Error: ({}) STATE: ({}) Message: ({})" . format(e.errno, e.sqlstate, e.msg), file=sys.stderr)
+                sys.exit(2)
+            else:
+                print("retry...{}" . format(retry_count))
+                time.sleep(1)
+                continue
 
         now = datetime.datetime.now().strftime("%H:%M")
 
