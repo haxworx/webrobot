@@ -9,19 +9,24 @@ import datetime
 import database
 import time
 import subprocess
+import signal
 from mysql.connector import errorcode
 from urllib.parse import urlparse
 from config import Config
 
-RETRY_MAX = 20
+RETRY_MAX = 35
 
 def main():
     retry_count = 0
     config = Config(0)
     config.read_ini()
 
+    # Ensure we don't end up with a million zombies.
+    signal.signal(signal.SIGCHLD, signal.SIG_IGN)
 
-    for _ in range(0, 21):
+    # Wait for our container to come up. This should be enough time
+    # to accomodate for the first-run database setup process.
+    for _ in range(0, 36):
         try:
             cnx = mysql.connector.connect(user=config.db_user,
                                           host=config.db_host,
@@ -66,7 +71,7 @@ def main():
             timestamp = start_time.strftime("%H:%M")
             if timestamp == seen['time'] and bot_id not in seen['ids']:
                 seen['ids'].append(bot_id)
-                subprocess.run(["python3", "robot_start.py", str(bot_id)])
+                subprocess.Popen(["python3", "robot_start.py", str(bot_id)])
 
         cnx.commit()
         cursor.close()
