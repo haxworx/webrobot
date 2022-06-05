@@ -30,11 +30,12 @@ class Mqtt extends MqttClient
     private function payload(int $botId, string $type, string $command = "", string $message = "")
     {
         $payload = [
-            'type'    => $type,
-            'command' => $command,
-            'message' => $message,
-            'author'  => self::CLIENT_ID,
-            'bot_id'  => $botId,
+            'type'      => $type,
+            'command'   => $command,
+            'message'   => $message,
+            'author'    => self::CLIENT_ID,
+            'timestamp' => new \DateTime('NOW'),
+            'bot_id'    => $botId,
         ];
 
         return json_encode($payload, JSON_PRETTY_PRINT);

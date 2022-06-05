@@ -552,9 +552,13 @@ def mqtt_message(bot_id, message):
         'command': '',
         'message': message,
         'author': bot_id,
+        'timestamp': {
+            'date': datetime.now(),
+            'timezone': time.strftime("%Z"),
+        }
     }
 
-    return json.dumps(payload, indent=4, sort_keys=True)
+    return json.dumps(payload, indent=4, sort_keys=True, default=str)
 
 def on_connect(client, userdata, flags, rc):
     """
