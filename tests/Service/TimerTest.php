@@ -13,6 +13,8 @@ class TimerTest extends TestCase
 {
     public function testCreateDelete(): void
     {
+        if (PHP_OS !== "Linux") return;
+
         $globalSettings = new GlobalSettings;
         $globalSettings->setDockerImage('testing');
         $crawler = new CrawlSettings;
