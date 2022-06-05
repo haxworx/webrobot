@@ -10,6 +10,7 @@ import logging
 import re
 import hashlib
 import fcntl
+import json
 import mysql.connector
 import paho.mqtt.client as mqtt
 from datetime import datetime
@@ -38,12 +39,12 @@ class Robot:
     _url = None
     _is_running = False
     _has_error = False
-    dbh = None
+    _dbh = None
 
     def __init__(self, bot_id):
         self.bot_id = bot_id;
 #        self.acquire_lock()
-        self.pidfile_create();
+#        self.pidfile_create();
         atexit.register(self.cleanup)
 
         self.config = Config(self.bot_id)
@@ -101,6 +102,14 @@ class Robot:
     @bot_id.setter
     def bot_id(self, value):
         self._bot_id = value
+
+    @property
+    def dbh(self):
+        return self._dbh
+
+    @dbh.setter
+    def dbh(self, value):
+        self._dbh = value
 
     @property
     def launch_id(self):
@@ -190,7 +199,7 @@ class Robot:
     def cleanup(self):
         if self.dbh is not None:
             self.dbh.close()
-        self.pidfile_delete()
+#        self.pidfile_delete()
 #        self.release_lock()
 
     def domain_parse(self, url):
@@ -532,10 +541,20 @@ class Robot:
             self.has_error = True
 
         self.log.info("/%s/%s/info/finished/saved/%i", self.hostname, self.domain, self.save_count)
-        self.mqtt_client.publish(crawler.config.mqtt_topic, "FINISHED: {}" . format(self.bot_id));
+        self.mqtt_client.publish(crawler.config.mqtt_topic, mqtt_message(self.bot_id, "finished"))
         self.mqtt_client.loop_stop();
 
         self.finished({ 'bot_id': self.bot_id })
+
+def mqtt_message(bot_id, message):
+    payload = {
+        'type': 'message',
+        'command': '',
+        'message': message,
+        'author': bot_id,
+    }
+
+    return json.dumps(payload, indent=4, sort_keys=True)
 
 def on_connect(client, userdata, flags, rc):
     """
@@ -543,7 +562,7 @@ def on_connect(client, userdata, flags, rc):
     """
     crawler = userdata;
     client.subscribe(crawler.config.mqtt_topic);
-    client.publish(crawler.config.mqtt_topic, "STARTED: {}" . format(crawler.bot_id));
+    client.publish(crawler.config.mqtt_topic, mqtt_message(crawler.bot_id, "started"))
 
 def on_message(client, userdata, msg):
     """
@@ -551,19 +570,24 @@ def on_message(client, userdata, msg):
     """
     crawler = userdata;
     if msg.topic == crawler.config.mqtt_topic:
-       received = str(msg.payload)
-       print("DEBUG MQTT: '{}'" . format(received), file=sys.stderr)
-       matches = re.search('TERMINATE: (\d+)', received)
-       if matches:
-           if int(matches[1]) == crawler.bot_id:
-               crawler.log.critical("/%s/%s/critical/mqtt/interrupted", crawler.hostname, crawler.domain)
-               core.shutdown()
+        received = json.loads(msg.payload);
+
+        if received['type'] != 'command':
+            return
+
+        if received['bot_id'] != crawler.bot_id:
+            return
+
+        if received['command'] == "terminate":
+            crawler.log.critical("/%s/%s/critical/mqtt/interrupted", crawler.hostname, crawler.domain)
+            core.shutdown()
 
 def signal_handler(signum, frame):
     if signum == signal.SIGINT:
         core.shutdown()
 
 if __name__ == '__main__':
+
     ROBOT_START = os.getenv('ROBOT_START')
     if ROBOT_START is None:
         print("This tool should not be launched directly.", file=sys.stderr)
