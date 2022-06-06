@@ -17,7 +17,6 @@ class GlobalSettingsType extends AbstractType
         $builder
             ->add('maxCrawlers')
             ->add('debug')
-            ->add('dockerImage', TextType::class, ['attr' => ['readonly' => true ]])
             ->add('mqttHost', TextType::class, ['attr' => ['readonly' => true ]])
             ->add('mqttPort', NumberType::class, ['attr' => ['readonly' => true ]])
             ->add('mqttTopic', TextType::class, ['attr' => ['readonly' => true ]])

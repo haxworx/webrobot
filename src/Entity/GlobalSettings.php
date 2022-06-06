@@ -53,13 +53,6 @@ class GlobalSettings
     /**
      * @var string|null
      *
-     * @ORM\Column(name="docker_image", type="string", length=128, nullable=true)
-     */
-    private $dockerImage;
-
-    /**
-     * @var string|null
-     *
      * @ORM\Column(name="mqtt_host", type="string", length=128, nullable=true)
      */
     private $mqttHost;
@@ -127,18 +120,6 @@ class GlobalSettings
     public function setDebug(?bool $debug): self
     {
         $this->debug = $debug;
-
-        return $this;
-    }
-
-    public function getDockerImage(): ?string
-    {
-        return $this->dockerImage;
-    }
-
-    public function setDockerImage(?string $dockerImage): self
-    {
-        $this->dockerImage = $dockerImage;
 
         return $this;
     }
