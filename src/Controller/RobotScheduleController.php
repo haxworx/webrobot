@@ -181,8 +181,4 @@ class RobotScheduleController extends AbstractController
 
         return $this->redirectToRoute('app_index');
     }
-
-    private function stopRobot(GlobalSettings $globalSettings, int $botId)
-    {
-    }
 }
