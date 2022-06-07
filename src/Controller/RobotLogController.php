@@ -37,13 +37,13 @@ class RobotLogController extends AbstractController
 
         $content = json_decode($request->getContent(), true);
 
-        if ((!$content) || (!array_key_exists('last_id', $content)) || (!array_key_exists('scan_date', $content)) ||
+        if ((!$content) || (!array_key_exists('last_id', $content)) || (!array_key_exists('launch_id', $content)) ||
             (!array_key_exists('bot_id', $content)) || (!array_key_exists('token', $content))) {
             throw new \Exception('Missing parameters');
         }
 
         $lastId = $content['last_id'];
-        $scanDate = $content['scan_date'];
+        $launchId = $content['launch_id'];
         $botId = $content['bot_id'];
         $token = $content['token'];
 
@@ -55,7 +55,7 @@ class RobotLogController extends AbstractController
             throw new \Exception("CSRF Token Invalid");
         }
 
-        $logs = $doctrine->getRepository(CrawlLog::class)->findAllNew($botId, $scanDate, $lastId);
+        $logs = $doctrine->getRepository(CrawlLog::class)->findAllNew($launchId, $lastId);
         $n = count($logs);
         if ($n) {
             $text = "";

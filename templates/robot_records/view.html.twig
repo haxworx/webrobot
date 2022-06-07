@@ -6,7 +6,7 @@
 <div {{ stimulus_controller('robot-records-view',
     { botId: bot_id }
 ) }}>
-<h3>{{ address }} - {{ scan_date }}</h3>
+<h3>{{ address }}</h3>
 <hr>
 <table width="100%" class="table table-striped">
     <thead>
@@ -30,10 +30,10 @@
 
   <ul class="pagination">
 {% if previous >= 0 %}
-    <li class="page-item"><a class="page-link" href="{{ path('app_records_view', { botId: bot_id, scanDate: scan_date, offset: previous }) }}">Previous</a></li>
+    <li class="page-item"><a class="page-link" href="{{ path('app_records_view', { botId: bot_id, launchId: launch_id, offset: previous }) }}">Previous</a></li>
 {% endif %}
 {% if next < records|length %}
-    <li class="page-item"><a class="page-link" href="{{ path('app_records_view', { botId: bot_id, scanDate: scan_date, offset: next }) }}">Next</a></li>
+    <li class="page-item"><a class="page-link" href="{{ path('app_records_view', { botId: bot_id, launchId: launch_id, offset: next }) }}">Next</a></li>
 {% endif %}
   </ul>
 

@@ -156,9 +156,11 @@ class CrawlData
     private $data;
 
     /**
-     * @ORM\Column(type="integer")
+     * @var int|null
+     *
+     * @ORM\Column(name="launch_id", type="integer")
      */
-    private $launch_id;
+    private $launchId;
 
     public function getId(): ?int
     {
@@ -412,12 +414,12 @@ class CrawlData
 
     public function getLaunchId(): ?int
     {
-        return $this->launch_id;
+        return $this->launchId;
     }
 
-    public function setLaunchId(int $launch_id): self
+    public function setLaunchId(int $launchId): self
     {
-        $this->launch_id = $launch_id;
+        $this->launchId = $launchId;
 
         return $this;
     }

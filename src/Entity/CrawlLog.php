@@ -94,9 +94,11 @@ class CrawlLog
     private $message;
 
     /**
-     * @ORM\Column(type="integer")
+     * @var int|null
+     *
+     * @ORM\Column(name="launch_id", type="integer", nullable=true)
      */
-    private $launch_id;
+    private $launchId;
 
     public function getId(): ?int
     {
@@ -237,15 +239,13 @@ class CrawlLog
 
     public function getLaunchId(): ?int
     {
-        return $this->launch_id;
+        return $this->launchId;
     }
 
-    public function setLaunchId(int $launch_id): self
+    public function setLaunchId(?int $launchId): self
     {
-        $this->launch_id = $launch_id;
+        $this->launchId = $launchId;
 
         return $this;
     }
-
-
 }

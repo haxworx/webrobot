@@ -1,85 +1,37 @@
 import { Controller } from '@hotwired/stimulus';
-
-function clearSelectElements(selectElement) {
-    for (let i = selectElement.options.length - 1; i >= 0; i--) {
-        if (selectElement.options[i].value != "") {
-            selectElement.remove(i);
-        } else {
-            selectElement[i].selected = 'selected';
-        }
-    }
-}
+import { clearSelectElements, getRobots, getLaunches } from './local.js';
 
 export default class extends Controller {
-    static targets = ['botId', 'dates', 'datesDiv', 'panel', 'token', 'spinner'];
+    static targets = ['botId', 'launches', 'launchesDiv', 'panel', 'token', 'spinner'];
     static values = {
         botId: Number,
         baseUrl: String,
-        scanDate: String,
+        launchId: String,
         token: String,
-    }
-
-    getRobots(addressField) {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', '/robot/query/all', true);
-        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        xhr.send();
-
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                let robots = JSON.parse(xhr.response);
-                robots.forEach(function (item, index) {
-                    let option = document.createElement('option');
-                    option.text = item.address;
-                    option.value = item.botId;
-                    addressField.appendChild(option);
-                });
-            }
-        }
-    }
-
-    getDates(datesField, botId) {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', '/robot/query/dates/'+ botId, true);
-        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF=8');
-        xhr.send();
-
-        xhr.onload = function() {
-            clearSelectElements(datesField);
-            if (xhr.status === 200) {
-                let dates = JSON.parse(xhr.response);
-                dates.forEach(function (item, index) {
-                    let option = document.createElement('option');
-                    option.text = item;
-                    option.value = item;
-                    datesField.appendChild(option);
-                });
-            }
-        }
     }
 
     connect() {
         const addressField = this.botIdTarget;
-        const datesField = this.datesTarget;
-        const datesDiv = this.datesDivTarget;
+        const launchesField = this.launchesTarget;
+        const launchesDiv = this.launchesDivTarget;
         const panel = this.panelTarget;
 
-        this.getRobots(addressField);
+        getRobots(addressField);
 
         addressField.addEventListener('change', (event) => {
             if (event.target.value) {
                 panel.innerHTML = "";
                 this.botIdValue = event.target.value;
-                this.getDates(datesField, event.target.value);
-                if (datesDiv.classList.contains('visually-hidden')) {
-                    datesDiv.classList.remove('visually-hidden');
+                getLaunches(launchesField, event.target.value);
+                if (launchesDiv.classList.contains('visually-hidden')) {
+                    launchesDiv.classList.remove('visually-hidden');
                 }
             }
         });
 
-        datesField.addEventListener('change', (event) => {
+        launchesField.addEventListener('change', (event) => {
             if ((event.target.value) && (this.botIdValue)) {
-                this.scanDateValue = event.target.value;
+                this.launchIdValue = event.target.value;
                 if (panel.classList.contains('visually-hidden')) {
                     panel.classList.remove('visually-hidden');
                 }
@@ -97,7 +49,7 @@ export default class extends Controller {
         this.postObj = {
             bot_id: this.botIdValue,
             last_id: 0,
-            scan_date: this.scanDateValue,
+            launch_id: this.launchIdValue,
             token: this.tokenValue,
         };
         this.postData = JSON.stringify(this.postObj);

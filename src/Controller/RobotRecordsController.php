@@ -57,8 +57,8 @@ class RobotRecordsController extends AbstractController
         ]);
     }
 
-    #[Route('/robot/records/{botId}/date/{scanDate}/offset/{offset}', name: 'app_records_view')]
-    public function paginate(Request $request, CrawlDataRepository $recordsRepository, ManagerRegistry $doctrine, int $botId, string $scanDate, int $offset): Response
+    #[Route('/robot/records/{botId}/launch/{launchId}/offset/{offset}', name: 'app_records_view')]
+    public function paginate(Request $request, CrawlDataRepository $recordsRepository, ManagerRegistry $doctrine, int $botId, int $launchId, int $offset): Response
     {
         $user = $this->getUser();
         if (!$user) {
@@ -80,19 +80,13 @@ class RobotRecordsController extends AbstractController
             );
         }
 
-        if ($offset < 0) {
+        if (($launchId < 0) || ($offset < 0)) {
             throw new \Exception(
                 'Invalid offset.'
             );
         }
 
-        if (!preg_match('/\d{4}-\d{1,2}-\d{1,2}/', $scanDate, $matches)) {
-            throw new \Exception(
-                'Invalid scan date.'
-            );
-        }
-
-        $paginator = $recordsRepository->getPaginator($botId, $scanDate, $offset);
+        $paginator = $recordsRepository->getPaginator($launchId, $offset);
 
         return $this->render('robot_records/view.html.twig', [
             'address' => $crawler->getAddress(),
@@ -100,7 +94,7 @@ class RobotRecordsController extends AbstractController
             'records' => $paginator,
             'next' => min(count($paginator), $offset + CrawlDataRepository::PAGINATOR_PER_PAGE),
             'bot_id' => $botId,
-            'scan_date' => $scanDate,
+            'launch_id' => $launchId,
         ]);
     }
 }

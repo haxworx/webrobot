@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\CrawlSettings;
 use App\Entity\CrawlLog;
+use App\Entity\CrawlLaunch;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,7 +22,7 @@ class RobotQueryController extends AbstractController
     public function __construct()
     {
         $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];;
+        $normalizers = [new DateTimeNormalizer(), new ObjectNormalizer()];
         $this->serializer = new Serializer($normalizers, $encoders);
     }
 
@@ -46,26 +48,22 @@ class RobotQueryController extends AbstractController
         return $response;
     }
 
-    #[Route('/robot/query/dates/{botId}', name: 'app_robot_query_dates', methods: ['GET'], format: 'json')]
-    public function dates(Request $request, ManagerRegistry $doctrine, int $botId): Response
+    #[Route('/robot/query/launches/{botId}', name: 'app_robot_query_launches', methods: ['GET'], format: 'json')]
+    public function launches(Request $request, ManagerRegistry $doctrine, int $botId): Response
     {
         $jsonContent = [];
 
         $user = $this->getUser();
-        if (!$user) {
-            throw new \Exception(
-                'No user.'
-            );
-        }
 
         if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
             throw new \Exception(
                 'Bot not owned by user.'
             );
         }
+       
+        $launches = $doctrine->getRepository(CrawlLaunch::class)->findBy(['bot_id' => [ $botId ]]);
 
-        $dates = $doctrine->getRepository(CrawlLog::class)->findUniqueScanDatesByBotId($botId);
-        $jsonContent = $this->serializer->serialize($dates, 'json');
+        $jsonContent = $this->serializer->serialize($launches, 'json');
 
         $response = new Response();
         $response->setContent($jsonContent);

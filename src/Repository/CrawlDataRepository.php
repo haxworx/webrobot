@@ -17,32 +17,17 @@ class CrawlDataRepository extends ServiceEntityRepository
         parent::__construct($registry, CrawlData::class);
     }
 
-    public function getPaginator(int $botId, string $scanDate, int $offset): Paginator
+    public function getPaginator(int $launchId, int $offset): Paginator
     {
         $query = $this->createQueryBuilder('c')
-            ->Where('c.botId = :botId')
-            ->setParameter('botId', $botId)
-            ->andWhere('c.scanDate = :scanDate')
-            ->setParameter('scanDate', $scanDate)
+            ->Where('c.launchId = :launchId')
+            ->setParameter('launchId', $launchId)
             ->setMaxResults(self::PAGINATOR_PER_PAGE)
             ->setFirstResult($offset)
             ->getQuery()
         ;
 
         return new Paginator($query);
-    }
-
-    public function findUniqueScanDatesByBotId(int $botId): array
-    {
-        return $this->createQueryBuilder('c')
-            ->select('c.scanDate')
-            ->where('c.botId = :id')
-            ->setParameter('id', $botId)
-            ->groupBy('c.scanDate')
-            ->orderBy('c.scanDate', 'DESC')
-            ->getQuery()
-            ->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
-
     }
 
     public function countByBotId($botId): int
