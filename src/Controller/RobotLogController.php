@@ -42,10 +42,10 @@ class RobotLogController extends AbstractController
             throw new \Exception('Missing parameters');
         }
 
-        $lastId = $content['last_id'];
+        $lastId   = $content['last_id'];
         $launchId = $content['launch_id'];
-        $botId = $content['bot_id'];
-        $token = $content['token'];
+        $botId    = $content['bot_id'];
+        $token    = $content['token'];
 
         if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
             throw new \Exception('Bot not owned by user.');

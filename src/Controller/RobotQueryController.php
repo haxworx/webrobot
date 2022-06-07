@@ -60,8 +60,8 @@ class RobotQueryController extends AbstractController
                 'Bot not owned by user.'
             );
         }
-       
-        $launches = $doctrine->getRepository(CrawlLaunch::class)->findBy(['bot_id' => [ $botId ]]);
+
+        $launches = $doctrine->getRepository(CrawlLaunch::class)->findByBotId($botId);
 
         $jsonContent = $this->serializer->serialize($launches, 'json');
 

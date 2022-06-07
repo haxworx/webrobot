@@ -47,6 +47,15 @@ class CrawlLaunchRepository extends ServiceEntityRepository
         }
     }
 
+    public function findbyBotId($botId)
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.botId = :botId')
+            ->setParameter('botId', $botId)
+            ->orderBy('c.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
     // /**
     //  * @return CrawlLaunch[] Returns an array of CrawlLaunch objects
     //  */

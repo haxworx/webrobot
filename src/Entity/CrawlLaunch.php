@@ -18,19 +18,19 @@ class CrawlLaunch
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="bot_id", type="integer")
      */
-    private $bot_id;
+    private $botId;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(name="start_time", type="datetime", nullable=true)
      */
-    private $start_time;
+    private $startTime;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(name="end_time", type="datetime", nullable=true)
      */
-    private $end_time;
+    private $endTime;
 
     public function getId(): ?int
     {
@@ -39,36 +39,36 @@ class CrawlLaunch
 
     public function getBotId(): ?int
     {
-        return $this->bot_id;
+        return $this->botId;
     }
 
-    public function setBotId(int $bot_id): self
+    public function setBotId(int $botId): self
     {
-        $this->bot_id = $bot_id;
+        $this->botId = $botId;
 
         return $this;
     }
 
     public function getStartTime(): ?\DateTimeInterface
     {
-        return $this->start_time;
+        return $this->startTime;
     }
 
-    public function setStartTime(?\DateTimeInterface $start_time): self
+    public function setStartTime(?\DateTimeInterface $startTime): self
     {
-        $this->start_time = $start_time;
+        $this->startTime = $startTime;
 
         return $this;
     }
 
     public function getEndTime(): ?\DateTimeInterface
     {
-        return $this->end_time;
+        return $this->endTime;
     }
 
-    public function setEndTime(?\DateTimeInterface $end_time): self
+    public function setEndTime(?\DateTimeInterface $endTime): self
     {
-        $this->end_time = $end_time;
+        $this->endTime = $endTime;
 
         return $this;
     }
