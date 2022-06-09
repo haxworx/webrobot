@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 import { Modal, Spinner } from 'bootstrap';
 
 export default class extends Controller {
-    static targets = ['modal', 'spinner', 'btn_save', 'btn_delete'];
+    static targets = ['modal', 'spinner'];
     static values = {
         token: String,
         botId: Number,
@@ -17,7 +17,9 @@ export default class extends Controller {
 
         this.removeCrawler();
         this.spinner = this.spinnerTarget;
-        this.spinner.classList.remove('visually-hidden');
+        if(this.spinner !== undefined) {
+            this.spinner.classList.remove('visually-hidden');
+        }
         this.modal.hide();
     }
 
@@ -34,15 +36,21 @@ export default class extends Controller {
             delete_button.disabled = true;
         }
 
-        let xhr = new XMLHttpRequest();
-        xhr.open('POST', '/robot/schedule/remove/' + botId, true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-        xhr.onreadystatechange = function() {
-            if ((xhr.readyState == XMLHttpRequest.DONE) && (xhr.status === 200)) {
-                window.location.href='/';
+        fetch('/robot/schedule/remove/' + botId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'botId=' + botId + '&token=' + token,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response');
             }
-        }
-        xhr.send('botId=' + botId + '&token=' + token);
+            window.location.href = '/';
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
     }
 }

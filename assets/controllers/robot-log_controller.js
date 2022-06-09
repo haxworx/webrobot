@@ -58,38 +58,40 @@ export default class extends Controller {
     }
 
     downloadLog() {
-        var self = this;
-        let xhr = new XMLHttpRequest();
-        xhr.open('POST', '/robot/log/more', true);
-        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        xhr.send(JSON.stringify(self.postObj));
-
-        let logPanel = self.panelTarget;
-        let spinner = self.spinnerTarget;
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                self.postObj = JSON.parse(xhr.response);
-                if (self.postObj.logs) {
-                    logPanel.innerHTML = logPanel.innerHTML + self.postObj.logs;
-                    logPanel.scrollTop = logPanel.scrollHeight;
-                    delete(self.postObj.logs);
-                    self.postData = JSON.stringify(self.postObj);
-                    self.dataTime = Math.floor(Date.now() / 1000);
-                    if (spinner.classList.contains('visually-hidden')) {
-                        spinner.classList.remove('visually-hidden');
-                    }
-                }
-                if ((self.dataTime) && (((Date.now() / 1000) - self.dataTime) >= 5.0)) {
-                    if (!spinner.classList.contains('visually-hidden')) {
-                        spinner.classList.add('visually-hidden');
-                    }
-                }
-            } else {
-                if (self.interval) {
-                    clearInterval(self.interval);
-                    self.interval = null;
+        fetch('/robot/log/more', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: JSON.stringify(this.postObj),
+        })
+        .then(response => response.json())
+        .then(data => {
+            this.postObj = data;
+            let logPanel = this.panelTarget;
+            let spinner = this.spinnerTarget;
+            if (this.postObj.logs) {
+                logPanel.innerHTML = logPanel.innerHTML + this.postObj.logs;
+                logPanel.scrollTop = logPanel.scrollHeight;
+                delete(this.postObj.logs);
+                this.postData = JSON.stringify(this.postObj);
+                this.dataTime = Math.floor(Date.now() / 1000);
+                if (spinner.classList.contains('visually-hidden')) {
+                    spinner.classList.remove('visually-hidden');
                 }
             }
-        }
+            if ((this.dataTime) && (((Date.now() / 1000) - this.dataTime) >= 5.0)) {
+                if (!spinner.classList.contains('visually-hidden')) {
+                    spinner.classList.add('visually-hidden');
+                }
+            }
+        })
+        .catch((error) => {
+            if (this.interval) {
+                clearInterval(this.interval);
+                this.interval = null;
+            }
+            console.error('Error:', error);
+        });
     }
 }
