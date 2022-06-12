@@ -13,6 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Notifier\Notification\Notification;
 use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,7 +25,7 @@ class RobotScheduleController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user) {
-            throw $this->createNotFoundException(
+            throw new AccessDeniedException(
                 'No user found.'
             );
         }
@@ -77,7 +78,7 @@ class RobotScheduleController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user) {
-            throw $this->createNotFoundException(
+            throw new AccessDeniedException(
                 'No user found.'
             );
         }
@@ -138,7 +139,7 @@ class RobotScheduleController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user) {
-            throw $this->createNotFoundException(
+            throw new AccessDeniedException(
                 'No user found.'
             );
         }

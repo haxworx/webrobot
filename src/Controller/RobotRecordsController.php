@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class RobotRecordsController extends AbstractController
@@ -26,18 +27,53 @@ class RobotRecordsController extends AbstractController
         return $this->render('robot_records/index.html.twig');
     }
 
-    #[Route('/robot/records/view/{botId}/record/{recordId}', name: 'app_records_show')]
-    public function show(Request $request, ManagerRegistry $doctrine, int $botId, int $recordId): Response
+    #[Route('/robot/records/download/{botId}/record/{recordId}', name: 'app_records_download')]
+    public function download(Request $request, ManagerRegistry $doctrine, int $botId, int $recordId): Response
     {
         $user = $this->getUser();
         if (!$user) {
-            throw $this->createNotFoundException(
+            throw new AccessDeniedException(
                 'No user found.'
             );
         }
 
         if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
-            throw new \Exception(
+            throw new AccessDeniedException(
+                'User does not own bot.'
+            );
+        }
+
+        $record = $doctrine->getRepository(CrawlData::class)->findOneById($recordId);
+        if (!$record) {
+            throw $this->createNotFoundException(
+                'No record found.'
+            );
+        }
+
+        $fileName = $record->getId();
+        $blob = $record->getDataStream();
+
+        $response = new Response();
+        $response->headers->set('Content-Type', $record->getContentType());
+        $response->headers->set('Content-Length', strlen($blob));
+        $response->headers->set('Content-Disposition', 'attachment; filename="'. $fileName .'"');
+        $response->setContent($blob);
+
+        return $response;
+    }
+
+    #[Route('/robot/records/show/{botId}/record/{recordId}', name: 'app_records_show')]
+    public function show(Request $request, ManagerRegistry $doctrine, int $botId, int $recordId): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            throw new AccessDeniedException(
+                'No user found.'
+            );
+        }
+
+        if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
+            throw new AccessDeniedException(
                 'User does not own bot.'
             );
         }
@@ -62,7 +98,7 @@ class RobotRecordsController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user) {
-            throw $this->createNotFoundException(
+            throw new AccessDeniedException(
                 'No user found.'
             );
         }

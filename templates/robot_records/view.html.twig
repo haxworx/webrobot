@@ -10,7 +10,7 @@
 <hr>
 <table width="100%" class="table table-striped">
     <thead>
-        <tr class="align-middle"><th>id</th><th>url</th><th>timestamp</th><th>content type</th><th>content length</th><th>headers</th><th>checksum</th><th></th></tr>
+        <tr class="align-middle"><th>id</th><th>url</th><th>timestamp</th><th>content type</th><th>content length</th><th>headers</th><th>checksum</th><th></th><th></th></tr>
     </thead>
     <tbody>
 {% for record in records %}
@@ -22,7 +22,12 @@
             <td>{{ record.length }}</td>
             <td>{{ record.metadata|ellipsis }}</td>
             <td>{{ record.checksum }}</td>
-            <td><button class="btn btn-primary btn-sm" data-robot-records-view-id-param="{{ record.id }}" data-action="robot-records-view#show">View</button></td>
+            <td>
+                <button class="btn btn-primary btn-sm" data-robot-records-view-id-param="{{ record.id }}" data-action="robot-records-view#show">View</button>
+            </td>
+            <td>
+                <button class="btn btn-secondary btn-sm" data-robot-records-view-id-param="{{ record.id }}" data-action="robot-records-view#download">Download</button>
+            </td>
         </tr>
 {% endfor %}
     </tbody>

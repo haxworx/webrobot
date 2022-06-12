@@ -14,6 +14,12 @@ export default class extends Controller {
         const frame = this.frameTarget;
         const recordId = event.params['id'];
         const botId = this.botIdValue;
-        frame.src = '/robot/records/view/' + botId + '/record/' + recordId;
+        frame.src = '/robot/records/show/' + botId + '/record/' + recordId;
+    }
+
+    download (event) {
+        const recordId = event.params.id;
+        const botId = this.botIdValue;
+        window.location.href = '/robot/records/download/' + botId + '/record/' + recordId;
     }
 }

@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class RobotLogController extends AbstractController
@@ -17,7 +18,7 @@ class RobotLogController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user) {
-            throw $this->createNotFoundException(
+            throw new AccessDeniedException(
                 'No user found.'
             );
         }
@@ -30,7 +31,7 @@ class RobotLogController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user) {
-            throw $this->createNotFoundException(
+            throw new AccessDeniedException(
                 'No user found.'
             );
         }
@@ -48,11 +49,11 @@ class RobotLogController extends AbstractController
         $token    = $content['token'];
 
         if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
-            throw new \Exception('Bot not owned by user.');
+            throw new AccessDeniedException('Bot not owned by user.');
         }
 
         if (!$this->isCsrfTokenValid('update-log', $token)) {
-            throw new \Exception("CSRF Token Invalid");
+            throw new AccessDeniedException("CSRF Token Invalid");
         }
 
         $logs = $doctrine->getRepository(CrawlLog::class)->findAllNew($launchId, $lastId);
