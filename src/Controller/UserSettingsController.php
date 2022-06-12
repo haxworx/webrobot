@@ -19,6 +19,8 @@ class UserSettingsController extends AbstractController
     #[Route('/user/settings', name: 'app_user_settings')]
     public function index(Request $request, ManagerRegistry $doctrine, UserPasswordHasherInterface $passwordHasher, NotifierInterface $notifier): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $user = $this->getUser();
 
         $settings = new UserSettings();

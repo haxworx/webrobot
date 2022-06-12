@@ -16,12 +16,9 @@ class RobotLogController extends AbstractController
     #[Route('/robot/log', name: 'app_robot_log')]
     public function index(Request $request, ManagerRegistry $doctrine): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $user = $this->getUser();
-        if (!$user) {
-            throw new AccessDeniedException(
-                'No user found.'
-            );
-        }
 
         return $this->render('robot_log/index.html.twig');
     }
@@ -29,12 +26,9 @@ class RobotLogController extends AbstractController
     #[Route('/robot/log/more', name: 'app_robot_log_stream', format: 'json')]
     public function more(Request $request, ManagerRegistry $doctrine): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $user = $this->getUser();
-        if (!$user) {
-            throw new AccessDeniedException(
-                'No user found.'
-            );
-        }
 
         $content = json_decode($request->getContent(), true);
 

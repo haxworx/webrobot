@@ -23,12 +23,9 @@ class RobotScheduleController extends AbstractController
     #[Route('/robot/schedule', name: 'app_robot_schedule')]
     public function index(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $user = $this->getUser();
-        if (!$user) {
-            throw new AccessDeniedException(
-                'No user found.'
-            );
-        }
 
         $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
         if (!$globalSettings) {
@@ -76,12 +73,9 @@ class RobotScheduleController extends AbstractController
     #[Route('/robot/schedule/edit/{botId}', name: 'app_robot_schedule_edit')]
     public function edit(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier, int $botId): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $user = $this->getUser();
-        if (!$user) {
-            throw new AccessDeniedException(
-                'No user found.'
-            );
-        }
 
         $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
         if (!$globalSettings) {
@@ -137,12 +131,9 @@ class RobotScheduleController extends AbstractController
     #[Route('/robot/schedule/remove/{botId}', name: 'app_robot_schedule_remove', methods: ['POST'])]
     public function remove(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $user = $this->getUser();
-        if (!$user) {
-            throw new AccessDeniedException(
-                'No user found.'
-            );
-        }
 
         $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
         if (!$globalSettings) {

@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class RobotQueryController extends AbstractController
@@ -30,13 +31,9 @@ class RobotQueryController extends AbstractController
     public function all(Request $request, ManagerRegistry $doctrine): Response
     {
         $jsonContent = [];
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         $user = $this->getUser();
-        if (!$user) {
-            throw new \Exception(
-                'No user.'
-            );
-        }
 
         $crawlers = $doctrine->getRepository(CrawlSettings::class)->findAllByUserId($user->getId());
         $jsonContent = $this->serializer->serialize($crawlers, 'json');
@@ -52,11 +49,12 @@ class RobotQueryController extends AbstractController
     public function launches(Request $request, ManagerRegistry $doctrine, int $botId): Response
     {
         $jsonContent = [];
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         $user = $this->getUser();
 
         if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
-            throw new \Exception(
+            throw new AccessDeniedException(
                 'Bot not owned by user.'
             );
         }

@@ -17,12 +17,9 @@ class RobotRecordsController extends AbstractController
     #[Route('/robot/records', name: 'app_robot_records')]
     public function index(Request $request, ManagerRegistry $doctrine): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $user = $this->getUser();
-        if (!$user) {
-            throw $this->createNotFoundException(
-                'No user found.'
-            );
-        }
 
         return $this->render('robot_records/index.html.twig');
     }
@@ -30,12 +27,9 @@ class RobotRecordsController extends AbstractController
     #[Route('/robot/records/download/{botId}/record/{recordId}', name: 'app_records_download')]
     public function download(Request $request, ManagerRegistry $doctrine, int $botId, int $recordId): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $user = $this->getUser();
-        if (!$user) {
-            throw new AccessDeniedException(
-                'No user found.'
-            );
-        }
 
         if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
             throw new AccessDeniedException(
@@ -65,12 +59,9 @@ class RobotRecordsController extends AbstractController
     #[Route('/robot/records/show/{botId}/record/{recordId}', name: 'app_records_show')]
     public function show(Request $request, ManagerRegistry $doctrine, int $botId, int $recordId): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $user = $this->getUser();
-        if (!$user) {
-            throw new AccessDeniedException(
-                'No user found.'
-            );
-        }
 
         if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
             throw new AccessDeniedException(
@@ -96,15 +87,12 @@ class RobotRecordsController extends AbstractController
     #[Route('/robot/records/{botId}/launch/{launchId}/offset/{offset}', name: 'app_records_view')]
     public function paginate(Request $request, CrawlDataRepository $recordsRepository, ManagerRegistry $doctrine, int $botId, int $launchId, int $offset): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $user = $this->getUser();
-        if (!$user) {
-            throw new AccessDeniedException(
-                'No user found.'
-            );
-        }
 
         if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
-            throw new \Exception(
+            throw new AccessDeniedException(
                 'User does not own bot.'
             );
         }
