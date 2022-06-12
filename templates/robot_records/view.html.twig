@@ -7,16 +7,17 @@
     { botId: bot_id }
 ) }}>
 <h3>{{ address }}</h3>
+<p><strong>{{ time_range }}</strong></p>
 <hr>
 <table width="100%" class="table table-striped">
     <thead>
-        <tr class="align-middle"><th>id</th><th>url</th><th>timestamp</th><th>content type</th><th>content length</th><th>headers</th><th>checksum</th><th></th><th></th></tr>
+        <tr class="align-middle"><th>id</th><th>path</th><th>timestamp</th><th>content type</th><th>content length</th><th>headers</th><th>checksum</th><th></th><th></th></tr>
     </thead>
     <tbody>
 {% for record in records %}
         <tr class="align-middle">
             <td>{{ record.id }}</td>
-            <td>{{ record.url }}</td>
+            <td>{{ record.path }}</td>
             <td>{{ record.scanTimestamp|date('Y-m-d H:i:s') }}</td>
             <td>{{ record.contentType }}</td>
             <td>{{ record.length }}</td>

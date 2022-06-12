@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\CrawlSettings;
 use App\Entity\CrawlData;
+use App\Entity\CrawlLaunch;
+use App\Repository\CrawlLaunchRepository;
 use App\Repository\CrawlDataRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -110,6 +112,15 @@ class RobotRecordsController extends AbstractController
             );
         }
 
+        $launch = $doctrine->getRepository(CrawlLaunch::class)->findOneByLaunchId($launchId);
+        if (!$launch) {
+            throw $this->createNotFoundException(
+                'No launch for id: ' . $launchId
+            );
+        }
+
+        $timeRange = $launch->getStartTime()->format('Y-m-d H:i:s') . ' to ' . $launch->getEndTime()->format('Y-m-d H:i:s');
+
         $paginator = $recordsRepository->getPaginator($launchId, $offset);
 
         return $this->render('robot_records/view.html.twig', [
@@ -119,6 +130,7 @@ class RobotRecordsController extends AbstractController
             'next' => min(count($paginator), $offset + CrawlDataRepository::PAGINATOR_PER_PAGE),
             'bot_id' => $botId,
             'launch_id' => $launchId,
+            'time_range' => $timeRange,
         ]);
     }
 }

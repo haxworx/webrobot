@@ -56,6 +56,15 @@ class CrawlLaunchRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findOneByLaunchId($launchId)
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.id = :launchId')
+            ->setParameter('launchId', $launchId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
     // /**
     //  * @return CrawlLaunch[] Returns an array of CrawlLaunch objects
     //  */
