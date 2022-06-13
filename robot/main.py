@@ -233,8 +233,7 @@ class Robot:
         for rule in self.robots_text.disallowed:
             matches = re.search(rule, link)
             if matches:
-                self.log.warning("/%s/%s/warning/robots/rule/ignore/%s",
-                                 self.hostname, self.domain, link)
+                self.log.warning("warning/robots/rule/ignore/%s", link)
                 return False
         return True
 
@@ -264,7 +263,7 @@ class Robot:
             cursor.execute(SQL, val)
             self.dbh.cnx.commit()
         except mysql.connector.Error as e:
-            self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
+            self.log.critical("critical/database/save/%i/%s", e.errno, e.msg)
             self.has_error = True
             everything_is_fine = False
 
@@ -287,7 +286,7 @@ class Robot:
             cursor.execute(SQL, (now, self.is_running, self.has_error, self.bot_id))
             self.dbh.cnx.commit()
         except mysql.connector.Error as e:
-            self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
+            self.log.critical("critical/database/save/%i/%s", e.errno, e.msg)
             everything_is_fine = False
         cursor.close()
 
@@ -300,7 +299,7 @@ class Robot:
             cursor.execute(SQL, (now, self.launch_id))
             self.dbh.cnx.commit()
         except mysql.connector.Error as e:
-            self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
+            self.log.critical("critical/database/save/%i/%s", e.errno, e.msg)
             everything_is_fine = False
         cursor.close()
 
@@ -320,7 +319,7 @@ class Robot:
             cursor.execute(SQL, (self.bot_id, now))
             self.dbh.cnx.commit()
         except mysql.connector.Error as e:
-            self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
+            self.log.critical("critical/database/save/%i/%s", e.errno, e.msg)
             self.has_error = True
             everything_is_fine = False
 
@@ -335,7 +334,7 @@ class Robot:
             cursor.execute(SQL, (self.is_running, self.hostname, self.bot_id))
             self.dbh.cnx.commit()
         except mysql.connector.Error as e:
-            self.log.critical("/%s/%s/critical/database/save/%i/%s", self.hostname, self.domain, e.errno, e.msg)
+            self.log.critical("critical/database/save/%i/%s", e.errno, e.msg)
             self.has_error = True
             everything_is_fine = False
         cursor.close()
@@ -365,7 +364,7 @@ class Robot:
             cursor.execute(SQL, val)
             self.dbh.cnx.commit()
         except mysql.connector.Error as e:
-            self.log.critical("/%s/%s/critical/database/save/errors/%i/%s", self.hostname, self.domain, e.errno, e.msg)
+            self.log.critical("critical/database/save/errors/%i/%s", e.errno, e.msg)
             everything_is_fine = False
             self.has_error = False
 
@@ -393,21 +392,20 @@ class Robot:
             if core.shutdown_gracefully():
                 break
             if self.page_list.append(url, sitemap_url=True):
-                self.log.info("/%s/%s/info/sitemap/index/%s",
-                              self.hostname, self.domain, url)
+                self.log.info("info/sitemap/index/%s", url)
 
         for url in self.robots_text.sitemap:
             if core.shutdown_gracefully():
                 break
             if self.page_list.append(url, sitemap_url=True):
-                self.log.info("/%s/%s/info/sitemap/url/%s", self.hostname, self.domain, url)
+                self.log.info("info/sitemap/url/%s", url)
 
     def crawl(self):
         """
         Crawling logic.
         """
         self.started()
-        self.log.info("/%s/%s/info/start", self.hostname, self.domain)
+        self.log.info("info/start")
         self.robots_text.parse(self.url)
         self.page_list.append(self.robots_text.url)
 
@@ -433,33 +431,31 @@ class Robot:
                 downloader = Download(self.url, self.user_agent)
                 (response, code) = downloader.get()
             except error.HTTPError as e:
-                self.log.info("/%s/%s/warning/%i/%s", self.hostname, self.domain, e.code, self.url)
+                self.log.info("warning/%i/%s", e.code, self.url)
                 res = {'status_code': e.code,
                        'url': self.url,
                        'link_source': page.link_source,
                        'description': e.reason}
                 if not self.save_errors(res):
-                    self.log.critical("/%s/%s/critical/database/errors/save", self.hostname, self.domain)
+                    self.log.critical("critical/database/errors/save")
                     self.has_error = True
                     break
 
             except error.URLError as e:
-                self.log.error("/%s/%s/error/connect/%s/%s",
-                               self.hostname, self.domain, e.reason, self.url)
+                self.log.error("error/connect/%s/%s", e.reason, self.url)
                 self.retry_count += 1
 
                 if self.retry_count > self.config.retry_max:
-                    self.log.critical("/%s/%s/critical/connect/retry_max/%i",
-                                      self.hostname, self.domain, self.config.retry_max)
+                    self.log.critical("critical/connect/retry_max/%i",
+                                      self.config.retry_max)
                     self.has_error = True
                     break
                 else:
                     self.page_list.again()
-                    self.log.warning("/%s/%s/warning/retry/%s", self.hostname, self.domain, self.url)
+                    self.log.warning("warning/retry/%s", self.url)
                     continue
             except Exception as e:
-                self.log.warning("/%s/%s/warning/exception/%s/%s",
-                                 self.hostname, self.domain, self.url, e)
+                self.log.warning("warning/exception/%s/%s", self.url, e)
                 continue
             else:
                 self.retry_count = 0
@@ -504,11 +500,10 @@ class Robot:
                            'length': length or len(data),
                            'data': data}
 
-                    self.log.info("/%s/%s/info/save/%s", self.hostname, self.domain, self.url)
+                    self.log.info("info/save/%s", self.url)
 
                     if not self.save_results(res):
-                        self.log.critical("/%s/%s/critical/database/data/save",
-                                          self.hostname, self.domain)
+                        self.log.critical("critical/database/data/save")
                         self.has_error = True
                         break
 
@@ -530,17 +525,17 @@ class Robot:
                                                              link_source=page.url):
                                         count += 1
                         if count:
-                            self.log.info("/%s/%s/info/found/%i/%s", self.hostname, self.domain, count, self.url)
+                            self.log.info("info/found/%i/%s", count, self.url)
 
                 time.sleep(self.config.crawl_interval)
                 response.close()
 
         # End of the crawling main loop.
         if core.shutdown_gracefully():
-            self.log.critical("/%s/%s/critical/interrupted", self.hostname, self.domain)
+            self.log.critical("critical/interrupted")
             self.has_error = True
 
-        self.log.info("/%s/%s/info/finished/saved/%i", self.hostname, self.domain, self.save_count)
+        self.log.info("info/finished/saved/%i", self.save_count)
         self.mqtt_client.publish(crawler.config.mqtt_topic, mqtt_message(self.bot_id, "finished"))
         self.mqtt_client.loop_stop();
 
@@ -583,7 +578,7 @@ def on_message(client, userdata, msg):
             return
 
         if received['command'] == "terminate":
-            crawler.log.critical("/%s/%s/critical/mqtt/interrupted", crawler.hostname, crawler.domain)
+            crawler.log.critical("critical/mqtt/interrupted")
             core.shutdown()
 
 def signal_handler(signum, frame):
@@ -601,10 +596,9 @@ if __name__ == '__main__':
         print("Usage: {} <bot_id>" . format(sys.argv[0]))
         sys.exit(1)
 
-    fmt = '/%(asctime)s%(message)s'
-    datefmt = "%Y-%m-%d"
+    fmt = '%(message)s'
 
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout, format=fmt, datefmt=datefmt)
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout, format=fmt)
     core.init()
 
     try:
