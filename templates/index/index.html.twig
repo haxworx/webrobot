@@ -5,6 +5,7 @@
 {% block body %}
 <h1>Scheduled</h1>
 <hr>
+<div {{ stimulus_controller('robot-index') }}>
 <table width="100%" class="table table-striped">
     <thead>
         <tr><th>address</th></th><th>agent</th><th>start</th><th>running</th><th>finished</th><th class="text-center">actions</th></tr>
@@ -12,15 +13,11 @@
     <tbody>
 {% for crawler in crawlers %}
         <tr class="align-middle">
-            <td>{{ crawler.address }}</td>
-            <td>{{ crawler.agent }}</td>
-            <td>{{ crawler.startTime|date('H:i:s') }}</td>
-            {% if crawler.isRunning %}
-            <td>yes</td>
-            {% else %}
-            <td>no</td>
-            {% endif %}
-            <td>{{ crawler.endTime|fuzzy_date }}</td>
+            <td id="bot{{ crawler.botId }}Address"></td>
+            <td id="bot{{ crawler.botId }}Agent"></td>
+            <td id="bot{{ crawler.botId }}Start"></td>
+            <td id="bot{{ crawler.botId }}State"></td>
+            <td id="bot{{ crawler.botId }}Finish"></td>
             <td class="text-center">
                 <a data-toggle="tooltip" title="Edit" href="{{ path('app_robot_schedule_edit', { botId: crawler.botId }) }}" class="text-decoration-none">&#128221;</a>
                 {{ include('modal/modal_delete.twig', { 'bot_id': crawler.botId } ) }}
@@ -29,6 +26,6 @@
 {% endfor %}
     </tbody>
 </table>
-
+</div> <!-- end of index-controller -->
 {% endblock %}
 
