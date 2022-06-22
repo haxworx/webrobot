@@ -1,3 +1,4 @@
+import { Notification } from './notification.js';
 
 export class Crawlers {
     constructor(field) {
@@ -73,6 +74,8 @@ export class Crawlers {
         })
         .catch((error) => {
             console.error('Error:', error);
+            let notification = new Notification('There was a network error.', true);
+            notification.show();
         });
     }
 
@@ -95,6 +98,8 @@ export class Crawlers {
         })
         .catch((error) => {
             console.error('Error:', error);
+            let notification = new Notification('There was a network error.', true);
+            notification.show();
         });
     }
 
@@ -123,6 +128,8 @@ export class Crawlers {
         })
         .catch((error) => {
             console.error('Error:', error);
+            let notification = new Notification('There was a network error.', true);
+            notification.show();
         });
     }
 }

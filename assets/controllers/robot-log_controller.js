@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import { Crawlers } from './crawlers.js';
+import { Notification } from './notification.js';
 
 export default class extends Controller {
     static targets = ['botId', 'launches', 'launchesDiv', 'panel', 'token', 'spinner'];
@@ -94,6 +95,8 @@ export default class extends Controller {
                 this.interval = null;
             }
             console.error('Error:', error);
+            let notification = new Notification("There was a network error.", true);
+            notification.show();
         });
     }
 }

@@ -82,9 +82,9 @@
 
         <main role="main" class="container mt-5" id="main">
         {% for message in app.flashes('notification') %}
-            <div class="alert alert-info alter-dismissible fade show">
-            {{ message }}
+            <div class="alert alert-info alter-dismissible d-flex align-items-center fade show">
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message }}
             </div>
         {% endfor %}
         {% block body %}{% endblock %}

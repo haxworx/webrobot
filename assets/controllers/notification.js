@@ -1,7 +1,8 @@
 const NOTIFICATION_URL = "/flashes";
 
 export class Notification {
-    constructor(message){
+    constructor(message, warning = false){
+        this.warning = warning;
         this.messageText = message;
         this.message = {
             message: this.messageText,
@@ -12,12 +13,17 @@ export class Notification {
     show() {
         let container = document.querySelector('#main');
         let div = document.createElement('div');
-        div.classList.add("alert", "alert-info", "alter-dismissible", "fade", "show");
+        div.classList.add("alert", "alter-dismissible", "d-flex", 'align-items-center', "fade", "show");
+        if (!this.warning) {
+            div.classList.add('alert-info');
+        } else {
+            div.classList.add('alert-warning');
+        }
         div.innerHTML = this.messageText;
         let button = document.createElement('button');
         button.setAttribute('data-bs-dismiss', 'alert');
         button.setAttribute('aria-label', 'Close');
-        button.classList.add("btn-close");
+        button.classList.add("btn-close", "text-right");
         div.prepend(button);
         container.prepend(div);
     }
