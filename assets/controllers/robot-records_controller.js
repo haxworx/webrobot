@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-import { clearSelectElements, getRobots, getLaunches } from './local.js';
+import { Crawlers } from './crawlers.js';
 
 export default class extends Controller {
     static targets = ['botId', 'launches', 'launchesDiv' ];
@@ -13,13 +13,15 @@ export default class extends Controller {
         const launchesField = this.launchesTarget;
         const launchesDiv = this.launchesDivTarget;
 
-        getRobots(addressField);
+        let crawlers = new Crawlers(addressField);
+        crawlers.getRobots();
 
         addressField.addEventListener('change', (event) => {
             if (event.target.value) {
                 this.botIdValue = event.target.value;
-                clearSelectElements(launchesField);
-                getLaunches(launchesField, event.target.value);
+                let crawlers = new Crawlers(launchesField);
+                crawlers.clearSelectElements();
+                crawlers.getLaunches(this.botIdValue);
                 if (launchesDiv.classList.contains('visually-hidden')) {
                     launchesDiv.classList.remove('visually-hidden');
                 }

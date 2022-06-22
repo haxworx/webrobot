@@ -1,6 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import { Modal, Spinner } from 'bootstrap';
-import { updateCrawlers } from './local.js';
+import { Crawlers } from './crawlers.js';
 
 export default class extends Controller {
     static targets = [];
@@ -8,7 +8,8 @@ export default class extends Controller {
     };
 
     updateState() {
-        updateCrawlers();
+        let crawlers = new Crawlers();
+        crawlers.update();
     }
 
     connect() {
