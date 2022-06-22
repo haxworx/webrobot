@@ -16,5 +16,12 @@ export default class extends Controller {
     connect() {
         this.updateState();
         this.interval = setInterval(this.updateState, 5000);
+
+        // Notification test.
+        return;
+        let notification = new Notification('Test', true);
+        for (let i = 0; i < 10; i++) {
+            notification.show();
+        }
     }
 }

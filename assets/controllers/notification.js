@@ -1,4 +1,5 @@
 const NOTIFICATION_URL = "/flashes";
+const MAXIMUM_ALERTS = 3;
 
 export class Notification {
     constructor(message, warning = false){
@@ -12,6 +13,10 @@ export class Notification {
     // Use Javascript to append Bootstrap 5 alert to our main content.
     show() {
         let container = document.querySelector('#main');
+        let alerts = document.querySelectorAll('.alert');
+        if ((alerts) && (alerts.length >= this.getMax())) {
+            return;
+        }
         let div = document.createElement('div');
         div.classList.add("alert", "alter-dismissible", "d-flex", 'align-items-center', "fade", "show");
         if (!this.warning) {
@@ -26,6 +31,10 @@ export class Notification {
         button.classList.add("btn-close", "text-right");
         div.prepend(button);
         container.prepend(div);
+    }
+
+    getMax() {
+        return MAXIMUM_ALERTS;
     }
 
     getUrl() {
