@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 import { Modal, Spinner } from 'bootstrap';
 import { Crawlers } from './crawlers.js';
+import { Notification } from './notification.js';
 
 export default class extends Controller {
     static targets = [];
@@ -14,6 +15,6 @@ export default class extends Controller {
 
     connect() {
         this.updateState();
-        this.interval = setInterval(this.updateState.bind(this), 5000); 
+        this.interval = setInterval(this.updateState, 5000);
     }
 }
