@@ -53,12 +53,17 @@ export class Crawlers {
         })
         .then(response => response.json())
         .then(crawlers => {
-            crawlers.forEach(function(crawler, index) {
-                let address = document.getElementById('bot'+crawler.botId+'Address');
-                let agent = document.getElementById('bot'+crawler.botId+'Agent');
-                let start = document.getElementById('bot'+crawler.botId+'Start');
-                let finish = document.getElementById('bot'+crawler.botId+'Finish');
-                let state = document.getElementById('bot'+crawler.botId+'State');
+            crawlers.every(crawler => {
+                let address = document.querySelector('#bot' + crawler.botId + 'Address');
+                let agent = document.querySelector('#bot' + crawler.botId + 'Agent');
+                let start = document.querySelector('#bot' + crawler.botId + 'Start');
+                let finish = document.querySelector('#bot' + crawler.botId + 'Finish');
+                let state = document.querySelector('#bot' + crawler.botId + 'State');
+
+                if ((!address) || (!agent) || (!start) || (!finish) || (!state)) {
+                    self.contentError();
+                    return false;
+                }
 
                 address.innerHTML = crawler.address;
                 agent.innerHTML = crawler.agent;
@@ -70,13 +75,23 @@ export class Crawlers {
                 } else {
                     state.innerHTML = "no";
                 }
+                return true;
             });
         })
         .catch((error) => {
-            console.error('Error:', error);
-            let notification = new Notification('There was a network error.', true);
-            notification.show();
+            self.networkError(error);
         });
+    }
+
+    networkError(error) {
+        let notification = new Notification('There was a network error.', true);
+        notification.show();
+        console.log('Error:', error);
+    }
+
+    contentError() {
+        let notification = new Notification('There was a content error.', true);
+        notification.show();
     }
 
     getRobots() {
@@ -97,9 +112,7 @@ export class Crawlers {
             });
         })
         .catch((error) => {
-            console.error('Error:', error);
-            let notification = new Notification('There was a network error.', true);
-            notification.show();
+            self.networkError(error);
         });
     }
 
@@ -127,9 +140,7 @@ export class Crawlers {
             });
         })
         .catch((error) => {
-            console.error('Error:', error);
-            let notification = new Notification('There was a network error.', true);
-            notification.show();
+            self.networkError(error);
         });
     }
 }

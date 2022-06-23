@@ -26,18 +26,14 @@ export default class extends Controller {
                 this.botIdValue = event.target.value;
                 let crawlers = new Crawlers(launchesField);
                 crawlers.getLaunches(this.botIdValue);
-                if (launchesDiv.classList.contains('visually-hidden')) {
-                    launchesDiv.classList.remove('visually-hidden');
-                }
+                launchesDiv.classList.remove('visually-hidden');
             }
         });
 
         launchesField.addEventListener('change', (event) => {
             if ((event.target.value) && (this.botIdValue)) {
                 this.launchIdValue = event.target.value;
-                if (panel.classList.contains('visually-hidden')) {
-                    panel.classList.remove('visually-hidden');
-                }
+                panel.classList.remove('visually-hidden');
                 panel.innerHTML = "";
                 this.getLog();
             }
@@ -79,14 +75,11 @@ export default class extends Controller {
                 delete(this.postObj.logs);
                 this.postData = JSON.stringify(this.postObj);
                 this.dataTime = Math.floor(Date.now() / 1000);
-                if (spinner.classList.contains('visually-hidden')) {
-                    spinner.classList.remove('visually-hidden');
-                }
+                spinner.classList.remove('visually-hidden');
+
             }
             if ((this.dataTime) && (((Date.now() / 1000) - this.dataTime) >= 5.0)) {
-                if (!spinner.classList.contains('visually-hidden')) {
-                    spinner.classList.add('visually-hidden');
-                }
+                spinner.classList.add('visually-hidden');
             }
         })
         .catch((error) => {
