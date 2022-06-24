@@ -56,7 +56,7 @@ class RobotLogController extends AbstractController
             $text = "";
             $content['last_id'] = $logs[$n - 1]->getId();
             foreach ($logs as $log) {
-                $text .= $log->getId() . ':' .$log->getScanTimestamp()->format('Y-m-d H:i:s') . ':' . $log->getMessage() . "\n";
+                $text .= $log->getScanTimestamp()->format('Y-m-d H:i:s') . ':' . $log->getMessage() . "\n";
             }
             $content['logs'] = $text;
         }

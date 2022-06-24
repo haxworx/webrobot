@@ -3,7 +3,7 @@ import { Crawlers } from './crawlers.js';
 import { Notification } from './notification.js';
 
 export default class extends Controller {
-    static targets = ['botId', 'launches', 'launchesDiv', 'panel', 'token', 'spinner'];
+    static targets = ['botId', 'launches', 'launchesDiv', 'panel', 'panelDiv', 'token', 'spinner'];
     static values = {
         botId: Number,
         baseUrl: String,
@@ -15,6 +15,7 @@ export default class extends Controller {
         const addressField = this.botIdTarget;
         const launchesField = this.launchesTarget;
         const launchesDiv = this.launchesDivTarget;
+        const panelDiv = this.panelDivTarget;
         const panel = this.panelTarget;
 
         let crawlers = new Crawlers(addressField);
@@ -33,7 +34,7 @@ export default class extends Controller {
         launchesField.addEventListener('change', (event) => {
             if ((event.target.value) && (this.botIdValue)) {
                 this.launchIdValue = event.target.value;
-                panel.classList.remove('visually-hidden');
+                panelDiv.classList.remove('visually-hidden');
                 panel.innerHTML = "";
                 this.getLog();
             }
