@@ -468,9 +468,11 @@ class Robot:
                     # Ignore redirects outside domain.
                     if self.domain.upper() != \
                             self.domain_parse(response.url).upper():
+                        self.log.warning("warning/redirect/ignore/%s", self.domain_parse(response.url))
                         continue
                     # Ignore redirects to different scheme.
                     if self.scheme.upper() != self.scheme_parse(response.url).upper():
+                        self.log.warning("warning/redirect/ignore/%s", self.domain_parse(response.url))
                         continue;
 
                     self.url = response.url
