@@ -54,11 +54,11 @@ export class Crawlers {
         .then(response => response.json())
         .then(crawlers => {
             crawlers.every(crawler => {
-                let address = document.querySelector('#bot' + crawler.botId + 'Address');
-                let agent = document.querySelector('#bot' + crawler.botId + 'Agent');
-                let start = document.querySelector('#bot' + crawler.botId + 'Start');
-                let finish = document.querySelector('#bot' + crawler.botId + 'Finish');
-                let state = document.querySelector('#bot' + crawler.botId + 'State');
+                let address = document.querySelector(`#bot${crawler.botId}Address`);
+                let agent = document.querySelector(`#bot${crawler.botId}Agent`);
+                let start = document.querySelector(`#bot${crawler.botId}Start`);
+                let finish = document.querySelector(`#bot${crawler.botId}Finish`);
+                let state = document.querySelector(`#bot${crawler.botId}State`);
 
                 if ((!address) || (!agent) || (!start) || (!finish) || (!state)) {
                     self.contentError();
