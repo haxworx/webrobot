@@ -1,0 +1,20 @@
+  <div {{ stimulus_controller('legal-requirements', {
+  }) }}>
+    <div class="modal" tabindex="-1" data-legal-requirements-target="modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Legal Requiements</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>This website uses cookies and stores account information for the duration of your subscription. By continuing you agree to this.</p>
+          </div>
+          <div class="modal-footer">
+                <a href="#" {{ stimulus_action('legal-requirements', 'reject') }}><div class="btn btn-secondary">Reject</div></a>
+                <a href="#" {{ stimulus_action('legal-requirements', 'accept') }}><div class="btn btn-primary">Accept</div></a>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

@@ -79,6 +79,8 @@
             </nav>
         </header>
 
+        {{ include('modal/modal_legal.twig') }}
+
         <div {{ stimulus_controller('global-theme') }}>
             <div class="container mt-5" align="right">
                 <button type="button" data-global-theme-target="themeToggle" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
