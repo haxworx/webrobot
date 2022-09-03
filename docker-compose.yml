@@ -3,7 +3,7 @@ version: '3'
 services:
   nginx:
     image: nginx:latest
-    container_name: nginx
+    container_name: webrobot-nginx
     build:
       context: ./docker/nginx
     ports:
@@ -17,7 +17,7 @@ services:
       - php-fpm
 
   php-fpm:
-    container_name: php-fpm
+    container_name: webrobot-php-fpm
     build:
       context: ./docker/php-fpm
     ports:
@@ -28,7 +28,7 @@ services:
       - database
 
   database:
-    container_name: database
+    container_name: webrobot-database
     build:
       context: ./docker/database
     image: mysql
@@ -44,7 +44,7 @@ services:
       - "3306:3306"
 
   launcher:
-    container_name: launcher
+    container_name: webrobot-launcher
     build:
       context: ./docker/launcher
     depends_on:
@@ -52,7 +52,7 @@ services:
 
   mosquitto:
     image: eclipse-mosquitto
-    container_name: mosquitto
+    container_name: webrobot-mosquitto
     ports:
       - "1883:1883"
       - "9001:9001"
