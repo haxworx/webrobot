@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+  nginx:
+    image: haxworx/nginx
+    container_name: nginx
+    build:
+      context: ./docker/nginx
+    ports:
+      - "8080:80"
+    working_dir: /code
+    volumes:
+      - ./:/code
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d
+    depends_on:
+      - database
+      - php-fpm
+
+  php-fpm:
+    image: haxworx/webrobot-php-fpm
+    container_name: php-fpm
+    build:
+      context: ./docker/php-fpm
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./:/code
+    depends_on:
+      - database
+
+  database:
+    container_name: database
+    build:
+      context: ./docker/database
+    image: haxworx/mysql
+    platform: linux/x86_64
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=crawler
+      - MYSQL_USER=username
+    volumes:
+      - database-data:/var/lib/mysql:rw
+    ports:
+      - "3306:3306"
+
+  launcher:
+    image: haxworx/webrobot-launcher
+    container_name: launcher
+    build:
+      context: ./docker/launcher
+    depends_on:
+      - database
+
+  mosquitto:
+    image: haxworx/eclipse-mosquitto
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./docker/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+volumes:
+  database-data:
+
