@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import { Crawlers } from './crawlers.js';
+import { Theme } from './theme.js';
 
 export default class extends Controller {
     static targets = ['botId', 'launches', 'launchesDiv' ];
@@ -7,7 +8,7 @@ export default class extends Controller {
         botId: Number,
         baseUrl: String,
     }
-    
+
     connect() {
         const addressField = this.botIdTarget;
         const launchesField = this.launchesTarget;
@@ -30,6 +31,9 @@ export default class extends Controller {
 
         launchesField.addEventListener('change', (event) => {
             if ((event.target.value) && (this.botIdValue)) {
+                // Show a spinner.
+                let theme = new Theme();
+                theme.displayLoadingSpinner();
                 window.location = this.baseUrlValue + '/' + this.botIdValue + '/launch/' + event.target.value + '/offset/' + 0;
             }
         });

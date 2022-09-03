@@ -119,7 +119,7 @@ class RobotRecordsController extends AbstractController
             );
         }
 
-        $timeRange = $launch->getStartTime()->format('Y-m-d H:i:s') . ' to ' . $launch->getEndTime()->format('Y-m-d H:i:s');
+        $timeRange = $launch->getStartTime()?->format('Y-m-d H:i:s') . ' to ' . $launch->getEndTime()?->format('Y-m-d H:i:s');
 
         $paginator = $recordsRepository->getPaginator($launchId, $offset);
 
