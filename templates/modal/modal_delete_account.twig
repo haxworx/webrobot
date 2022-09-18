@@ -1,0 +1,35 @@
+  <div {{ stimulus_controller('delete-account', {
+       token: csrf_token('delete-account'),
+  }) }}>
+    <div class="modal" tabindex="-1" data-delete-account-target="modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Are you sure?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you absolute sure you wish to delete your account?</p>
+            <p>To confirm please enter "yes i understand completely".</p>
+            <div class="form-group">
+            <div class="input-group">
+              <input class="confirm" type="text" data-delete-account-target="confirm">
+            </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" {{ stimulus_action('delete-account', 'remove') }}><div data-delete-account-target="button" class="btn btn-danger disabled">Delete</div></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn btn-danger" data-action="delete-account#confirm">
+    Delete
+    </button>
+    <br>
+    <div class="clearfix">
+        <div data-delete-account-target="spinner" class="visually-hidden spinner-border text-primary float-end" role="status">
+        </div>
+    </div>
+</div>

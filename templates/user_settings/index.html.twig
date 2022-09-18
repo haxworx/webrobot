@@ -5,12 +5,23 @@
 {% block body %}
 
 <h1>User Settings</h1>
-<hr>
-<h3>Authentication</h3>
-<p>Enter your existing password followed by your new password.</p>
+<div class="pt-3">
+    <hr>
+    <h3>Authentication</h3>
+    <p>Enter your existing password followed by your new password.</p>
 
-<hr>
+    <hr>
 
-{{ form(form) }}
+    {{ form(form) }}
+
+    <hr>
+</div>
+
+<div class="pt-3">
+    <h3>Dangerous Settings</h3>
+    <hr>
+
+    {{ include('modal/modal_delete_account.twig') }}
+</div>
 
 {% endblock %}

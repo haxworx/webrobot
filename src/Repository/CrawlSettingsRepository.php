@@ -113,4 +113,15 @@ class CrawlSettingsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+
+    public function deleteAllByUserId(int $userId): void
+    {
+        $this->createQueryBuilder('c')
+            ->delete()
+            ->where('c.userId = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->execute();
+    }
 }
