@@ -44,6 +44,6 @@ class DeleteAccountController extends AbstractController
         $request->getSession()->invalidate();
         $this->container->get('security.token_storage')->setToken(null);
 
-        return $this->redirectToRoute("app_unregistered");
+        return $this->redirectToRoute("app_index");
     }
 }

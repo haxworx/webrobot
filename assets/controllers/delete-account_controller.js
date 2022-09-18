@@ -13,7 +13,6 @@ export default class extends Controller {
         let confirmText = this.confirmTarget;
         document.addEventListener('keyup', (event) => {
             if (confirmText.value === "yes i understand completely") {
-                console.log(this.buttonTarget);
                 this.buttonTarget.classList.remove("disabled");
             } else {
                 this.buttonTarget.classList.add("disabled");
@@ -50,7 +49,7 @@ export default class extends Controller {
                 let notification = new Notification("A network error occurred", true);
                 notification.show();
             }
-            window.location.href = '/unregistered';
+            window.location.href = '/';
         })
         .catch((error) => {
             let notification = new Notification("An error has occurred.", true)
