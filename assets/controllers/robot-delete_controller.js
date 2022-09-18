@@ -2,14 +2,26 @@ import { Controller } from '@hotwired/stimulus';
 import { Modal, Spinner } from 'bootstrap';
 
 export default class extends Controller {
-    static targets = ['modal', 'spinner'];
+    static targets = ['modal', 'spinner', 'confirm', 'button'];
     static values = {
         token: String,
         botId: Number,
     }
+
     confirm(event) {
         event.preventDefault();
+        let confirmText = this.confirmTarget;
+        document.addEventListener('keyup', (event) => {
+            if (confirmText.value === "delete me") {
+                console.log(this.buttonTarget);
+                this.buttonTarget.classList.remove("disabled");
+            } else {
+                this.buttonTarget.classList.add("disabled");
+            }
+        });
         this.modal = new Modal(this.modalTarget);
+        confirmText.value = "";
+        this.buttonTarget.classList.add("disabled");
         this.modal.show();
     }
     remove(event) {
