@@ -82,6 +82,11 @@
         {{ include('modal/modal_legal.twig') }}
 
         <div {{ stimulus_controller('global-theme') }}>
+{% if is_granted('ROLE_USER') %}
+            <div class="container mt-5" align="right">
+                <p>Logged in as {{ app.user.email }}.</p>
+            </div>
+{% endif %}
             <div class="container mt-5" align="right">
                 <button type="button" data-global-theme-target="themeToggle" class="btn btn-primary btn-sm" data-toggle="button" aria-pressed="false" autocomplete="off">
                     Dark

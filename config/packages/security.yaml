@@ -35,6 +35,10 @@ security:
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
+            # API key based authentication.
+            custom_authenticators:
+                - App\Security\ApiKeyAuthenticator
+
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
 

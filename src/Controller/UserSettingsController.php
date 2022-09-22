@@ -46,6 +46,7 @@ class UserSettingsController extends AbstractController
 
         return $this->renderForm('user_settings/index.html.twig', [
             'form' => $form,
+            'api_token' => $user->getApiToken(),
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Utils\ApiKey;
 use App\Form\RegistrationFormType;
 use App\Security\LoginFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,7 +32,7 @@ class RegistrationController extends AbstractController
                     $form->get('plainPassword')->getData()
                 )
             );
-
+            $user->setApiToken(ApiKey::generate());
             $entityManager->persist($user);
             $entityManager->flush();
             // do anything else you need here, like send an email
