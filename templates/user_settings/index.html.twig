@@ -14,8 +14,7 @@
         token: csrf_token('regenerate-api-key'),
     }) }}>
         <a href="#" {{ stimulus_action('regenerate-api-key', 'generate')}}>
-            <div class="btn btn-sm btn-primary m-2">Regenerate</div>
-        </a>
+            <div class="btn btn-sm btn-primary">Regenerate</div></a>
         <div class="d-inline" id="api_token">{{ api_token }}</div>
     </div>
 </div>
