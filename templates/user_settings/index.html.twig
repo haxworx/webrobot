@@ -16,6 +16,8 @@
         <a href="#" {{ stimulus_action('regenerate-api-key', 'generate')}}>
             <div class="btn btn-sm btn-primary">Regenerate</div></a>
         <div class="d-inline" id="api_token">{{ api_token }}</div>
+        <div data-regenerate-api-key-target="spinner" class="d-inline visually-hidden spinner-border text-primary float-end" role="status">
+    </div>
     </div>
 </div>
 

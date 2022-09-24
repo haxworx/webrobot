@@ -3,13 +3,15 @@ import { Modal, Spinner } from 'bootstrap';
 import { Notification } from './notification.js';
 
 export default class extends Controller {
+    static targets = [ 'spinner' ];
     static values = {
         token: String,
     }
 
     generate(event) {
+        let spinner = this.spinnerTarget;
+        spinner.classList.remove('visually-hidden');
         event.preventDefault();
-        let token = this.tokenValue;
         let o = {
             token: this.tokenValue,
         };
@@ -26,6 +28,7 @@ export default class extends Controller {
             let apiKey = data['api-key'];
             let div = document.querySelector('#api_token');
             div.textContent = apiKey;
+            spinner.classList.add('visually-hidden');
         })
         .catch((error) => {
             let notification = new Notification("An error has occurred.", true)
