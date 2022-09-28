@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Utils\ApiKey;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -37,9 +38,7 @@ class ApiKeyController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
-        $response = new Response();
-        $response->setContent(json_encode(['api-key' => $newKey, 'message' => 'ok']));
-        $response->headers->set('Content-Type', 'application/json');
+        $response = new JsonResponse(['api-key' => $newKey, 'message' => 'ok']);
 
         return $response;
     }
