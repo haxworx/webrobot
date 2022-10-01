@@ -33,7 +33,7 @@ class ApiRobotScheduleController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
         if (count($data) !== 1) {
-            throw new \Exception("Invalid argument.");
+            throw new \InvalidArgumentException("Length is not 1");
         }
 
         $data = $data[0];
@@ -47,7 +47,7 @@ class ApiRobotScheduleController extends AbstractController
         $startTime = isset($data['start_time']) && preg_match('/^\d{1,2}:\d{1,2}$/', $data['start_time']) ? new \DateTime($data['start_time']) : null;
 
         if (($agent === null) || ($address === null) || ($delay === null) || ($ignoreQuery === null) || ($importSitemaps === null) || ($retryMax === null) || ($startTime === null)) {
-            throw new \Exception("Invalid argument.");
+            throw new \InvalidArgumentException("Missing argument.");
         }
 
         $repository = $doctrine->getRepository(CrawlSettings::class);
@@ -103,7 +103,7 @@ class ApiRobotScheduleController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
         if (count($data) !== 1) {
-            throw new \Exception("Invalid argument.");
+            throw new \InvalidArgumentException("Length not 1");
         }
 
         $data = $data[0];
@@ -117,7 +117,7 @@ class ApiRobotScheduleController extends AbstractController
         $startTime = isset($data['start_time']) && preg_match('/^\d{1,2}:\d{1,2}$/', $data['start_time']) ? new \DateTime($data['start_time']) : null;
 
         if (($botId === null) || ($agent === null) || ($delay === null) || ($ignoreQuery === null) || ($importSitemaps === null) || ($retryMax === null) || ($startTime === null)) {
-            throw new \Exception("Invalid argument.");
+            throw new \InvalidArgumentException("Missing argument.");
         }
 
         $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByUserIdAndBotId($user->getId(), $botId);
@@ -163,14 +163,14 @@ class ApiRobotScheduleController extends AbstractController
         }
         $data = json_decode($request->getContent(), true);
         if (count($data) !== 1) {
-            throw new \Exception("Invalid argument.");
+            throw new \InvalidArgumentException("Length not 1");
         }
 
         $data = $data[0];
 
         $botId = $data['bot_id'] ?? null;
         if ($botId === null) {
-            throw new \Exception('Invalid argument.');
+            throw new \InvalidArgumentException('Missing argument');
         }
 
         $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByUserIdAndBotId($user->getId(), $botId);
