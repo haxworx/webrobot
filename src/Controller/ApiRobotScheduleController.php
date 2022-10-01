@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\CrawlSettings;
 use App\Entity\GlobalSettings;
+use App\Entity\CrawlData;
+use App\Entity\CrawlErrors;
+use App\Entity\CrawlLog;
 use App\Service\Mqtt;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -77,6 +80,7 @@ class ApiRobotScheduleController extends AbstractController
 
         $obj = [
             'message' => 'ok',
+            'bot_id' => $crawler->getBotId(),
         ];
 
         $response = new JsonResponse($obj);
@@ -84,7 +88,7 @@ class ApiRobotScheduleController extends AbstractController
         return $response;
     }
 
-    #[Route('/api/robot/schedule/edit', format: 'json', name: 'app_api_robot_schedule_edit', methods: ['PUT'])]
+    #[Route('/api/robot/schedule/edit', format: 'json', name: 'app_api_robot_schedule_edit', methods: ['PATCH'])]
     public function edit(Request $request, ManagerRegistry $doctrine): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
@@ -141,6 +145,55 @@ class ApiRobotScheduleController extends AbstractController
 
         $entityManager->flush();
 
+        $response = new JsonResponse(['message' => 'ok']);
+
+        return $response;
+    }
+
+    #[Route('/api/robot/schedule/remove', format: 'json', name: 'app_api_robot_schedule_remove', methods: ['DELETE'])]
+    public function remove(Request $request, ManagerRegistry $doctrine): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $user = $this->getUser();
+
+        $globalSettings = $doctrine->getRepository(GlobalSettings::class)->get();
+        if (!$globalSettings) {
+            throw $this->createNotFoundException(
+                'No global settings found.'
+            );
+        }
+        $data = json_decode($request->getContent(), true);
+        $len = count($data);
+        if ($len !== 1) {
+            throw new \Exception("Invalid argument.");
+        }
+
+        $data = $data[0];
+
+        $botId = isset($data['bot_id']) ? $data['bot_id'] : null;
+        if ($botId === null) {
+            throw new \Exception('Invalid argument.');
+        }
+
+        $crawler = $doctrine->getRepository(CrawlSettings::class)->findOneByUserIdAndBotId($user->getId(), $botId);
+        if (!$crawler) {
+            throw $this->createNotFoundException(
+                'No bot for id: ' . $botId
+            );
+        }
+
+        $mqtt = new Mqtt($globalSettings);
+        $mqtt->stopRobot($botId);
+
+        // Remove our database data related to the bot id.
+        $doctrine->getRepository(CrawlData::class)->deleteAllByBotId($botId);
+        $doctrine->getRepository(CrawlErrors::class)->deleteAllByBotId($botId);
+        $doctrine->getRepository(CrawlLog::class)->deleteAllByBotId($botId);
+
+        $entityManager = $doctrine->getManager();
+        $entityManager->remove($crawler);
+        $entityManager->flush();
         $response = new JsonResponse(['message' => 'ok']);
 
         return $response;
