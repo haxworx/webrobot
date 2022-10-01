@@ -32,19 +32,18 @@ class ApiRobotScheduleController extends AbstractController
         }
 
         $data = json_decode($request->getContent(), true);
-        $len = count($data);
-        if ($len !== 1) {
+        if (count($data) !== 1) {
             throw new \Exception("Invalid argument.");
         }
 
         $data = $data[0];
 
-        $agent = isset($data['agent']) ? $data['agent'] : null;
-        $address = isset($data['address']) ? $data['address'] : null;
-        $delay = isset($data['delay']) ? $data['delay'] : null;
-        $ignoreQuery = isset($data['ignore_query']) ? $data['ignore_query'] : null;
-        $importSitemaps = isset($data['import_sitemaps']) ? $data['import_sitemaps'] : null;
-        $retryMax = isset($data['retry_max']) ? $data['retry_max'] : null;
+        $agent = $data['agent'] ?? null;
+        $address = $data['address'] ?? null;
+        $delay = $data['delay'] ?? null;
+        $ignoreQuery = $data['ignore_query'] ?? null;
+        $importSitemaps = $data['import_sitemaps'] ?? null;
+        $retryMax = $data['retry_max'] ?? null;
         $startTime = isset($data['start_time']) && preg_match('/^\d{1,2}:\d{1,2}$/', $data['start_time']) ? new \DateTime($data['start_time']) : null;
 
         if (($agent === null) || ($address === null) || ($delay === null) || ($ignoreQuery === null) || ($importSitemaps === null) || ($retryMax === null) || ($startTime === null)) {
@@ -103,19 +102,18 @@ class ApiRobotScheduleController extends AbstractController
         }
 
         $data = json_decode($request->getContent(), true);
-        $len = count($data);
-        if ($len !== 1) {
+        if (count($data) !== 1) {
             throw new \Exception("Invalid argument.");
         }
 
         $data = $data[0];
 
-        $botId = isset($data['bot_id']) ? $data['bot_id'] : null;
-        $agent = isset($data['agent']) ? $data['agent'] : null;
-        $delay = isset($data['delay']) ? $data['delay'] : null;
-        $ignoreQuery = isset($data['ignore_query']) ? $data['ignore_query'] : null;
-        $importSitemaps = isset($data['import_sitemaps']) ? $data['import_sitemaps'] : null;
-        $retryMax = isset($data['retry_max']) ? $data['retry_max'] : null;
+        $botId = $data['bot_id'] ?? null;
+        $agent = $data['agent'] ?? null;
+        $delay = $data['delay'] ?? null;
+        $ignoreQuery = $data['ignore_query'] ?? null;
+        $importSitemaps = $data['import_sitemaps'] ?? null;
+        $retryMax = $data['retry_max'] ?? null;
         $startTime = isset($data['start_time']) && preg_match('/^\d{1,2}:\d{1,2}$/', $data['start_time']) ? new \DateTime($data['start_time']) : null;
 
         if (($botId === null) || ($agent === null) || ($delay === null) || ($ignoreQuery === null) || ($importSitemaps === null) || ($retryMax === null) || ($startTime === null)) {
@@ -164,14 +162,13 @@ class ApiRobotScheduleController extends AbstractController
             );
         }
         $data = json_decode($request->getContent(), true);
-        $len = count($data);
-        if ($len !== 1) {
+        if (count($data) !== 1) {
             throw new \Exception("Invalid argument.");
         }
 
         $data = $data[0];
 
-        $botId = isset($data['bot_id']) ? $data['bot_id'] : null;
+        $botId = $data['bot_id'] ?? null;
         if ($botId === null) {
             throw new \Exception('Invalid argument.');
         }
