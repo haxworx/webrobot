@@ -32,7 +32,7 @@ class ApiRobotRecordsController extends AbstractController
         $this->serializer = new Serializer($normalizers, $encoders);
     }
 
-    #[Route('/api/robot/records/{botId}/launch/{launchId}/offset/{offset}', name: 'app_api_robot_records_view')]
+    #[Route('/api/robot/records/{botId}/launch/{launchId}/offset/{offset}', methods: ['GET'], name: 'app_api_robot_records_view')]
     public function paginate(Request $request, CrawlDataRepository $recordsRepository, ManagerRegistry $doctrine, int $botId, int $launchId, int $offset): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
@@ -69,6 +69,34 @@ class ApiRobotRecordsController extends AbstractController
         $paginator = $recordsRepository->getPaginator($launchId, $offset);
 
         $jsonContent = $this->serializer->serialize($paginator, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['data']]);
+
+        $response = new JsonResponse();
+        $response->setContent($jsonContent);
+
+        return $response;
+    }
+
+    #[Route('/api/robot/records/download/{botId}/record/{recordId}', methods: ['GET'], name: 'app_api_records_download')]
+    public function download(Request $request, ManagerRegistry $doctrine, int $botId, int $recordId): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $user = $this->getUser();
+
+        if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
+            throw new \AccessDeniedException(
+                'User does not own bot.'
+            );
+        }
+
+        $record = $doctrine->getRepository(CrawlData::class)->findOneById($recordId);
+        if (!$record) {
+            throw $this->createNotFoundException(
+                'No record found.'
+            );
+        }
+
+        $jsonContent = $this->serializer->serialize($record, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['data']]);
 
         $response = new JsonResponse();
         $response->setContent($jsonContent);
