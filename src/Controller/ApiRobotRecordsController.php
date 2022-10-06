@@ -17,6 +17,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
@@ -67,13 +68,10 @@ class ApiRobotRecordsController extends AbstractController
         $records = [];
         $paginator = $recordsRepository->getPaginator($launchId, $offset);
 
-        foreach ($paginator as $record) {
-        }
-
-        $jsonContent = $this->serializer->serialize($records, 'json');
+        $jsonContent = $this->serializer->serialize($paginator, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['data']]);
 
         $response = new JsonResponse();
-        //$response->setContent($jsonContent);
+        $response->setContent($jsonContent);
 
         return $response;
     }
