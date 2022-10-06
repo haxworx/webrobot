@@ -1,5 +1,7 @@
 <?php
 
+// src/Controller/UserSettingsController.php
+
 namespace App\Controller;
 
 use App\Entity\User;

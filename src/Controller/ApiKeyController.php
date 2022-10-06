@@ -1,5 +1,7 @@
 <?php
 
+// src/Controller/ApiKeyController.php
+
 namespace App\Controller;
 
 use App\Utils\ApiKey;

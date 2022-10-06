@@ -1,5 +1,7 @@
 <?php
 
+// src/Controller/GlobalSettingsController.php
+
 namespace App\Controller;
 
 use App\Entity\GlobalSettings;

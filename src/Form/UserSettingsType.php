@@ -1,5 +1,7 @@
 <?php
 
+// src/Form/UserSettingsType.php
+
 namespace App\Form;
 
 use App\Validator\ConfirmPassword;

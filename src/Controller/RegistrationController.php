@@ -1,5 +1,8 @@
 <?php
 
+
+// src/Controller/RegistrationController.php
+
 namespace App\Controller;
 
 use App\Entity\User;

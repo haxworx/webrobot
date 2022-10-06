@@ -179,18 +179,6 @@ class CrawlData
         return $this;
     }
 
-    public function getSrvDate(): ?\DateTimeInterface
-    {
-        return $this->srvDate;
-    }
-
-    public function setSrvDate(?\DateTimeInterface $srvDate): self
-    {
-        $this->srvDate = $srvDate;
-
-        return $this;
-    }
-
     public function getSrvTimeStamp(): ?\DateTimeInterface
     {
         return $this->srvTimeStamp;

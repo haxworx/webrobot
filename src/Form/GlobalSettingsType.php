@@ -1,5 +1,7 @@
 <?php
 
+// src/Form/GlobalSettingsType.php
+
 namespace App\Form;
 
 use App\Entity\GlobalSettings;
