@@ -107,7 +107,7 @@ class RobotRecordsController extends AbstractController
         }
 
         if (($launchId < 0) || ($offset < 0)) {
-            throw new \Exception(
+            throw new \InvalidArgumentException(
                 'Invalid offset.'
             );
         }

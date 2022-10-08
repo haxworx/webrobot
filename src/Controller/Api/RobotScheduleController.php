@@ -1,8 +1,8 @@
 <?php
 
-// src/Controller/ApiRobotScheduleController.php
+// src/Controller/Api/RobotScheduleController.php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use App\Entity\CrawlSettings;
 use App\Entity\GlobalSettings;
@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 
-class ApiRobotScheduleController extends AbstractController
+class RobotScheduleController extends AbstractController
 {
     #[Route('/api/robot/schedule', format: 'json', name: 'app_api_robot_schedule', methods: ['POST'])]
     public function index(Request $request, ManagerRegistry $doctrine): Response
@@ -33,20 +33,20 @@ class ApiRobotScheduleController extends AbstractController
             );
         }
 
-        $data = json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), false);
         if (count($data) !== 1) {
             throw new \InvalidArgumentException("Length is not 1");
         }
 
         $data = $data[0];
 
-        $agent = $data['agent'] ?? null;
-        $address = $data['address'] ?? null;
-        $delay = $data['delay'] ?? null;
-        $ignoreQuery = $data['ignore_query'] ?? null;
-        $importSitemaps = $data['import_sitemaps'] ?? null;
-        $retryMax = $data['retry_max'] ?? null;
-        $startTime = isset($data['start_time']) && preg_match('/^\d{1,2}:\d{1,2}$/', $data['start_time']) ? new \DateTime($data['start_time']) : null;
+        $agent = $data->agent ?? null;
+        $address = $data->address ?? null;
+        $delay = $data->delay ?? null;
+        $ignoreQuery = $data->ignoreQuery ?? null;
+        $importSitemaps = $data->importSitemaps ?? null;
+        $retryMax = $data->retryMax ?? null;
+        $startTime = isset($data->startTime) && preg_match('/^\d{1,2}:\d{1,2}$/', $data->startTime) ? new \DateTime($data->startTime) : null;
 
         if (($agent === null) || ($address === null) || ($delay === null) || ($ignoreQuery === null) || ($importSitemaps === null) || ($retryMax === null) || ($startTime === null)) {
             throw new \InvalidArgumentException("Missing argument.");
@@ -81,7 +81,7 @@ class ApiRobotScheduleController extends AbstractController
 
         $obj = [
             'message' => 'ok',
-            'bot_id' => $crawler->getBotId(),
+            'botId' => $crawler->getBotId(),
         ];
 
         $response = new JsonResponse($obj);
@@ -103,20 +103,20 @@ class ApiRobotScheduleController extends AbstractController
             );
         }
 
-        $data = json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), false);
         if (count($data) !== 1) {
             throw new \InvalidArgumentException("Length not 1");
         }
 
         $data = $data[0];
 
-        $botId = $data['bot_id'] ?? null;
-        $agent = $data['agent'] ?? null;
-        $delay = $data['delay'] ?? null;
-        $ignoreQuery = $data['ignore_query'] ?? null;
-        $importSitemaps = $data['import_sitemaps'] ?? null;
-        $retryMax = $data['retry_max'] ?? null;
-        $startTime = isset($data['start_time']) && preg_match('/^\d{1,2}:\d{1,2}$/', $data['start_time']) ? new \DateTime($data['start_time']) : null;
+        $botId = $data->botId ?? null;
+        $agent = $data->agent ?? null;
+        $delay = $data->delay ?? null;
+        $ignoreQuery = $data->ignoreQuery ?? null;
+        $importSitemaps = $data->importSitemaps ?? null;
+        $retryMax = $data->retryMax ?? null;
+        $startTime = isset($data->startTime) && preg_match('/^\d{1,2}:\d{1,2}$/', $data->startTime) ? new \DateTime($data->startTime) : null;
 
         if (($botId === null) || ($agent === null) || ($delay === null) || ($ignoreQuery === null) || ($importSitemaps === null) || ($retryMax === null) || ($startTime === null)) {
             throw new \InvalidArgumentException("Missing argument.");
@@ -163,14 +163,14 @@ class ApiRobotScheduleController extends AbstractController
                 'No global settings found.'
             );
         }
-        $data = json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), false);
         if (count($data) !== 1) {
             throw new \InvalidArgumentException("Length not 1");
         }
 
         $data = $data[0];
 
-        $botId = $data['bot_id'] ?? null;
+        $botId = $data->botId ?? null;
         if ($botId === null) {
             throw new \InvalidArgumentException('Missing argument');
         }

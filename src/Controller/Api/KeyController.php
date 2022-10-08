@@ -1,8 +1,8 @@
 <?php
 
-// src/Controller/ApiKeyController.php
+// src/Controller/api/KeyController.php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use App\Utils\ApiKey;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Doctrine\Persistence\ManagerRegistry;
 
-class ApiKeyController extends AbstractController
+class KeyController extends AbstractController
 {
     #[Route('/api/key/regenerate', name: 'app_api_key', format: 'json', methods: ['POST'])]
     public function index(Request $request, ManagerRegistry $doctrine): Response
@@ -22,12 +22,12 @@ class ApiKeyController extends AbstractController
 
         $user = $this->getUser();
 
-        $content = json_decode($request->getContent(), true);
-        if ((!$content) || (!array_key_exists('token', $content))) {
+        $content = json_decode($request->getContent(), false);
+        if ((!$content) || (!isset($content->token))) {
             throw new \Exception('Missing parameters');
         }
 
-        $token = $content['token'];
+        $token = $content->token;
 
         if (!$this->isCsrfTokenValid('regenerate-api-key', $token)) {
             throw new AccessDeniedException('CSRF token invalid');

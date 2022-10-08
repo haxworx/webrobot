@@ -1,8 +1,8 @@
 <?php
 
-// src/Controller/ApiRobotQueryController.php
+// src/Controller/Api/RobotQueryController.php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use App\Entity\CrawlSettings;
 use App\Entity\CrawlLog;
@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Doctrine\Persistence\ManagerRegistry;
 
-class ApiRobotQueryController extends AbstractController
+class RobotQueryController extends AbstractController
 {
     private $serializer = null;
 
@@ -50,12 +50,12 @@ class ApiRobotQueryController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
         $user = $this->getUser();
 
-        $data = json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), false);
         if (count($data) !== 1) {
             throw new \InvalidArgumentException("Length is not 1");
         }
 
-        $botId = $data[0]['bot_id'];
+        $botId = $data[0]->botId;
 
         if (!$doctrine->getRepository(CrawlSettings::class)->userOwnsBot($user->getId(), $botId)) {
             throw new AccessDeniedException(

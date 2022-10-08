@@ -47,9 +47,9 @@ export default class extends Controller {
         }
         this.dataTime = null;
         this.postObj = {
-            bot_id: this.botIdValue,
-            last_id: 0,
-            launch_id: this.launchIdValue,
+            botId: this.botIdValue,
+            lastId: 0,
+            launchId: this.launchIdValue,
             token: this.tokenValue,
         };
         this.postData = JSON.stringify(this.postObj);
