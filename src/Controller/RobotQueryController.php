@@ -9,6 +9,7 @@ use App\Entity\CrawlLog;
 use App\Entity\CrawlLaunch;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -40,9 +41,8 @@ class RobotQueryController extends AbstractController
         $crawlers = $doctrine->getRepository(CrawlSettings::class)->findAllByUserId($user->getId());
         $jsonContent = $this->serializer->serialize($crawlers, 'json');
 
-        $response = new Response();
+        $response = new JsonResponse();
         $response->setContent($jsonContent);
-        $response->headers->set('Content-Type', 'application/json');
 
         return $response;
     }
@@ -65,9 +65,8 @@ class RobotQueryController extends AbstractController
 
         $jsonContent = $this->serializer->serialize($launches, 'json');
 
-        $response = new Response();
+        $response = new JsonResponse();
         $response->setContent($jsonContent);
-        $response->headers->set('Content-Type', 'application/json');
 
         return $response;
     }
