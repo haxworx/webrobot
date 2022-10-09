@@ -129,7 +129,6 @@ class RobotScheduleController extends AbstractController
         ]);
     }
 
-    // See public/robot_schedule.js for POST request.
     #[Route('/robot/schedule/remove/{botId}', name: 'app_robot_schedule_remove', methods: ['POST'])]
     public function remove(Request $request, ManagerRegistry $doctrine, NotifierInterface $notifier): Response
     {
