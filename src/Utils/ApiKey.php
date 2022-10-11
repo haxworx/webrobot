@@ -1,5 +1,7 @@
 <?php
 
+// src/Utils/ApiKey.php
+
 namespace App\Utils;
 use Symfony\Component\Uid\Uuid;
 
