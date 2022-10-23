@@ -3,17 +3,60 @@
 {% block title %}Search{% endblock %}
 
 {% block body %}
+<form action="/robot/search" method="GET">
 <div {{ stimulus_controller('search') }}>
     <div class="container">
         <div class="row height d-flex justify-content-center align-items-center">
             <div class="col-md-8">
                 <div class="search">
                     <i class="fa fa-search"></i>
-                    <input type="text" class="form-control" placeholder="Search...">
+                    <input type="text" value="{{ search_term }}" name="search" class="form-control" placeholder="Search...">
                     <button class="btn btn-primary">Search</button>
                 </div>
             </div>
         </div>
     </div>
+</form>
 </div>
+
+{% if search_term %}
+<p>Found a total of {{ count }} results.</p>
+{% endif %}
+{% if count %}
+<div class="container py-4">
+<table width="100%" class="table table-striped">
+    <thead>
+        <tr class="align-middle"><th>id</th><th>path</th><th>timestamp</th><th>content type</th><th>content length</th><th>headers</th><th></th><th></th></tr>
+    </thead>
+    <tbody>
+{% for record in records %}
+        <tr class="align-middle">
+            <td>{{ record.id }}</td>
+            <td>{{ record.path }}</td>
+            <td>{{ record.scanTimestamp|date('Y-m-d H:i:s') }}</td>
+            <td>{{ record.contentType }}</td>
+            <td>{{ record.length }}</td>
+            <td>{{ record.metadata|ellipsis }}</td>
+            <td>
+                <button class="btn btn-primary btn-sm" data-robot-records-view-id-param="{{ record.id }}" data-action="robot-records-view#show">View</button>
+            </td>
+            <td>
+                <button class="btn btn-secondary btn-sm" data-robot-records-view-id-param="{{ record.id }}" data-action="robot-records-view#download">Download</button>
+            </td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+<ul class="pagination">
+{% if previous >= 0 %}
+    <li class="page-item"><a class="page-link" href="{{ path('app_robot_search', { search: search_term, offset: previous }) }}">Previous</a></li>
+{% endif %}
+{% if next < records|length %}
+    <li class="page-item"><a class="page-link" href="{{ path('app_robot_search', { search: search_term, offset: next }) }}">Next</a></li>
+{% endif %}
+</ul>
+</div>
+{% endif %}
+
 {% endblock %}

@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\CrawlData;
+use App\Entity\CrawlSettings;
+use App\Repository\CrawlSettingsRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -14,6 +16,7 @@ class CrawlDataRepository extends ServiceEntityRepository
 
     public function __construct(ManagerRegistry $registry)
     {
+        $this->doctrine = $registry;
         parent::__construct($registry, CrawlData::class);
     }
 
@@ -22,6 +25,23 @@ class CrawlDataRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('c')
             ->Where('c.launchId = :launchId')
             ->setParameter('launchId', $launchId)
+            ->setMaxResults(self::PAGINATOR_PER_PAGE)
+            ->setFirstResult($offset)
+            ->getQuery()
+        ;
+
+        return new Paginator($query);
+    }
+
+    public function getSearchPaginator(string $searchTerm, int $offset, int $userId): Paginator
+    {
+        $ids = $this->doctrine->getRepository(CrawlSettings::class)->findAllBotIdsByUserId($userId);
+
+        $query = $this->createQueryBuilder('c')
+            ->where('c.data LIKE :searchTerm')
+            ->setParameter('searchTerm', '%' . $searchTerm . '%')
+            ->andWhere('c.botId IN (:ids)')
+            ->setParameter('ids', $ids)
             ->setMaxResults(self::PAGINATOR_PER_PAGE)
             ->setFirstResult($offset)
             ->getQuery()
