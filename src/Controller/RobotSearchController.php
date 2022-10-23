@@ -15,6 +15,7 @@ class RobotSearchController extends AbstractController
     public function index(Request $request, CrawlDataRepository $recordsRepository): Response
     {
         $offset = 0;
+        $count = 0;
         $paginator = null;
         $searchTerm = "";
 
@@ -25,8 +26,10 @@ class RobotSearchController extends AbstractController
         $searchTerm = $request->get('search') ?? null;
         $offset = $request->get('offset') ?? 0;
 
-        $paginator = $recordsRepository->getSearchPaginator($searchTerm, $offset, $user->getId());
-        $count = count($paginator);
+        if ($searchTerm) {
+            $paginator = $recordsRepository->getSearchPaginator($searchTerm, $offset, $user->getId());
+            $count = count($paginator);
+        }
 
         return $this->render('robot_search/index.html.twig', [
             'next' => min($count, $offset + CrawlDataRepository::PAGINATOR_PER_PAGE),
