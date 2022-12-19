@@ -6,33 +6,29 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ContentTypes
- *
- * @ORM\Table(name="content_types")
- * @ORM\Entity
  */
+#[ORM\Table(name: 'content_types')]
+#[ORM\Entity]
 class ContentTypes
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="content_id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'content_id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $contentId;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="content_type", type="string", length=128, nullable=true)
      */
+    #[ORM\Column(name: 'content_type', type: 'string', length: 128, nullable: true)]
     private $contentType;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="description", type="text", length=65535, nullable=true)
      */
+    #[ORM\Column(name: 'description', type: 'text', length: 65535, nullable: true)]
     private $description;
 
     public function getContentId(): ?int

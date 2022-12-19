@@ -5,31 +5,21 @@ namespace App\Entity;
 use App\Repository\CrawlLaunchRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=CrawlLaunchRepository::class)
- */
+#[ORM\Entity(repositoryClass: CrawlLaunchRepository::class)]
 class CrawlLaunch
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(name="bot_id", type="integer")
-     */
+    #[ORM\Column(name: 'bot_id', type: 'integer')]
     private $botId;
 
-    /**
-     * @ORM\Column(name="start_time", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: 'start_time', type: 'datetime', nullable: true)]
     private $startTime;
 
-    /**
-     * @ORM\Column(name="end_time", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: 'end_time', type: 'datetime', nullable: true)]
     private $endTime;
 
     public function getId(): ?int

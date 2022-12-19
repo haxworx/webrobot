@@ -7,68 +7,59 @@ use App\Repository\GlobalSettingsRepository;
 
 /**
  * GlobalSettings
- *
- * @ORM\Table(name="global_settings")
- * @ORM\Entity(repositoryClass=GlobalSettingsRepository::class)
  */
+#[ORM\Table(name: 'global_settings')]
+#[ORM\Entity(repositoryClass: GlobalSettingsRepository::class)]
 class GlobalSettings
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var \DateTime|null
-     *
-     * @ORM\Column(name="time_stamp", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'time_stamp', type: 'datetime', nullable: true)]
     private $timeStamp;
 
     /**
      * @var bool|null
-     *
-     * @ORM\Column(name="in_use", type="boolean", nullable=true)
      */
+    #[ORM\Column(name: 'in_use', type: 'boolean', nullable: true)]
     private $inUse;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="max_crawlers", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'max_crawlers', type: 'integer', nullable: true)]
     private $maxCrawlers;
 
     /**
      * @var bool|null
-     *
-     * @ORM\Column(name="debug", type="boolean", nullable=true)
      */
+    #[ORM\Column(name: 'debug', type: 'boolean', nullable: true)]
     private $debug;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="mqtt_host", type="string", length=128, nullable=true)
      */
+    #[ORM\Column(name: 'mqtt_host', type: 'string', length: 128, nullable: true)]
     private $mqttHost;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="mqtt_port", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'mqtt_port', type: 'integer', nullable: true)]
     private $mqttPort;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="mqtt_topic", type="string", length=8192, nullable=true)
      */
+    #[ORM\Column(name: 'mqtt_topic', type: 'string', length: 8192, nullable: true)]
     private $mqttTopic;
 
     public function getId(): ?int

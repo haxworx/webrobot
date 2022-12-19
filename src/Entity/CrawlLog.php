@@ -8,96 +8,83 @@ use App\Repository\CrawlLogRepository;
 /**
  * CrawlLog
  *
- * @ORM\Table(name="crawl_log")
- * @ORM\Entity(repositoryClass=CrawlLogRepository::class)
-
  */
+#[ORM\Table(name: 'crawl_log')]
+#[ORM\Entity(repositoryClass: CrawlLogRepository::class)]
 class CrawlLog
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="bot_id", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'bot_id', type: 'integer', nullable: true)]
     private $botId;
 
     /**
      * @var \DateTime|null
-     *
-     * @ORM\Column(name="srv_time_stamp", type="datetime", nullable=true, options={"default"="CURRENT_TIMESTAMP"})
      */
+    #[ORM\Column(name: 'srv_time_stamp', type: 'datetime', nullable: true, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private $srvTimeStamp = 'CURRENT_TIMESTAMP';
 
     /**
      * @var \DateTime|null
-     *
-     * @ORM\Column(name="scan_date", type="date", nullable=true)
      */
+    #[ORM\Column(name: 'scan_date', type: 'date', nullable: true)]
     private $scanDate;
 
     /**
      * @var \DateTime|null
-     *
-     * @ORM\Column(name="scan_time_stamp", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'scan_time_stamp', type: 'datetime', nullable: true)]
     private $scanTimeStamp;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="crawler_name", type="string", length=32, nullable=true)
      */
+    #[ORM\Column(name: 'crawler_name', type: 'string', length: 32, nullable: true)]
     private $crawlerName;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="hostname", type="string", length=128, nullable=true)
      */
+    #[ORM\Column(name: 'hostname', type: 'string', length: 128, nullable: true)]
     private $hostname;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="ip_address", type="string", length=128, nullable=true)
      */
+    #[ORM\Column(name: 'ip_address', type: 'string', length: 128, nullable: true)]
     private $ipAddress;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="level_number", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'level_number', type: 'integer', nullable: true)]
     private $levelNumber;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="level_name", type="string", length=32, nullable=true)
      */
+    #[ORM\Column(name: 'level_name', type: 'string', length: 32, nullable: true)]
     private $levelName;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="message", type="text", length=65535, nullable=true)
      */
+    #[ORM\Column(name: 'message', type: 'text', length: 65535, nullable: true)]
     private $message;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="launch_id", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'launch_id', type: 'integer', nullable: true)]
     private $launchId;
 
     public function getId(): ?int

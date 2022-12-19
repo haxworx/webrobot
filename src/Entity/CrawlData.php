@@ -7,159 +7,137 @@ use App\Repository\CrawlDataRepository;
 
 /**
  * CrawlData
- *
- * @ORM\Table(name="crawl_data")
- * @ORM\Entity(repositoryClass=CrawlDataRepository::class)
  */
+#[ORM\Table(name: 'crawl_data')]
+#[ORM\Entity(repositoryClass: CrawlDataRepository::class)]
 class CrawlData
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="bot_id", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'bot_id', type: 'integer', nullable: true)]
     private $botId;
 
     /**
      * @var \DateTime|null
-     *
-     * @ORM\Column(name="srv_time_stamp", type="datetime", nullable=true, options={"default"="CURRENT_TIMESTAMP"})
      */
+    #[ORM\Column(name: 'srv_time_stamp', type: 'datetime', nullable: true, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private $srvTimeStamp = 'CURRENT_TIMESTAMP';
 
     /**
      * @var \DateTime|null
-     *
-     * @ORM\Column(name="scan_date", type="date", nullable=true)
      */
+    #[ORM\Column(name: 'scan_date', type: 'date', nullable: true)]
     private $scanDate;
 
     /**
      * @var \DateTime|null
-     *
-     * @ORM\Column(name="scan_time_stamp", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'scan_time_stamp', type: 'datetime', nullable: true)]
     private $scanTimeStamp;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="scan_time_zone", type="string", length=64, nullable=true)
      */
+    #[ORM\Column(name: 'scan_time_zone', type: 'string', length: 64, nullable: true)]
     private $scanTimeZone;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="domain", type="string", length=253, nullable=true)
      */
+    #[ORM\Column(name: 'domain', type: 'string', length: 253, nullable: true)]
     private $domain;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="scheme", type="string", length=32, nullable=true)
      */
+    #[ORM\Column(name: 'scheme', type: 'string', length: 32, nullable: true)]
     private $scheme;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="link_source", type="string", length=4096, nullable=true)
      */
+    #[ORM\Column(name: 'link_source', type: 'string', length: 4096, nullable: true)]
     private $linkSource;
 
     /**
      * @var \DateTime|null
-     *
-     * @ORM\Column(name="modified", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'modified', type: 'datetime', nullable: true)]
     private $modified;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="url", type="string", length=4096, nullable=true)
      */
+    #[ORM\Column(name: 'url', type: 'string', length: 4096, nullable: true)]
     private $url;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="status_code", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'status_code', type: 'integer', nullable: true)]
     private $statusCode;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="path", type="text", length=65535, nullable=true)
      */
+    #[ORM\Column(name: 'path', type: 'text', length: 65535, nullable: true)]
     private $path;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="query", type="text", length=65535, nullable=true)
      */
+    #[ORM\Column(name: 'query', type: 'text', length: 65535, nullable: true)]
     private $query;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="content_type", type="string", length=255, nullable=true)
      */
+    #[ORM\Column(name: 'content_type', type: 'string', length: 255, nullable: true)]
     private $contentType;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="metadata", type="text", length=65535, nullable=true)
      */
+    #[ORM\Column(name: 'metadata', type: 'text', length: 65535, nullable: true)]
     private $metadata;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="checksum", type="string", length=32, nullable=true)
      */
+    #[ORM\Column(name: 'checksum', type: 'string', length: 32, nullable: true)]
     private $checksum;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="encoding", type="string", length=32, nullable=true)
      */
+    #[ORM\Column(name: 'encoding', type: 'string', length: 32, nullable: true)]
     private $encoding;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="length", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'length', type: 'integer', nullable: true)]
     private $length;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="data", type="blob", length=16777215, nullable=true)
      */
+    #[ORM\Column(name: 'data', type: 'blob', length: 16777215, nullable: true)]
     private $data;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="launch_id", type="integer")
      */
+    #[ORM\Column(name: 'launch_id', type: 'integer')]
     private $launchId;
 
     public function getId(): ?int

@@ -6,33 +6,29 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * CrawlAllowedContent
- *
- * @ORM\Table(name="crawl_allowed_content")
- * @ORM\Entity
  */
+#[ORM\Table(name: 'crawl_allowed_content')]
+#[ORM\Entity]
 class CrawlAllowedContent
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="bot_id", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'bot_id', type: 'integer', nullable: true)]
     private $botId;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="content_id", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'content_id', type: 'integer', nullable: true)]
     private $contentId;
 
     public function getId(): ?int

@@ -9,127 +9,110 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * CrawlSettings
- *
- * @ORM\Table(name="crawl_settings")
- * @ORM\Entity(repositoryClass=CrawlSettingsRepository::class)
  */
+#[ORM\Table(name: 'crawl_settings')]
+#[ORM\Entity(repositoryClass: CrawlSettingsRepository::class)]
 class CrawlSettings
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="bot_id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'bot_id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $botId;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="user_id", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'user_id', type: 'integer', nullable: true)]
     private $userId;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="scheme", type="string", length=32, nullable=true)
      */
+    #[ORM\Column(name: 'scheme', type: 'string', length: 32, nullable: true)]
     private $scheme;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="address", type="string", length=260, nullable=true)
      */
     #[Assert\Url]
+    #[ORM\Column(name: 'address', type: 'string', length: 260, nullable: true)]
     private $address;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="domain", type="string", length=253, nullable=true)
      */
+    #[ORM\Column(name: 'domain', type: 'string', length: 253, nullable: true)]
     private $domain;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="agent", type="string", length=255, nullable=true)
      */
     #[CrawlSettingsAssert\IsAgent]
+    #[ORM\Column(name: 'agent', type: 'string', length: 255, nullable: true)]
     private $agent;
 
     /**
      * @var float|null
-     *
-     * @ORM\Column(name="delay", type="float", precision=10, scale=0, nullable=true)
      */
     #[Assert\Range(
         min: 1,
         max: 10,
         notInRangeMessage: 'Must be between {{ min }} and {{ max }}.',
     )]
+    #[ORM\Column(name: 'delay', type: 'float', precision: 10, scale: 0, nullable: true)]
     private $delay;
 
     /**
      * @var bool|null
-     *
-     * @ORM\Column(name="ignore_query", type="boolean", nullable=true)
      */
+    #[ORM\Column(name: 'ignore_query', type: 'boolean', nullable: true)]
     private $ignoreQuery;
 
     /**
      * @var bool|null
-     *
-     * @ORM\Column(name="import_sitemaps", type="boolean", nullable=true)
      */
+    #[ORM\Column(name: 'import_sitemaps', type: 'boolean', nullable: true)]
     private $importSitemaps;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="retry_max", type="integer", nullable=true)
      */
     #[Assert\Range(
         min: 1,
         max: 10,
         notInRangeMessage: 'Must be between {{ min }} and {{ max }}.',
     )]
+    #[ORM\Column(name: 'retry_max', type: 'integer', nullable: true)]
     private $retryMax;
 
     /**
      * @var \DateTime|null
-     *
-     * @ORM\Column(name="start_time", type="time", nullable=true)
      */
+    #[ORM\Column(name: 'start_time', type: 'time', nullable: true)]
     private $startTime;
 
     /**
      * @var \DateTime|null
-     *
-     * @ORM\Column(name="end_time", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'end_time', type: 'datetime', nullable: true)]
     private $endTime;
 
     /**
      * @var bool|null
-     *
-     * @ORM\Column(name="is_running", type="boolean", nullable=true)
      */
+    #[ORM\Column(name: 'is_running', type: 'boolean', nullable: true)]
     private $IsRunning;
 
     /**
      * @var bool|null
-     *
-     * @ORM\Column(name="has_error", type="boolean", nullable=true)
      */
+    #[ORM\Column(name: 'has_error', type: 'boolean', nullable: true)]
     private $HasError;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $ContainerId;
 
     public function getBotId(): ?int
