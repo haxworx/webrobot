@@ -22,10 +22,6 @@ export default class extends Controller {
             pre.textContent = data;
         })
         .catch((error) => {
-            if (this.interval) {
-                clearInterval(this.interval);
-                this.interval = null;
-            }
             console.error('Error:', error);
             let notification = new Notification("There was a network error.", true);
             notification.show();
