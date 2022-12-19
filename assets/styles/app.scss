@@ -1,8 +1,12 @@
 @import '~bootstrap/scss/bootstrap';
 
-body, pre {
+body {
     font-size: 11pt;
     font-family: "IBM Plex Sans", "Open Sans", sans-serif;
+}
+
+pre.record-view {
+    font-family:'Courier New', Courier, monospace;
 }
 
 iframe.record-view {
