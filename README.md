@@ -9,6 +9,9 @@ interface written with Symfony in PHP.
 
 The project is runnable with docker compose.
 
+1. composer install
+2. yarnpkg encore dev
+
 To bring up the application, run:
 
 ```
