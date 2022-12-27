@@ -8,7 +8,7 @@ VALUES
     ('application/json', 'Application JSON');
 
 INSERT INTO `global_settings`
-    (`time_stamp`, `in_use`, `max_crawlers`, `debug`, `docker_image`, `mqtt_host`, `mqtt_port`, `mqtt_topic`)
+    (`time_stamp`, `in_use`, `max_crawlers`, `debug`, `mqtt_host`, `mqtt_port`, `mqtt_topic`)
     VALUES
-    (NOW(), true, 5, true, 'spiderz', 'mosquitto', 1883, 'testing');
+    (NOW(), true, 5, true, 'mosquitto', 1883, 'testing');
 
